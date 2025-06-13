@@ -43,7 +43,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <h3 className="font-medium text-lg">Phone</h3>
-                  <p className="text-muted-foreground">+254 XXX XXX XXX</p>
+                  <p className="text-muted-foreground">+254724238938</p>
                 </div>
               </CardContent>
             </Card>
