@@ -20,10 +20,10 @@ import { ThemeToggle } from "./theme-toggle"
 import { motion } from "framer-motion"
 
 const navigation = [
-  { name: "Home", href: "/" },
-  { name: "Services", href: "/services" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
+  { name: "Home", href: "/#home" },
+  { name: "Services", href: "/#services" },
+  { name: "About", href: "/#about" },
+  { name: "Contact", href: "/#contact" },
 ]
 
 function Navbar() {
@@ -41,8 +41,41 @@ function Navbar() {
     router.push("/")
   }
 
-  const handleNavClick = () => {
+  const handleNavClick = (href: string) => {
     setIsOpen(false)
+
+    // Handle anchor links
+    if (href.startsWith("/#")) {
+      const elementId = href.substring(2) // Remove "/#"
+
+      // If we're not on the home page, navigate there first
+      if (pathname !== "/") {
+        router.push("/")
+        // Wait a bit for navigation, then scroll
+        setTimeout(() => {
+          if (elementId === "home") {
+            // For home, scroll to top
+            window.scrollTo({ top: 0, behavior: "smooth" })
+          } else {
+            const element = document.getElementById(elementId)
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth" })
+            }
+          }
+        }, 100)
+      } else {
+        // We're already on home page, just scroll
+        if (elementId === "home") {
+          // For home, scroll to top
+          window.scrollTo({ top: 0, behavior: "smooth" })
+        } else {
+          const element = document.getElementById(elementId)
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" })
+          }
+        }
+      }
+    }
   }
 
   const getDashboardLink = () => {
@@ -57,6 +90,11 @@ function Navbar() {
     return <User className="mr-2 h-4 w-4" />
   }
 
+  const isActiveLink = (href: string) => {
+    // All anchor links are active when on home page
+    return pathname === "/"
+  }
+
   return (
     <motion.nav
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
@@ -66,7 +104,7 @@ function Navbar() {
     >
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
+          <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
             <motion.div
               className="h-8 w-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center"
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -77,28 +115,28 @@ function Navbar() {
             <span className="hidden font-bold sm:inline-block bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               AllotMeAfroc
             </span>
-          </Link>
+          </button>
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:space-x-6">
           {navigation.map((item) => (
-            <Link
+            <button
               key={item.name}
-              href={item.href}
+              onClick={() => handleNavClick(item.href)}
               className={`text-sm font-medium transition-colors hover:text-primary relative ${
-                pathname === item.href ? "text-primary" : "text-muted-foreground"
+                isActiveLink(item.href) ? "text-primary" : "text-muted-foreground"
               }`}
             >
               {item.name}
-              {pathname === item.href && (
+              {isActiveLink(item.href) && (
                 <motion.div
                   className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-orange-500"
                   layoutId="navbar-indicator"
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-            </Link>
+            </button>
           ))}
         </div>
 
@@ -170,14 +208,14 @@ function Navbar() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col space-y-4 mt-4">
                 <div className="flex items-center justify-between">
-                  <Link href="/" className="flex items-center space-x-2" onClick={handleNavClick}>
+                  <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
                     <div className="h-8 w-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-sm">A</span>
                     </div>
                     <span className="font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
                       AllotMeAfroc
                     </span>
-                  </Link>
+                  </button>
                   <SheetClose asChild>
                     <Button variant="ghost" size="icon">
                       <X className="h-5 w-5" />
@@ -187,16 +225,15 @@ function Navbar() {
 
                 <div className="flex flex-col space-y-3 pt-4">
                   {navigation.map((item) => (
-                    <Link
+                    <button
                       key={item.name}
-                      href={item.href}
-                      onClick={handleNavClick}
-                      className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 rounded ${
-                        pathname === item.href ? "text-primary bg-primary/10" : "text-muted-foreground"
+                      onClick={() => handleNavClick(item.href)}
+                      className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 rounded text-left w-full ${
+                        isActiveLink(item.href) ? "text-primary bg-primary/10" : "text-muted-foreground"
                       }`}
                     >
                       {item.name}
-                    </Link>
+                    </button>
                   ))}
                 </div>
 
@@ -216,7 +253,7 @@ function Navbar() {
                     {(userRole === "admin" || userRole === "marketing") && (
                       <Link
                         href={getDashboardLink()}
-                        onClick={handleNavClick}
+                        onClick={() => setIsOpen(false)}
                         className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded transition-colors"
                       >
                         {userRole === "admin" ? (
@@ -231,7 +268,7 @@ function Navbar() {
                     )}
                     <Link
                       href="/profile"
-                      onClick={handleNavClick}
+                      onClick={() => setIsOpen(false)}
                       className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded transition-colors"
                     >
                       <Settings className="h-4 w-4" />
@@ -240,7 +277,7 @@ function Navbar() {
                     <button
                       onClick={() => {
                         handleLogout()
-                        handleNavClick()
+                        setIsOpen(false)
                       }}
                       className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded transition-colors text-left"
                     >
@@ -250,12 +287,12 @@ function Navbar() {
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-2 pt-4 border-t">
-                    <Button variant="ghost" asChild onClick={handleNavClick}>
+                    <Button variant="ghost" asChild onClick={() => setIsOpen(false)}>
                       <Link href="/login">Log in</Link>
                     </Button>
                     <Button
                       asChild
-                      onClick={handleNavClick}
+                      onClick={() => setIsOpen(false)}
                       className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
                     >
                       <Link href="/signup">Sign up</Link>
