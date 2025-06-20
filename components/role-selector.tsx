@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { User, Briefcase, Shield } from "lucide-react"
+import { Shield, BarChart3, Home } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
-import { updateUserSelectedRole } from "@/lib/auth-utils"
 import { toast } from "sonner"
 
 export function RoleSelector() {
@@ -21,12 +20,9 @@ export function RoleSelector() {
     setLoading(true)
 
     try {
-      // Save selected role to user profile
-      await updateUserSelectedRole(user.uid, selectedRole)
-
       // Redirect based on selected role
       switch (selectedRole) {
-        case "user":
+        case "main":
           router.push("/")
           break
         case "marketing":
@@ -39,10 +35,10 @@ export function RoleSelector() {
           router.push("/")
       }
 
-      toast.success(`Switched to ${selectedRole} dashboard`)
+      toast.success(`Redirected to ${selectedRole === "main" ? "main page" : selectedRole + " dashboard"}`)
     } catch (error) {
-      console.error("Error saving role selection:", error)
-      toast.error("Failed to save role selection")
+      console.error("Error with role selection:", error)
+      toast.error("Failed to redirect")
     } finally {
       setLoading(false)
     }
@@ -51,28 +47,30 @@ export function RoleSelector() {
   const availableRoles = () => {
     switch (userRole) {
       case "admin":
-        return ["user", "marketing", "admin"]
+        return ["admin", "marketing", "main"]
       case "marketing":
-        return ["user", "marketing"]
+        return ["marketing", "main"]
       default:
-        return ["user"]
+        // Regular users go directly to main page
+        router.push("/")
+        return []
     }
   }
 
   const getRoleInfo = (role: string) => {
     switch (role) {
-      case "user":
+      case "main":
         return {
-          title: "User Dashboard",
-          description: "Browse services and explore opportunities",
-          icon: <User className="h-8 w-8" />,
-          color: "bg-blue-500",
+          title: "Main Page",
+          description: "Browse services and explore the platform",
+          icon: <Home className="h-8 w-8" />,
+          color: "bg-green-500",
         }
       case "marketing":
         return {
           title: "Marketing Dashboard",
           description: "Manage services, advertisements, and content",
-          icon: <Briefcase className="h-8 w-8" />,
+          icon: <BarChart3 className="h-8 w-8" />,
           color: "bg-yellow-500",
         }
       case "admin":
@@ -86,15 +84,22 @@ export function RoleSelector() {
         return {
           title: "Dashboard",
           description: "Access your dashboard",
-          icon: <User className="h-8 w-8" />,
+          icon: <Home className="h-8 w-8" />,
           color: "bg-gray-500",
         }
     }
   }
 
-  if (availableRoles().length === 1) {
-    // Auto-redirect if user only has one role
-    handleRoleSelection(availableRoles()[0])
+  const roles = availableRoles()
+
+  if (roles.length === 0) {
+    // This handles regular users - they get redirected automatically
+    return null
+  }
+
+  if (roles.length === 1) {
+    // Auto-redirect if user only has one option
+    handleRoleSelection(roles[0])
     return null
   }
 
@@ -104,7 +109,7 @@ export function RoleSelector() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">
             <span className="bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-600 bg-clip-text text-transparent">
-              Choose Your Dashboard
+              Choose Your Access Level
             </span>
           </h1>
           <p className="text-muted-foreground">Select how you want to access the platform</p>
@@ -114,7 +119,7 @@ export function RoleSelector() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {availableRoles().map((role) => {
+          {roles.map((role) => {
             const roleInfo = getRoleInfo(role)
             return (
               <Card key={role} className="hover:shadow-lg transition-all duration-300 cursor-pointer">
@@ -133,7 +138,7 @@ export function RoleSelector() {
                     onClick={() => handleRoleSelection(role)}
                     disabled={loading}
                   >
-                    {loading ? "Loading..." : "Enter Dashboard"}
+                    {loading ? "Loading..." : role === "main" ? "Go to Main Page" : "Enter Dashboard"}
                   </Button>
                 </CardContent>
               </Card>
