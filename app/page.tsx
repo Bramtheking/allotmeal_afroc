@@ -11,13 +11,19 @@ export default function HomePage() {
   return (
     <main>
       <HeroSection />
-      <ServicesSection />
+      <div id="services">
+        <ServicesSection />
+      </div>
       <FeaturedAdvertisements />
-      <AboutSection />
+      <div id="about">
+        <AboutSection />
+      </div>
       <StatsSection />
       <TestimonialsSection />
       <PartnersSection />
-      <ContactSection />
+      <div id="contact">
+        <ContactSection />
+      </div>
     </main>
   )
 }
