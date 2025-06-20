@@ -43,36 +43,49 @@ function Navbar() {
 
   const handleNavClick = (href: string) => {
     setIsOpen(false)
+    console.log("Navigating to:", href) // Debug log
 
     // Handle anchor links
     if (href.startsWith("/#")) {
       const elementId = href.substring(2) // Remove "/#"
+      console.log("Looking for element with ID:", elementId) // Debug log
 
       // If we're not on the home page, navigate there first
       if (pathname !== "/") {
         router.push("/")
         // Wait a bit for navigation, then scroll
         setTimeout(() => {
-          if (elementId === "home") {
-            // For home, scroll to top
-            window.scrollTo({ top: 0, behavior: "smooth" })
-          } else {
-            const element = document.getElementById(elementId)
-            if (element) {
-              element.scrollIntoView({ behavior: "smooth" })
-            }
-          }
-        }, 100)
+          scrollToElement(elementId)
+        }, 500) // Increased timeout
       } else {
         // We're already on home page, just scroll
-        if (elementId === "home") {
-          // For home, scroll to top
-          window.scrollTo({ top: 0, behavior: "smooth" })
-        } else {
-          const element = document.getElementById(elementId)
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth" })
-          }
+        scrollToElement(elementId)
+      }
+    }
+  }
+
+  const scrollToElement = (elementId: string) => {
+    if (elementId === "home") {
+      // For home, scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" })
+      console.log("Scrolled to top") // Debug log
+    } else {
+      const element = document.getElementById(elementId)
+      console.log("Found element:", element) // Debug log
+      if (element) {
+        // Add offset for sticky navbar (64px = h-16)
+        const offsetTop = element.offsetTop - 80
+        window.scrollTo({ top: offsetTop, behavior: "smooth" })
+        console.log("Scrolled to element:", elementId, "at position:", offsetTop) // Debug log
+      } else {
+        console.error("Element not found:", elementId) // Debug log
+        // Fallback: try to find by class or other selector
+        const fallbackElement =
+          document.querySelector(`[data-section="${elementId}"]`) || document.querySelector(`.${elementId}-section`)
+        if (fallbackElement) {
+          const offsetTop = (fallbackElement as HTMLElement).offsetTop - 80
+          window.scrollTo({ top: offsetTop, behavior: "smooth" })
+          console.log("Used fallback selector for:", elementId) // Debug log
         }
       }
     }
@@ -256,14 +269,8 @@ function Navbar() {
                         onClick={() => setIsOpen(false)}
                         className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded transition-colors"
                       >
-                        {userRole === "admin" ? (
-                          <Shield className="h-4 w-4" />
-                        ) : userRole === "marketing" ? (
-                          <BarChart3 className="h-4 w-4" />
-                        ) : (
-                          <User className="h-4 w-4" />
-                        )}
-                        <span>Dashboard</span>
+                        {getRoleIcon()}
+                        Dashboard
                       </Link>
                     )}
                     <Link
