@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { collection, getDocs, query, where, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { collection, getDocs, query, where, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 import type { Service, Advertisement } from "@/lib/types"
 import { Plus, Trash2, Eye, EyeOff, BarChart3, Package, Megaphone, Loader2, ArrowLeft } from "lucide-react"
@@ -36,11 +36,19 @@ export default function MarketingDashboard() {
   useEffect(() => {
     if (authLoading) return
 
-    if (!user || (userRole !== "marketing" && userRole !== "admin")) {
+    if (!user) {
+      console.log("No user found, redirecting to login")
       router.push("/login")
       return
     }
 
+    if (userRole !== "marketing" && userRole !== "admin") {
+      console.log("User role not authorized:", userRole)
+      router.push("/login")
+      return
+    }
+
+    console.log("User authorized, fetching data...")
     fetchData()
   }, [user, userRole, router, authLoading])
 
@@ -51,40 +59,50 @@ export default function MarketingDashboard() {
     }
 
     try {
-      const db = getFirebaseDb()
+      const db = await getFirebaseDb()
       if (!db) {
-        throw new Error("Database not initialized")
+        console.error("Database not initialized")
+        toast.error("Database connection failed")
+        setLoading(false)
+        return
       }
 
+      console.log("Fetching data for user:", user.uid)
+
       // Fetch services created by this user
-      const servicesQuery = query(
-        collection(db, "services"),
-        where("createdBy", "==", user.uid),
-        orderBy("createdAt", "desc"),
-      )
-      const servicesSnapshot = await getDocs(servicesQuery)
-      const servicesData: Service[] = []
-      servicesSnapshot.forEach((doc) => {
-        servicesData.push({ id: doc.id, ...doc.data() } as Service)
-      })
+      try {
+        const servicesQuery = query(collection(db, "services"), where("createdBy", "==", user.uid))
+        const servicesSnapshot = await getDocs(servicesQuery)
+        const servicesData: Service[] = []
+        servicesSnapshot.forEach((doc) => {
+          servicesData.push({ id: doc.id, ...doc.data() } as Service)
+        })
+        console.log("Services fetched:", servicesData.length)
+        setServices(servicesData)
+      } catch (servicesError) {
+        console.error("Error fetching services:", servicesError)
+        setServices([])
+      }
 
       // Fetch advertisements created by this user
-      const adsQuery = query(
-        collection(db, "advertisements"),
-        where("createdBy", "==", user.uid),
-        orderBy("createdAt", "desc"),
-      )
-      const adsSnapshot = await getDocs(adsQuery)
-      const adsData: Advertisement[] = []
-      adsSnapshot.forEach((doc) => {
-        adsData.push({ id: doc.id, ...doc.data() } as Advertisement)
-      })
-
-      setServices(servicesData)
-      setAdvertisements(adsData)
+      try {
+        const adsQuery = query(collection(db, "advertisements"), where("createdBy", "==", user.uid))
+        const adsSnapshot = await getDocs(adsQuery)
+        const adsData: Advertisement[] = []
+        adsSnapshot.forEach((doc) => {
+          adsData.push({ id: doc.id, ...doc.data() } as Advertisement)
+        })
+        console.log("Advertisements fetched:", adsData.length)
+        setAdvertisements(adsData)
+      } catch (adsError) {
+        console.error("Error fetching advertisements:", adsError)
+        setAdvertisements([])
+      }
     } catch (error) {
-      console.error("Error fetching data:", error)
-      toast.error("Failed to fetch data. Please try again.")
+      console.error("Error in fetchData:", error)
+      toast.error("Failed to fetch data. Please check your connection.")
+      setServices([])
+      setAdvertisements([])
     } finally {
       setLoading(false)
     }
