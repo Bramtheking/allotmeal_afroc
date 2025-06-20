@@ -48,7 +48,13 @@ function Navbar() {
   const getDashboardLink = () => {
     if (userRole === "admin") return "/dashboard/admin"
     if (userRole === "marketing") return "/dashboard/marketing"
-    return "/dashboard"
+    return "/" // Regular users go to main page
+  }
+
+  const getRoleIcon = () => {
+    if (userRole === "admin") return <Shield className="mr-2 h-4 w-4" />
+    if (userRole === "marketing") return <BarChart3 className="mr-2 h-4 w-4" />
+    return <User className="mr-2 h-4 w-4" />
   }
 
   return (
@@ -118,18 +124,14 @@ function Navbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={getDashboardLink()}>
-                    {userRole === "admin" ? (
-                      <Shield className="mr-2 h-4 w-4" />
-                    ) : userRole === "marketing" ? (
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                    ) : (
-                      <User className="mr-2 h-4 w-4" />
-                    )}
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
+                {(userRole === "admin" || userRole === "marketing") && (
+                  <DropdownMenuItem asChild>
+                    <Link href={getDashboardLink()}>
+                      {getRoleIcon()}
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link href="/profile">
                     <Settings className="mr-2 h-4 w-4" />
@@ -211,20 +213,22 @@ function Navbar() {
                         <p className="text-xs text-muted-foreground capitalize">Role: {userRole}</p>
                       </div>
                     </div>
-                    <Link
-                      href={getDashboardLink()}
-                      onClick={handleNavClick}
-                      className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded transition-colors"
-                    >
-                      {userRole === "admin" ? (
-                        <Shield className="h-4 w-4" />
-                      ) : userRole === "marketing" ? (
-                        <BarChart3 className="h-4 w-4" />
-                      ) : (
-                        <User className="h-4 w-4" />
-                      )}
-                      <span>Dashboard</span>
-                    </Link>
+                    {(userRole === "admin" || userRole === "marketing") && (
+                      <Link
+                        href={getDashboardLink()}
+                        onClick={handleNavClick}
+                        className="flex items-center space-x-2 text-sm font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded transition-colors"
+                      >
+                        {userRole === "admin" ? (
+                          <Shield className="h-4 w-4" />
+                        ) : userRole === "marketing" ? (
+                          <BarChart3 className="h-4 w-4" />
+                        ) : (
+                          <User className="h-4 w-4" />
+                        )}
+                        <span>Dashboard</span>
+                      </Link>
+                    )}
                     <Link
                       href="/profile"
                       onClick={handleNavClick}
