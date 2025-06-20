@@ -261,7 +261,7 @@ export default function ServicesSection() {
             className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             asChild
           >
-            <Link href="/contact">
+            <Link href="#/contact">
               Contact Us
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
