@@ -31,7 +31,7 @@ const services = [
     title: "Hotel & Industry",
     description: "Luxury accommodations, resorts, and hospitality services for your perfect stay.",
     icon: Building2,
-    image: "/services/hotel-industry.jpg",
+    image: "/services/hotel.jpg",
     color: "from-amber-500 to-orange-500",
     bgColor: "bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20",
     count: "150+ Hotels",
