@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app"
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore"
-import { getAuth, connectAuthEmulator } from "firebase/auth"
-import { getStorage, connectStorageEmulator } from "firebase/storage"
+import { getFirestore } from "firebase/firestore"
+import { getAuth } from "firebase/auth"
+import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -28,17 +28,6 @@ try {
   db = getFirestore(app)
   auth = getAuth(app)
   storage = getStorage(app)
-
-  // Connect to emulators in development
-  if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
-    try {
-      connectFirestoreEmulator(db, "localhost", 8080)
-      connectAuthEmulator(auth, "http://localhost:9099")
-      connectStorageEmulator(storage, "localhost", 9199)
-    } catch (error) {
-      // Emulators already connected
-    }
-  }
 } catch (error) {
   console.error("Firebase initialization error:", error)
 }
@@ -47,7 +36,6 @@ export { db, auth, storage }
 
 export const getFirebaseDb = () => {
   if (typeof window === "undefined") {
-    // Server-side: return null to avoid Firebase operations during build
     return null
   }
   return db
