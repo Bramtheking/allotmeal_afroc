@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, MapPin, Phone, Globe, Eye, Play, ExternalLink } from "lucide-react"
+import { ArrowLeft, MapPin, Phone, Globe, Eye, Play, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -18,6 +18,7 @@ export default function AdvertisementDetailPage() {
   const router = useRouter()
   const [advertisement, setAdvertisement] = useState<Advertisement | null>(null)
   const [loading, setLoading] = useState(true)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
     const fetchAdvertisement = async () => {
@@ -56,6 +57,27 @@ export default function AdvertisementDetailPage() {
     return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : null
   }
 
+  const formatText = (text: string) => {
+    // Convert markdown-style formatting to HTML
+    const formattedText = text
+      // Bold: **text** or *text*
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.*?)\*/g, "<strong>$1</strong>")
+      // Italic: _text_
+      .replace(/_(.*?)_/g, "<em>$1</em>")
+      // Underline: __text__
+      .replace(/__(.*?)__/g, "<u>$1</u>")
+      // Line breaks
+      .replace(/\n/g, "<br>")
+      // Links: [text](url)
+      .replace(
+        /\[([^\]]+)\]$$([^)]+)$$/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>',
+      )
+
+    return formattedText
+  }
+
   const handleLearnMore = () => {
     if (advertisement?.website) {
       window.open(advertisement.website, "_blank")
@@ -63,6 +85,18 @@ export default function AdvertisementDetailPage() {
       window.open(`tel:${advertisement.contact}`, "_blank")
     } else {
       toast.info("Contact information not available")
+    }
+  }
+
+  const nextImage = () => {
+    if (advertisement?.images && advertisement.images.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % advertisement.images!.length)
+    }
+  }
+
+  const prevImage = () => {
+    if (advertisement?.images && advertisement.images.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + advertisement.images!.length) % advertisement.images!.length)
     }
   }
 
@@ -105,28 +139,69 @@ export default function AdvertisementDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Images */}
+            {/* Images with Carousel */}
             {advertisement.images && advertisement.images.length > 0 && (
               <Card>
                 <CardContent className="p-0">
-                  <div className="aspect-video w-full bg-muted rounded-t-lg overflow-hidden">
-                    <img
-                      src={advertisement.images[0] || "/placeholder.svg"}
-                      alt={advertisement.title}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="relative">
+                    {/* Main Image Display - Full Size */}
+                    <div className="w-full bg-muted rounded-t-lg overflow-hidden" style={{ minHeight: "400px" }}>
+                      <img
+                        src={advertisement.images[currentImageIndex] || "/placeholder.svg"}
+                        alt={`${advertisement.title} - Image ${currentImageIndex + 1}`}
+                        className="w-full h-full object-contain bg-white"
+                        style={{ maxHeight: "600px" }}
+                      />
+                    </div>
+
+                    {/* Navigation Arrows */}
+                    {advertisement.images.length > 1 && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-80 hover:opacity-100"
+                          onClick={prevImage}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-80 hover:opacity-100"
+                          onClick={nextImage}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+
+                        {/* Image Counter */}
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-sm">
+                          {currentImageIndex + 1} / {advertisement.images.length}
+                        </div>
+                      </>
+                    )}
                   </div>
+
+                  {/* Thumbnail Gallery */}
                   {advertisement.images.length > 1 && (
                     <div className="p-4">
-                      <div className="grid grid-cols-4 gap-2">
-                        {advertisement.images.slice(1, 5).map((image, index) => (
-                          <div key={index} className="aspect-square bg-muted rounded overflow-hidden">
+                      <div className="grid grid-cols-6 gap-2">
+                        {advertisement.images.map((image, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentImageIndex(index)}
+                            className={`aspect-square bg-muted rounded overflow-hidden border-2 transition-all ${
+                              index === currentImageIndex
+                                ? "border-primary"
+                                : "border-transparent hover:border-gray-300"
+                            }`}
+                          >
                             <img
                               src={image || "/placeholder.svg"}
-                              alt={`${advertisement.title} ${index + 2}`}
+                              alt={`${advertisement.title} thumbnail ${index + 1}`}
                               className="w-full h-full object-cover"
                             />
-                          </div>
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -147,8 +222,8 @@ export default function AdvertisementDetailPage() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {advertisement.videos.map((video, index) => (
-                      <div key={index} className="aspect-video bg-muted rounded overflow-hidden">
-                        <video src={video} controls className="w-full h-full object-cover" />
+                      <div key={index} className="bg-muted rounded overflow-hidden">
+                        <video src={video} controls className="w-full h-auto" style={{ maxHeight: "300px" }} />
                       </div>
                     ))}
                   </div>
@@ -185,13 +260,16 @@ export default function AdvertisementDetailPage() {
               </Card>
             )}
 
-            {/* Description */}
+            {/* Description with Rich Text Formatting */}
             <Card>
               <CardHeader>
                 <CardTitle>About This Opportunity</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground leading-relaxed">{advertisement.description}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: formatText(advertisement.description) }}
+                />
               </CardContent>
             </Card>
 
@@ -293,7 +371,7 @@ export default function AdvertisementDetailPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {advertisement.contact && (
-                  <Button variant="outline" className="w-full" asChild>
+                  <Button variant="outline" className="w-full bg-transparent" asChild>
                     <a href={`tel:${advertisement.contact}`}>
                       <Phone className="h-4 w-4 mr-2" />
                       Call Now
@@ -302,7 +380,7 @@ export default function AdvertisementDetailPage() {
                 )}
 
                 {advertisement.website && (
-                  <Button variant="outline" className="w-full" asChild>
+                  <Button variant="outline" className="w-full bg-transparent" asChild>
                     <a href={advertisement.website} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Visit Website
@@ -310,7 +388,7 @@ export default function AdvertisementDetailPage() {
                   </Button>
                 )}
 
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full bg-transparent">
                   Share Advertisement
                 </Button>
               </CardContent>
