@@ -3,6 +3,7 @@
 import { CheckCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
+import Image from "next/image"
 
 const features = [
   {
@@ -68,8 +69,11 @@ export function AboutSection() {
             animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-yellow-500 opacity-90 flex items-center justify-center">
-              <div className="text-white text-center p-8">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-yellow-500 opacity-90 flex flex-col items-center justify-center">
+              <div className="relative w-48 h-48 mb-4">
+                <Image src="/logo.png" alt="Allotmeal Afroc Logo" fill className="object-contain" />
+              </div>
+              <div className="text-white text-center p-8 pt-0">
                 <h3 className="text-2xl md:text-3xl font-bold mb-6">Our Vision</h3>
                 <p className="text-lg mb-8">
                   To be Africa's leading provider of integrated hospitality and networking solutions, connecting
