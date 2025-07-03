@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from 'lucide-react'
 import Link from "next/link"
 import { motion } from "framer-motion"
 
@@ -38,19 +38,24 @@ export function HeroSection() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1, duration: 0.6 }}
             >
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-white shadow-lg border-4 border-yellow-200 dark:border-yellow-800 flex items-center justify-center">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white shadow-lg border-4 border-yellow-200 dark:border-yellow-800 flex items-center justify-center p-2">
                 <img
                   src="/logo.png"
                   alt="Allotmeal Afroc Ltd Logo"
-                  className="w-full h-full object-contain p-2"
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                  }}
+                  className="w-full h-full object-contain"
+                  onLoad={() => console.log("Logo loaded successfully")}
                   onError={(e) => {
+                    console.log("Logo failed to load, creating fallback")
                     const target = e.target as HTMLImageElement
                     target.style.display = "none"
+                    // Create a fallback element
+                    const parent = target.parentElement
+                    if (parent && !parent.querySelector('.logo-fallback')) {
+                      const fallback = document.createElement("div")
+                      fallback.className = "logo-fallback w-full h-full bg-gradient-to-br from-yellow-400 to-blue-500 rounded-full flex items-center justify-center"
+                      fallback.innerHTML = '<span class="text-white font-bold text-2xl md:text-3xl">A</span>'
+                      parent.appendChild(fallback)
+                    }
                   }}
                 />
               </div>
