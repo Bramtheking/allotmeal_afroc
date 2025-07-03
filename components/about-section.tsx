@@ -3,7 +3,6 @@
 import { CheckCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
-import Image from "next/image"
 
 const features = [
   {
@@ -70,8 +69,17 @@ export function AboutSection() {
             transition={{ duration: 0.6 }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-yellow-500 opacity-90 flex flex-col items-center justify-center">
-              <div className="relative w-48 h-48 mb-4">
-                <Image src="/logo.png" alt="Allotmeal Afroc Logo" fill className="object-contain" />
+              <div className="relative w-48 h-48 mb-4 flex items-center justify-center">
+                <img
+                  src="/logo.png"
+                  alt="Allotmeal Afroc Logo"
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    // Hide the image if it fails to load
+                    const target = e.target as HTMLImageElement
+                    target.style.display = "none"
+                  }}
+                />
               </div>
               <div className="text-white text-center p-8 pt-0">
                 <h3 className="text-2xl md:text-3xl font-bold mb-6">Our Vision</h3>
