@@ -18,6 +18,7 @@ import { Menu, X, User, Settings, LogOut, Shield, BarChart3 } from "lucide-react
 import { useAuth } from "@/lib/auth-context"
 import { ThemeToggle } from "./theme-toggle"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 const navigation = [
   { name: "Home", href: "/#home" },
@@ -119,11 +120,11 @@ function Navbar() {
         <div className="flex items-center">
           <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
             <motion.div
-              className="h-8 w-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
+              className="h-8 w-8 relative"
             >
-              <span className="text-white font-bold text-sm">A</span>
+              <Image src="/logo.png" alt="Allotmeal Afroc Logo" width={32} height={32} className="object-contain" />
             </motion.div>
             <span className="hidden font-bold sm:inline-block bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               AllotMeAfroc
@@ -222,8 +223,14 @@ function Navbar() {
               <div className="flex flex-col space-y-4 mt-4">
                 <div className="flex items-center justify-between">
                   <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
-                    <div className="h-8 w-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">A</span>
+                    <div className="h-8 w-8 relative">
+                      <Image
+                        src="/logo.png"
+                        alt="Allotmeal Afroc Logo"
+                        width={32}
+                        height={32}
+                        className="object-contain"
+                      />
                     </div>
                     <span className="font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
                       AllotMeAfroc
