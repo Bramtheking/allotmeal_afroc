@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { collection, getDocs, query, where, limit } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 import type { Advertisement } from "@/lib/types"
-import { Eye, Clock, MapPin, Building2, ArrowRight, Sparkles } from "lucide-react"
+import { Clock, MapPin, Building2, ArrowRight, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 // Function to format text with markdown-style formatting
@@ -111,7 +111,7 @@ export function FeaturedAdvertisements() {
         </div>
 
         {/* Advertisements Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {advertisements.map((ad) => (
             <Card
               key={ad.id}
@@ -196,18 +196,6 @@ export function FeaturedAdvertisements() {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        {/* View All Button */}
-        <div className="text-center">
-          <Button
-            size="lg"
-            variant="outline"
-            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 hover:from-blue-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <Eye className="mr-2 h-5 w-5" />
-            View All Advertisements
-          </Button>
         </div>
       </div>
     </section>
