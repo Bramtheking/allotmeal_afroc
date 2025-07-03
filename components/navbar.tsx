@@ -18,7 +18,6 @@ import { Menu, X, User, Settings, LogOut, Shield, BarChart3 } from "lucide-react
 import { useAuth } from "@/lib/auth-context"
 import { ThemeToggle } from "./theme-toggle"
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 const navigation = [
   { name: "Home", href: "/#home" },
@@ -44,12 +43,10 @@ function Navbar() {
 
   const handleNavClick = (href: string) => {
     setIsOpen(false)
-    console.log("Navigating to:", href) // Debug log
 
     // Handle anchor links
     if (href.startsWith("/#")) {
       const elementId = href.substring(2) // Remove "/#"
-      console.log("Looking for element with ID:", elementId) // Debug log
 
       // If we're not on the home page, navigate there first
       if (pathname !== "/") {
@@ -57,7 +54,7 @@ function Navbar() {
         // Wait a bit for navigation, then scroll
         setTimeout(() => {
           scrollToElement(elementId)
-        }, 500) // Increased timeout
+        }, 100)
       } else {
         // We're already on home page, just scroll
         scrollToElement(elementId)
@@ -69,25 +66,12 @@ function Navbar() {
     if (elementId === "home") {
       // For home, scroll to top
       window.scrollTo({ top: 0, behavior: "smooth" })
-      console.log("Scrolled to top") // Debug log
     } else {
       const element = document.getElementById(elementId)
-      console.log("Found element:", element) // Debug log
       if (element) {
         // Add offset for sticky navbar (64px = h-16)
         const offsetTop = element.offsetTop - 80
         window.scrollTo({ top: offsetTop, behavior: "smooth" })
-        console.log("Scrolled to element:", elementId, "at position:", offsetTop) // Debug log
-      } else {
-        console.error("Element not found:", elementId) // Debug log
-        // Fallback: try to find by class or other selector
-        const fallbackElement =
-          document.querySelector(`[data-section="${elementId}"]`) || document.querySelector(`.${elementId}-section`)
-        if (fallbackElement) {
-          const offsetTop = (fallbackElement as HTMLElement).offsetTop - 80
-          window.scrollTo({ top: offsetTop, behavior: "smooth" })
-          console.log("Used fallback selector for:", elementId) // Debug log
-        }
       }
     }
   }
@@ -122,9 +106,23 @@ function Navbar() {
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="h-8 w-8 relative"
+              className="h-10 w-10 relative"
             >
-              <Image src="/logo.png" alt="Allotmeal Afroc Logo" width={32} height={32} className="object-contain" />
+              <img
+                src="/logo.png"
+                alt="Allotmeal Afroc Logo"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback to original gradient design if logo fails to load
+                  const target = e.target as HTMLImageElement
+                  target.style.display = "none"
+                  const fallback = document.createElement("div")
+                  fallback.className =
+                    "h-8 w-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center"
+                  fallback.innerHTML = '<span class="text-white font-bold text-sm">A</span>'
+                  target.parentNode?.appendChild(fallback)
+                }}
+              />
             </motion.div>
             <span className="hidden font-bold sm:inline-block bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               AllotMeAfroc
@@ -224,12 +222,19 @@ function Navbar() {
                 <div className="flex items-center justify-between">
                   <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
                     <div className="h-8 w-8 relative">
-                      <Image
+                      <img
                         src="/logo.png"
                         alt="Allotmeal Afroc Logo"
-                        width={32}
-                        height={32}
-                        className="object-contain"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = "none"
+                          const fallback = document.createElement("div")
+                          fallback.className =
+                            "h-8 w-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center"
+                          fallback.innerHTML = '<span class="text-white font-bold text-sm">A</span>'
+                          target.parentNode?.appendChild(fallback)
+                        }}
                       />
                     </div>
                     <span className="font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
