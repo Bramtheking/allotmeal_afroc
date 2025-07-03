@@ -2,116 +2,109 @@
 
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle, Users, Globe, Award } from "lucide-react"
+import { Building2, Users, Globe, Award } from "lucide-react"
 
 const features = [
   {
-    icon: CheckCircle,
-    title: "Quality Assurance",
-    description: "We ensure all services meet the highest standards of quality and reliability.",
+    icon: Building2,
+    title: "Hotel Networking",
+    description: "Connecting hotels and hospitality businesses across Africa for enhanced collaboration and growth.",
   },
   {
     icon: Users,
-    title: "Community Focused",
-    description: "Building stronger communities through accessible services and opportunities.",
+    title: "Stakeholder Engagement",
+    description: "Building bridges between businesses, communities, and organizations for mutual benefit.",
   },
   {
     icon: Globe,
-    title: "Wide Reach",
-    description: "Connecting people across different regions and industries.",
+    title: "Pan-African Reach",
+    description: "Expanding opportunities and connections across the African continent and beyond.",
   },
   {
     icon: Award,
-    title: "Excellence",
-    description: "Committed to delivering exceptional value in everything we do.",
+    title: "Excellence in Service",
+    description: "Committed to delivering premium services and maintaining the highest standards.",
   },
 ]
 
 export function AboutSection() {
   return (
-    <section className="py-24 bg-gradient-to-br from-background to-muted/20">
+    <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-              About AllotMeAfroc
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              About{" "}
+              <span className="bg-gradient-to-r from-yellow-500 to-blue-600 bg-clip-text text-transparent">
+                Allotmeal Afroc Ltd
+              </span>
             </h2>
-            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-              AllotMeAfroc is your comprehensive platform for discovering and accessing essential services across
-              multiple industries. We bridge the gap between service providers and consumers, creating opportunities for
-              growth and connection.
+            <p className="text-lg text-muted-foreground mb-6">
+              We are a dynamic company dedicated to fostering connections and opportunities across Africa. Our mission
+              is to bridge the gap between businesses, communities, and stakeholders through innovative networking
+              solutions and premium services.
             </p>
-            <p className="text-muted-foreground mb-8 leading-relaxed">
-              From agriculture and construction to education and entertainment, we provide a centralized hub where
-              quality meets accessibility. Our mission is to empower communities by making vital services easily
-              discoverable and accessible to everyone.
+            <p className="text-lg text-muted-foreground mb-8">
+              From hospitality and agriculture to transport and education, we serve as the catalyst for growth and
+              collaboration in diverse sectors across the continent.
             </p>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex items-start space-x-3"
-                >
-                  <feature.icon className="h-5 w-5 text-yellow-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-sm mb-1">{feature.title}</h3>
-                    <p className="text-xs text-muted-foreground">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            {/* Company Logo in About Section */}
+            <motion.div
+              className="flex justify-center lg:justify-start mb-8"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <div className="w-48 h-48 rounded-full overflow-hidden bg-white shadow-xl border-4 border-yellow-200 dark:border-yellow-800 flex items-center justify-center">
+                <img
+                  src="/logo.png"
+                  alt="Allotmeal Afroc Ltd Logo"
+                  className="w-full h-full object-contain p-4"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.style.display = "none"
+                  }}
+                />
+              </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="relative"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
           >
-            <Card className="relative overflow-hidden">
-              <CardContent className="p-8">
-                <div className="text-center mb-6">
-                  <div className="w-48 h-48 mx-auto mb-6 flex items-center justify-center overflow-hidden">
-                    <img
-                      src="/logo.png"
-                      alt="Allotmeal Afroc Logo"
-                      className="max-w-full max-h-full w-auto h-auto object-contain"
-                      style={{ maxWidth: "192px", maxHeight: "192px" }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.style.display = "none"
-                        const fallback = document.createElement("div")
-                        fallback.className =
-                          "w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto"
-                        fallback.innerHTML = '<span class="text-white font-bold text-4xl">A</span>'
-                        target.parentNode?.appendChild(fallback)
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 pointer-events-none" />
-                <div className="relative z-10">
-                  <h3 className="text-xl font-bold mb-4 text-center bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                    Our Vision
-                  </h3>
-                  <p className="text-muted-foreground text-center leading-relaxed">
-                    To become the leading platform that transforms how people discover, access, and engage with
-                    essential services, fostering economic growth and community development across Africa and beyond.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <feature.icon className="h-12 w-12 text-yellow-500 mb-4" />
+                    <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                    <p className="text-muted-foreground text-sm">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </div>
