@@ -44,14 +44,14 @@ function Navbar() {
   const handleNavClick = (href: string) => {
     setIsOpen(false)
 
-    // Handle anchor links
+    // Handle anchor links - only scroll if user explicitly clicks
     if (href.startsWith("/#")) {
       const elementId = href.substring(2) // Remove "/#"
 
       // If we're not on the home page, navigate there first
       if (pathname !== "/") {
         router.push("/")
-        // Wait a bit for navigation, then scroll
+        // Wait for navigation, then scroll
         setTimeout(() => {
           scrollToElement(elementId)
         }, 100)
@@ -102,7 +102,7 @@ function Navbar() {
     >
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center">
-          <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -127,7 +127,7 @@ function Navbar() {
             <span className="hidden font-bold sm:inline-block bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               AllotMeAfroc
             </span>
-          </button>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
@@ -220,7 +220,7 @@ function Navbar() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col space-y-4 mt-4">
                 <div className="flex items-center justify-between">
-                  <button onClick={() => handleNavClick("/#home")} className="flex items-center space-x-2">
+                  <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center space-x-2">
                     <div className="h-8 w-8 relative">
                       <img
                         src="/logo.png"
@@ -240,7 +240,7 @@ function Navbar() {
                     <span className="font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
                       AllotMeAfroc
                     </span>
-                  </button>
+                  </Link>
                   <SheetClose asChild>
                     <Button variant="ghost" size="icon">
                       <X className="h-5 w-5" />
