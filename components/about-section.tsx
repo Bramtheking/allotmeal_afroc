@@ -1,100 +1,117 @@
 "use client"
 
-import { CheckCircle } from "lucide-react"
 import { motion } from "framer-motion"
-import { useInView } from "react-intersection-observer"
+import { Card, CardContent } from "@/components/ui/card"
+import { CheckCircle, Users, Globe, Award } from "lucide-react"
 
 const features = [
   {
-    text: "Establish a premier networking ecosystem that connects hotels, hospitality businesses, and key stakeholders.",
-    color: "yellow",
+    icon: CheckCircle,
+    title: "Quality Assurance",
+    description: "We ensure all services meet the highest standards of quality and reliability.",
   },
   {
-    text: "Develop seamless and reliable transportation services to support hotel operations and guest mobility.",
-    color: "blue",
+    icon: Users,
+    title: "Community Focused",
+    description: "Building stronger communities through accessible services and opportunities.",
   },
   {
-    text: "Bridge the gap between farmers, suppliers, and the hotel industry for sustainable food services.",
-    color: "yellow",
+    icon: Globe,
+    title: "Wide Reach",
+    description: "Connecting people across different regions and industries.",
   },
   {
-    text: "Offer industry-specific training, mentorship, and networking platforms for professionals.",
-    color: "blue",
-  },
-  {
-    text: "Lead initiatives that promote sustainability, ethical business practices, and community engagement.",
-    color: "yellow",
+    icon: Award,
+    title: "Excellence",
+    description: "Committed to delivering exceptional value in everything we do.",
   },
 ]
 
 export function AboutSection() {
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  })
-
   return (
-    <section id="about" className="py-20">
-      <div className="container">
-        <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <section className="py-24 bg-gradient-to-br from-background to-muted/20">
+      <div className="container mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">About Allotmeal Afroc Ltd</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Allotmeal Afroc Ltd is a trusted company whose aims are providing end-to-end services and products ranging
-              from hotel, infrastructure, health, jobs, and accessibility of agricultural products.
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+              About AllotMeAfroc
+            </h2>
+            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+              AllotMeAfroc is your comprehensive platform for discovering and accessing essential services across
+              multiple industries. We bridge the gap between service providers and consumers, creating opportunities for
+              growth and connection.
             </p>
-            <div className="space-y-5">
+            <p className="text-muted-foreground mb-8 leading-relaxed">
+              From agriculture and construction to education and entertainment, we provide a centralized hub where
+              quality meets accessibility. Our mission is to empower communities by making vital services easily
+              discoverable and accessible to everyone.
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-4">
               {features.map((feature, index) => (
                 <motion.div
-                  key={index}
-                  className="flex items-start gap-3"
+                  key={feature.title}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex items-start space-x-3"
                 >
-                  <CheckCircle className={`h-6 w-6 text-${feature.color}-500 shrink-0 mt-1`} />
-                  <p className="text-base md:text-lg">{feature.text}</p>
+                  <feature.icon className="h-5 w-5 text-yellow-600 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-sm mb-1">{feature.title}</h3>
+                    <p className="text-xs text-muted-foreground">{feature.description}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </motion.div>
+
           <motion.div
-            className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl"
-            initial={{ opacity: 0, x: 30 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-yellow-500 opacity-90 flex flex-col items-center justify-center">
-              <div className="relative w-48 h-48 mb-4 flex items-center justify-center">
-                <img
-                  src="/logo.png"
-                  alt="Allotmeal Afroc Logo"
-                  className="max-w-full max-h-full object-contain"
-                  onError={(e) => {
-                    // Hide the image if it fails to load
-                    const target = e.target as HTMLImageElement
-                    target.style.display = "none"
-                  }}
-                />
-              </div>
-              <div className="text-white text-center p-8 pt-0">
-                <h3 className="text-2xl md:text-3xl font-bold mb-6">Our Vision</h3>
-                <p className="text-lg mb-8">
-                  To be Africa's leading provider of integrated hospitality and networking solutions, connecting
-                  businesses and opportunities across the continent.
-                </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm backdrop-blur-sm">Innovation</span>
-                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm backdrop-blur-sm">Excellence</span>
-                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm backdrop-blur-sm">Integrity</span>
-                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm backdrop-blur-sm">Collaboration</span>
+            <Card className="relative overflow-hidden">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <div className="w-48 h-48 mx-auto mb-6 flex items-center justify-center overflow-hidden">
+                    <img
+                      src="/logo.png"
+                      alt="Allotmeal Afroc Logo"
+                      className="max-w-full max-h-full w-auto h-auto object-contain"
+                      style={{ maxWidth: "192px", maxHeight: "192px" }}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.display = "none"
+                        const fallback = document.createElement("div")
+                        fallback.className =
+                          "w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto"
+                        fallback.innerHTML = '<span class="text-white font-bold text-4xl">A</span>'
+                        target.parentNode?.appendChild(fallback)
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 pointer-events-none" />
+                <div className="relative z-10">
+                  <h3 className="text-xl font-bold mb-4 text-center bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                    Our Vision
+                  </h3>
+                  <p className="text-muted-foreground text-center leading-relaxed">
+                    To become the leading platform that transforms how people discover, access, and engage with
+                    essential services, fostering economic growth and community development across Africa and beyond.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </div>
