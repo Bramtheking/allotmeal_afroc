@@ -31,6 +31,31 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+            {/* Logo above the heading */}
+            <motion.div
+              className="flex justify-center md:justify-start mb-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+            >
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-white shadow-lg border-4 border-yellow-200 dark:border-yellow-800 flex items-center justify-center">
+                <img
+                  src="/logo.png"
+                  alt="Allotmeal Afroc Ltd Logo"
+                  className="w-full h-full object-contain p-2"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.style.display = "none"
+                  }}
+                />
+              </div>
+            </motion.div>
+
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 leading-tight">
                 <span className="bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-600 bg-clip-text text-transparent">
