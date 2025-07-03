@@ -9,23 +9,23 @@ import { ContactSection } from "@/components/contact-section"
 
 export default function HomePage() {
   return (
-    <main>
-      <div id="home">
+    <main className="scroll-smooth">
+      <section id="home">
         <HeroSection />
-      </div>
-      <div id="services">
+      </section>
+      <section id="services">
         <ServicesSection />
-      </div>
+      </section>
       <FeaturedAdvertisements />
-      <div id="about">
+      <section id="about">
         <AboutSection />
-      </div>
+      </section>
       <StatsSection />
       <TestimonialsSection />
       <PartnersSection />
-      <div id="contact">
+      <section id="contact">
         <ContactSection />
-      </div>
+      </section>
     </main>
   )
 }
