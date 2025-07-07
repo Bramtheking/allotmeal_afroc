@@ -22,8 +22,10 @@ import {
   MessageCircle,
   Sparkles,
   Star,
+  Play,
 } from "lucide-react"
 import { ServiceOptionsDialog } from "./service-options-dialog"
+import { getVideoThumbnail, getYouTubeThumbnail } from "@/lib/cloudinary"
 
 const services = [
   {
@@ -149,6 +151,62 @@ const services = [
   },
 ]
 
+interface ServiceCardProps {
+  service: any
+  images?: string[]
+  videos?: string[]
+  youtubeLinks?: string[]
+}
+
+function ServiceCard({ service, images, videos, youtubeLinks }: ServiceCardProps) {
+  const getServiceThumbnail = () => {
+    // Priority: images first, then video thumbnails, then YouTube thumbnails
+    if (images && images.length > 0) {
+      return images[0]
+    }
+
+    if (videos && videos.length > 0) {
+      const thumbnail = getVideoThumbnail(videos[0])
+      if (thumbnail) return thumbnail
+    }
+
+    if (youtubeLinks && youtubeLinks.length > 0) {
+      const thumbnail = getYouTubeThumbnail(youtubeLinks[0])
+      if (thumbnail) return thumbnail
+    }
+
+    return service.image
+  }
+
+  const hasVideoContent = (videos && videos.length > 0) || (youtubeLinks && youtubeLinks.length > 0)
+  const thumbnail = getServiceThumbnail()
+
+  return (
+    <div className="relative">
+      <div className="aspect-[4/3] w-full rounded-xl overflow-hidden mb-4 shadow-lg">
+        <img
+          src={thumbnail || "/placeholder.svg"}
+          alt={service.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement
+            target.src = `/placeholder.svg?height=240&width=320&text=${encodeURIComponent(service.title)}`
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {hasVideoContent && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-black/50 rounded-full p-3">
+              <Play className="h-6 w-6 text-white fill-white" />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function ServicesSection() {
   const [selectedService, setSelectedService] = useState<string | null>(null)
 
@@ -216,18 +274,7 @@ export function ServicesSection() {
 
                 <CardHeader className="pb-4 relative">
                   <div className="relative mb-6">
-                    <div className="aspect-[4/3] w-full rounded-xl overflow-hidden mb-4 shadow-lg">
-                      <img
-                        src={service.image || "/placeholder.svg"}
-                        alt={service.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.src = `/placeholder.svg?height=240&width=320&text=${encodeURIComponent(service.title)}`
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
+                    <ServiceCard service={service} />
                     <div
                       className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${service.color} flex items-center justify-center text-white shadow-xl absolute -bottom-2 right-4 group-hover:scale-110 transition-transform duration-300`}
                     >
