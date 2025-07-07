@@ -10,9 +10,10 @@ import { Badge } from "@/components/ui/badge"
 import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 import type { Service, Advertisement } from "@/lib/types"
-import { Plus, Trash2, Eye, EyeOff, BarChart3, Package, Megaphone, Loader2, ArrowLeft } from "lucide-react"
+import { Plus, Trash2, Eye, EyeOff, BarChart3, Package, Megaphone, Loader2, ArrowLeft, Edit } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
+import { getVideoThumbnail, getYouTubeThumbnail } from "@/lib/cloudinary"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -188,6 +189,25 @@ export default function MarketingDashboard() {
     }
   }
 
+  const getServiceThumbnail = (service: Service) => {
+    // Priority: images first, then video thumbnails, then YouTube thumbnails
+    if (service.images && service.images.length > 0) {
+      return service.images[0]
+    }
+
+    if (service.videos && service.videos.length > 0) {
+      const thumbnail = getVideoThumbnail(service.videos[0])
+      if (thumbnail) return thumbnail
+    }
+
+    if (service.youtubeLinks && service.youtubeLinks.length > 0) {
+      const thumbnail = getYouTubeThumbnail(service.youtubeLinks[0])
+      if (thumbnail) return thumbnail
+    }
+
+    return null
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -336,84 +356,93 @@ export default function MarketingDashboard() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {services.map((service) => (
-                            <TableRow key={service.id}>
-                              <TableCell>
-                                <div className="flex items-center gap-3">
-                                  {service.images && service.images.length > 0 ? (
-                                    <img
-                                      src={service.images[0] || "/placeholder.svg"}
-                                      alt=""
-                                      className="w-10 h-10 rounded object-cover"
-                                    />
-                                  ) : (
-                                    <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
-                                      <Package className="h-4 w-4" />
-                                    </div>
-                                  )}
-                                  <div>
-                                    <div className="font-medium">{service.title}</div>
-                                    <div className="text-sm text-muted-foreground line-clamp-1">
-                                      {service.description}
+                          {services.map((service) => {
+                            const thumbnail = getServiceThumbnail(service)
+
+                            return (
+                              <TableRow key={service.id}>
+                                <TableCell>
+                                  <div className="flex items-center gap-3">
+                                    {thumbnail ? (
+                                      <img
+                                        src={thumbnail || "/placeholder.svg"}
+                                        alt=""
+                                        className="w-10 h-10 rounded object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
+                                        <Package className="h-4 w-4" />
+                                      </div>
+                                    )}
+                                    <div>
+                                      <div className="font-medium">{service.title}</div>
+                                      <div className="text-sm text-muted-foreground line-clamp-1">
+                                        {service.description}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="secondary">{service.serviceType?.replace("-", " ")}</Badge>
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant={service.status === "active" ? "default" : "destructive"}>
-                                  {service.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>{service.views || 0}</TableCell>
-                              <TableCell>
-                                {service.createdAt ? new Date(service.createdAt).toLocaleDateString() : "Unknown"}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() =>
-                                      updateServiceStatus(
-                                        service.id!,
-                                        service.status === "active" ? "suspended" : "active",
-                                      )
-                                    }
-                                  >
-                                    {service.status === "active" ? (
-                                      <EyeOff className="h-3 w-3" />
-                                    ) : (
-                                      <Eye className="h-3 w-3" />
-                                    )}
-                                  </Button>
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <Button size="sm" variant="destructive">
-                                        <Trash2 className="h-3 w-3" />
-                                      </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Service</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          Are you sure you want to delete this service? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => deleteService(service.id!)}>
-                                          Delete
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="secondary">{service.serviceType?.replace("-", " ")}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={service.status === "active" ? "default" : "destructive"}>
+                                    {service.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{service.views || 0}</TableCell>
+                                <TableCell>
+                                  {service.createdAt ? new Date(service.createdAt).toLocaleDateString() : "Unknown"}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Button size="sm" variant="outline" asChild>
+                                      <Link href={`/dashboard/marketing/services/edit/${service.id}`}>
+                                        <Edit className="h-3 w-3" />
+                                      </Link>
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        updateServiceStatus(
+                                          service.id!,
+                                          service.status === "active" ? "suspended" : "active",
+                                        )
+                                      }
+                                    >
+                                      {service.status === "active" ? (
+                                        <EyeOff className="h-3 w-3" />
+                                      ) : (
+                                        <Eye className="h-3 w-3" />
+                                      )}
+                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button size="sm" variant="destructive">
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Service</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to delete this service? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => deleteService(service.id!)}>
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })}
                         </TableBody>
                       </Table>
                     </div>
