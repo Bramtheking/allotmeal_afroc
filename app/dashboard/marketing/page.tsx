@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, Edit, Trash2, Eye, Play, MapPin, Calendar, DollarSign, Users, TrendingUp, Star } from "lucide-react"
 import Link from "next/link"
-import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore"
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 import { useAuth } from "@/lib/auth-context"
 import type { Service, Advertisement } from "@/lib/types"
@@ -39,15 +39,8 @@ export default function MarketingDashboard() {
         return
       }
 
-      // Fetch services - get ALL services for admin, or user's services for regular users
-      let servicesQuery
-      if (user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-        // Admin sees all services
-        servicesQuery = collection(db, "services")
-      } else {
-        // Regular users see only their services
-        servicesQuery = query(collection(db, "services"), where("userId", "==", user.uid))
-      }
+      // Fetch ALL services - both admin and marketing can see all services
+      const servicesQuery = collection(db, "services")
 
       const servicesSnapshot = await getDocs(servicesQuery)
       const servicesData = servicesSnapshot.docs.map((doc) => ({
@@ -58,15 +51,8 @@ export default function MarketingDashboard() {
       console.log("Services fetched:", servicesData.length)
       setServices(servicesData)
 
-      // Fetch advertisements - get ALL advertisements for admin, or user's advertisements for regular users
-      let advertisementsQuery
-      if (user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-        // Admin sees all advertisements
-        advertisementsQuery = collection(db, "advertisements")
-      } else {
-        // Regular users see only their advertisements
-        advertisementsQuery = query(collection(db, "advertisements"), where("userId", "==", user.uid))
-      }
+      // Fetch ALL advertisements - both admin and marketing can see all advertisements
+      const advertisementsQuery = collection(db, "advertisements")
 
       const advertisementsSnapshot = await getDocs(advertisementsQuery)
       const advertisementsData = advertisementsSnapshot.docs.map((doc) => ({
