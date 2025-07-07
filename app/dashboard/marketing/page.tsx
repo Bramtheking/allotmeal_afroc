@@ -1,86 +1,157 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { collection, getDocs, query, where, orderBy, deleteDoc, doc } from "firebase/firestore"
-import { getFirebaseDb } from "@/lib/firebase"
 import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { getFirebaseDb } from "@/lib/firebase"
 import type { Service, Advertisement } from "@/lib/types"
-import { Plus, Edit, Trash2, Eye, Calendar, MapPin, Building2, Play } from "lucide-react"
+import { Plus, Trash2, Eye, EyeOff, BarChart3, Package, Megaphone, Loader2, ArrowLeft, Edit } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { getVideoThumbnail, getYouTubeThumbnail } from "@/lib/cloudinary"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function MarketingDashboard() {
-  const { user } = useAuth()
+  const { user, userRole, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [services, setServices] = useState<Service[]>([])
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<"services" | "advertisements">("services")
 
   useEffect(() => {
-    if (user) {
-      console.log("User authorized, fetching data...")
-      fetchData()
+    if (authLoading) return
+
+    if (!user) {
+      console.log("No user found, redirecting to login")
+      router.push("/login")
+      return
     }
-  }, [user])
+
+    if (userRole !== "marketing" && userRole !== "admin") {
+      console.log("User role not authorized:", userRole)
+      router.push("/login")
+      return
+    }
+
+    console.log("User authorized, fetching data...")
+    fetchData()
+  }, [user, userRole, router, authLoading])
 
   const fetchData = async () => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     try {
       const db = await getFirebaseDb()
-      if (!db) return
+      if (!db) {
+        console.error("Database not initialized")
+        toast.error("Database connection failed")
+        setLoading(false)
+        return
+      }
 
-      console.log("Fetching data for user:", user?.uid)
+      console.log("Fetching data for user:", user.uid)
 
-      // Fetch services
-      const servicesQuery =
-        user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL
-          ? query(collection(db, "services"), orderBy("createdAt", "desc"))
-          : query(collection(db, "services"), where("userId", "==", user?.uid), orderBy("createdAt", "desc"))
+      // Fetch ALL services - both admin and marketing can see all services
+      try {
+        const servicesQuery = collection(db, "services")
+        const servicesSnapshot = await getDocs(servicesQuery)
+        const servicesData: Service[] = []
+        servicesSnapshot.forEach((doc) => {
+          servicesData.push({ id: doc.id, ...doc.data() } as Service)
+        })
+        console.log("Services fetched:", servicesData.length)
+        setServices(servicesData)
+      } catch (servicesError) {
+        console.error("Error fetching services:", servicesError)
+        setServices([])
+      }
 
-      const servicesSnapshot = await getDocs(servicesQuery)
-      const servicesData = servicesSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Service[]
-
-      console.log("Services fetched:", servicesData.length)
-      setServices(servicesData)
-
-      // Fetch advertisements
-      const adsQuery =
-        user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL
-          ? query(collection(db, "advertisements"), orderBy("createdAt", "desc"))
-          : query(collection(db, "advertisements"), where("userId", "==", user?.uid), orderBy("createdAt", "desc"))
-
-      const adsSnapshot = await getDocs(adsQuery)
-      const adsData = adsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Advertisement[]
-
-      console.log("Advertisements fetched:", adsData.length)
-      setAdvertisements(adsData)
+      // Fetch ALL advertisements - both admin and marketing can see all advertisements
+      try {
+        const adsQuery = collection(db, "advertisements")
+        const adsSnapshot = await getDocs(adsQuery)
+        const adsData: Advertisement[] = []
+        adsSnapshot.forEach((doc) => {
+          adsData.push({ id: doc.id, ...doc.data() } as Advertisement)
+        })
+        console.log("Advertisements fetched:", adsData.length)
+        setAdvertisements(adsData)
+      } catch (adsError) {
+        console.error("Error fetching advertisements:", adsError)
+        setAdvertisements([])
+      }
     } catch (error) {
-      console.error("Error fetching data:", error)
-      toast.error("Failed to fetch data")
+      console.error("Error in fetchData:", error)
+      toast.error("Failed to fetch data. Please check your connection.")
+      setServices([])
+      setAdvertisements([])
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDeleteService = async (serviceId: string) => {
-    if (!confirm("Are you sure you want to delete this service?")) return
-
+  const updateServiceStatus = async (serviceId: string, status: "active" | "suspended") => {
     try {
-      const db = await getFirebaseDb()
-      if (!db) return
+      const db = getFirebaseDb()
+      if (!db) throw new Error("Database not initialized")
+
+      await updateDoc(doc(db, "services", serviceId), {
+        status,
+        updatedAt: new Date().toISOString(),
+      })
+
+      setServices((prev) => prev.map((s) => (s.id === serviceId ? { ...s, status } : s)))
+      toast.success(`Service ${status === "active" ? "activated" : "suspended"}`)
+    } catch (error) {
+      console.error("Error updating service:", error)
+      toast.error("Failed to update service status")
+    }
+  }
+
+  const updateAdStatus = async (adId: string, status: "active" | "suspended") => {
+    try {
+      const db = getFirebaseDb()
+      if (!db) throw new Error("Database not initialized")
+
+      await updateDoc(doc(db, "advertisements", adId), {
+        status,
+        updatedAt: new Date().toISOString(),
+      })
+
+      setAdvertisements((prev) => prev.map((ad) => (ad.id === adId ? { ...ad, status } : ad)))
+      toast.success(`Advertisement ${status === "active" ? "activated" : "suspended"}`)
+    } catch (error) {
+      console.error("Error updating advertisement:", error)
+      toast.error("Failed to update advertisement status")
+    }
+  }
+
+  const deleteService = async (serviceId: string) => {
+    try {
+      const db = getFirebaseDb()
+      if (!db) throw new Error("Database not initialized")
 
       await deleteDoc(doc(db, "services", serviceId))
-      setServices(services.filter((service) => service.id !== serviceId))
+      setServices((prev) => prev.filter((s) => s.id !== serviceId))
       toast.success("Service deleted successfully")
     } catch (error) {
       console.error("Error deleting service:", error)
@@ -88,15 +159,13 @@ export default function MarketingDashboard() {
     }
   }
 
-  const handleDeleteAdvertisement = async (adId: string) => {
-    if (!confirm("Are you sure you want to delete this advertisement?")) return
-
+  const deleteAdvertisement = async (adId: string) => {
     try {
-      const db = await getFirebaseDb()
-      if (!db) return
+      const db = getFirebaseDb()
+      if (!db) throw new Error("Database not initialized")
 
       await deleteDoc(doc(db, "advertisements", adId))
-      setAdvertisements(advertisements.filter((ad) => ad.id !== adId))
+      setAdvertisements((prev) => prev.filter((ad) => ad.id !== adId))
       toast.success("Advertisement deleted successfully")
     } catch (error) {
       console.error("Error deleting advertisement:", error)
@@ -105,7 +174,7 @@ export default function MarketingDashboard() {
   }
 
   const getServiceThumbnail = (service: Service) => {
-    // Priority: images > video thumbnails > youtube thumbnails > placeholder
+    // Priority: images → video thumbnails → YouTube thumbnails → placeholder
     if (service.images && service.images.length > 0) {
       return service.images[0]
     }
@@ -120,251 +189,379 @@ export default function MarketingDashboard() {
       if (thumbnail) return thumbnail
     }
 
-    return "/placeholder.svg?height=100&width=100"
+    return null
   }
 
-  const hasVideoContent = (service: Service) => {
-    return (service.videos && service.videos.length > 0) || (service.youtubeLinks && service.youtubeLinks.length > 0)
-  }
-
-  if (loading) {
+  if (authLoading) {
     return (
-      <div className="container py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Loading dashboard...</p>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     )
   }
 
+  if (!user || (userRole !== "marketing" && userRole !== "admin")) {
+    return <div>Access denied</div>
+  }
+
   return (
-    <div className="container py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Marketing Dashboard</h1>
-          <p className="text-muted-foreground">Manage your services and advertisements</p>
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-yellow-950/30 dark:via-gray-950 dark:to-blue-950/30">
+      <div className="container py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Marketing Dashboard</h1>
+            <p className="text-muted-foreground">
+              {userRole === "admin"
+                ? "Manage all services and advertisements"
+                : "Manage all services and advertisements"}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="services" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="services">Services ({services.length})</TabsTrigger>
-          <TabsTrigger value="advertisements">Advertisements ({advertisements.length})</TabsTrigger>
-        </TabsList>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Services</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{services.length}</div>
+              <p className="text-xs text-muted-foreground">
+                {services.filter((s) => s.status === "active").length} active
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Advertisements</CardTitle>
+              <Megaphone className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{advertisements.length}</div>
+              <p className="text-xs text-muted-foreground">
+                {advertisements.filter((ad) => ad.status === "active").length} active
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {services.reduce((total, service) => total + (service.views || 0), 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">Service views</p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <TabsContent value="services" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Your Services</h2>
-            <Button asChild>
-              <Link href="/dashboard/marketing/services/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Service
-              </Link>
-            </Button>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex gap-4 mb-8">
+          <Button asChild>
+            <Link href="/dashboard/marketing/services/create">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Service
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/marketing/advertisements/create">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Advertisement
+            </Link>
+          </Button>
+        </div>
 
-          {services.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-2">No services yet</h3>
-                  <p className="text-muted-foreground mb-4">Create your first service to get started</p>
-                  <Button asChild>
-                    <Link href="/dashboard/marketing/services/create">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Service
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-6">
-              {services.map((service) => (
-                <Card key={service.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                        <img
-                          src={getServiceThumbnail(service) || "/placeholder.svg"}
-                          alt={service.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = "/placeholder.svg?height=100&width=100"
-                          }}
-                        />
-                        {hasVideoContent(service) && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <Play className="h-6 w-6 text-white" />
-                          </div>
-                        )}
-                      </div>
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6">
+          <Button variant={activeTab === "services" ? "default" : "outline"} onClick={() => setActiveTab("services")}>
+            <Package className="h-4 w-4 mr-2" />
+            Services ({services.length})
+          </Button>
+          <Button
+            variant={activeTab === "advertisements" ? "default" : "outline"}
+            onClick={() => setActiveTab("advertisements")}
+          >
+            <Megaphone className="h-4 w-4 mr-2" />
+            Advertisements ({advertisements.length})
+          </Button>
+        </div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="text-lg font-semibold line-clamp-1">{service.title}</h3>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                              <Badge variant="outline" className="capitalize">
-                                {service.serviceType?.replace("-", " ")}
-                              </Badge>
-                              {service.company && (
-                                <div className="flex items-center gap-1">
-                                  <Building2 className="h-3 w-3" />
-                                  <span>{service.company}</span>
-                                </div>
-                              )}
-                              {service.location && (
-                                <div className="flex items-center gap-1">
-                                  <MapPin className="h-3 w-3" />
-                                  <span>{service.location}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" asChild>
-                              <Link href={`/services/${service.serviceType}/${service.id}`}>
-                                <Eye className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button variant="outline" size="sm" asChild>
-                              <Link href={`/dashboard/marketing/services/edit/${service.id}`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteService(service.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{service.description}</p>
-
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>
-                              Created{" "}
-                              {service.createdAt
-                                ? new Date(service.createdAt.seconds * 1000).toLocaleDateString()
-                                : "Unknown"}
-                            </span>
-                          </div>
-                          {service.price && <span className="font-semibold text-primary">{service.price}</span>}
-                        </div>
-                      </div>
+        {loading ? (
+          <Card>
+            <CardContent className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <span className="ml-2">Loading...</span>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* Services Tab */}
+            {activeTab === "services" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{userRole === "admin" ? "All Services" : "All Services"}</CardTitle>
+                  <CardDescription>
+                    {userRole === "admin" ? "Manage all published services" : "Manage all published services"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {services.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No services yet</h3>
+                      <p className="text-muted-foreground mb-4">Create your first service to get started</p>
+                      <Button asChild>
+                        <Link href="/dashboard/marketing/services/create">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Service
+                        </Link>
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Service</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Views</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {services.map((service) => {
+                            const thumbnail = getServiceThumbnail(service)
 
-        <TabsContent value="advertisements" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Your Advertisements</h2>
-            <Button asChild>
-              <Link href="/dashboard/marketing/advertisements/create">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Advertisement
-              </Link>
-            </Button>
-          </div>
+                            return (
+                              <TableRow key={service.id}>
+                                <TableCell>
+                                  <div className="flex items-center gap-3">
+                                    {thumbnail ? (
+                                      <img
+                                        src={thumbnail || "/placeholder.svg"}
+                                        alt=""
+                                        className="w-10 h-10 rounded object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
+                                        <Package className="h-4 w-4" />
+                                      </div>
+                                    )}
+                                    <div>
+                                      <div className="font-medium">{service.title}</div>
+                                      <div className="text-sm text-muted-foreground line-clamp-1">
+                                        {service.description}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="secondary">{service.serviceType?.replace("-", " ")}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={service.status === "active" ? "default" : "destructive"}>
+                                    {service.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{service.views || 0}</TableCell>
+                                <TableCell>
+                                  {service.createdAt ? new Date(service.createdAt).toLocaleDateString() : "Unknown"}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Button size="sm" variant="outline" asChild>
+                                      <Link href={`/dashboard/marketing/services/edit/${service.id}`}>
+                                        <Edit className="h-3 w-3" />
+                                      </Link>
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        updateServiceStatus(
+                                          service.id!,
+                                          service.status === "active" ? "suspended" : "active",
+                                        )
+                                      }
+                                    >
+                                      {service.status === "active" ? (
+                                        <EyeOff className="h-3 w-3" />
+                                      ) : (
+                                        <Eye className="h-3 w-3" />
+                                      )}
+                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button size="sm" variant="destructive">
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Service</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to delete this service? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => deleteService(service.id!)}>
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
-          {advertisements.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-2">No advertisements yet</h3>
-                  <p className="text-muted-foreground mb-4">Create your first advertisement to get started</p>
-                  <Button asChild>
-                    <Link href="/dashboard/marketing/advertisements/create">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Advertisement
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Advertisement</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {advertisements.map((ad) => (
-                    <TableRow key={ad.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {ad.images && ad.images.length > 0 && (
-                            <img
-                              src={ad.images[0] || "/placeholder.svg"}
-                              alt={ad.title}
-                              className="w-12 h-12 rounded object-cover"
-                            />
-                          )}
-                          <div>
-                            <div className="font-medium line-clamp-1">{ad.title}</div>
-                            {ad.company && <div className="text-sm text-muted-foreground">{ad.company}</div>}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {ad.adType || "Standard"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={ad.status === "active" ? "default" : "secondary"}>{ad.status || "Draft"}</Badge>
-                      </TableCell>
-                      <TableCell>{ad.price || "N/A"}</TableCell>
-                      <TableCell>
-                        {ad.createdAt ? new Date(ad.createdAt.seconds * 1000).toLocaleDateString() : "Unknown"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="sm" asChild>
-                            <Link href={`/advertisements/${ad.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteAdvertisement(ad.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+            {/* Advertisements Tab */}
+            {activeTab === "advertisements" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{userRole === "admin" ? "All Advertisements" : "All Advertisements"}</CardTitle>
+                  <CardDescription>
+                    {userRole === "admin" ? "Manage all promotional campaigns" : "Manage all promotional campaigns"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {advertisements.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Megaphone className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No advertisements yet</h3>
+                      <p className="text-muted-foreground mb-4">Create your first advertisement to get started</p>
+                      <Button asChild>
+                        <Link href="/dashboard/marketing/advertisements/create">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Advertisement
+                        </Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Advertisement</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Duration</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {advertisements.map((ad) => (
+                            <TableRow key={ad.id}>
+                              <TableCell>
+                                <div className="flex items-center gap-3">
+                                  {ad.images && ad.images.length > 0 ? (
+                                    <img
+                                      src={ad.images[0] || "/placeholder.svg"}
+                                      alt=""
+                                      className="w-10 h-10 rounded object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
+                                      <Megaphone className="h-4 w-4" />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="font-medium">{ad.title}</div>
+                                    <div className="text-sm text-muted-foreground">{ad.company}</div>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="secondary">{ad.adType}</Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant={ad.status === "active" ? "default" : "destructive"}>{ad.status}</Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  {ad.startDate && ad.endDate && (
+                                    <>
+                                      {new Date(ad.startDate).toLocaleDateString()} -{" "}
+                                      {new Date(ad.endDate).toLocaleDateString()}
+                                    </>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                {ad.createdAt ? new Date(ad.createdAt).toLocaleDateString() : "Unknown"}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      updateAdStatus(ad.id!, ad.status === "active" ? "suspended" : "active")
+                                    }
+                                  >
+                                    {ad.status === "active" ? (
+                                      <EyeOff className="h-3 w-3" />
+                                    ) : (
+                                      <Eye className="h-3 w-3" />
+                                    )}
+                                  </Button>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button size="sm" variant="destructive">
+                                        <Trash2 className="h-3 w-3" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete Advertisement</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Are you sure you want to delete this advertisement? This action cannot be
+                                          undone.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => deleteAdvertisement(ad.id!)}>
+                                          Delete
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
