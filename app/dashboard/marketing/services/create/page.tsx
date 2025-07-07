@@ -15,7 +15,7 @@ import { uploadToCloudinary } from "@/lib/cloudinary"
 import { collection, addDoc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 import type { Service } from "@/lib/types"
-import { ArrowLeft, Upload, X, Loader2, Plus } from "lucide-react"
+import { ArrowLeft, Upload, X, Loader2, Plus, Play } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -57,10 +57,9 @@ export default function CreateService() {
 
     setUploadingImages(true)
     try {
-      const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file))
+      const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file, "image"))
       const results = await Promise.all(uploadPromises)
-      const newImageUrls = results.map((result) => result.secure_url)
-      setImages((prev) => [...prev, ...newImageUrls])
+      setImages((prev) => [...prev, ...results])
       toast.success(`${files.length} image(s) uploaded successfully`)
     } catch (error) {
       console.error("Error uploading images:", error)
@@ -82,8 +81,7 @@ export default function CreateService() {
     try {
       const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file, "video"))
       const results = await Promise.all(uploadPromises)
-      const newVideoUrls = results.map((result) => result.secure_url)
-      setVideos((prev) => [...prev, ...newVideoUrls])
+      setVideos((prev) => [...prev, ...results])
       toast.success(`${files.length} video(s) uploaded successfully`)
     } catch (error) {
       console.error("Error uploading videos:", error)
@@ -427,11 +425,10 @@ export default function CreateService() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {videos.map((video, index) => (
                     <div key={index} className="relative group">
-                      <video
-                        src={video || "/placeholder.svg"}
-                        className="w-full h-24 object-cover rounded-lg"
-                        controls
-                      />
+                      <video src={video || "/placeholder.svg"} className="w-full h-24 object-cover rounded-lg" muted />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="h-6 w-6 text-white drop-shadow-lg" />
+                      </div>
                       <Button
                         type="button"
                         variant="destructive"
