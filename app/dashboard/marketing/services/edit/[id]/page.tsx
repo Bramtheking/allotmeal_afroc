@@ -2,113 +2,136 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { useAuth } from "@/lib/auth-context"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { uploadToCloudinary } from "@/lib/cloudinary"
+import { Badge } from "@/components/ui/badge"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
+import { useAuth } from "@/lib/auth-context"
 import type { Service } from "@/lib/types"
-import { ArrowLeft, Upload, X, Loader2, Plus } from "lucide-react"
-import Link from "next/link"
+import { uploadToCloudinary } from "@/lib/cloudinary"
 import { toast } from "sonner"
+import { ArrowLeft, X, Plus, Play, ImageIcon, Video } from "lucide-react"
+import Link from "next/link"
 
-export default function EditService() {
-  const { user, userRole } = useAuth()
+const serviceTypes = [
+  { value: "agriculture", label: "Agriculture" },
+  { value: "construction", label: "Construction" },
+  { value: "education", label: "Education" },
+  { value: "entertainment", label: "Entertainment" },
+  { value: "health", label: "Health" },
+  { value: "hotel-industry", label: "Hotel & Industry" },
+  { value: "jobs", label: "Jobs" },
+  { value: "sermon", label: "Sermon" },
+  { value: "sme-products", label: "SME Products" },
+  { value: "tenders", label: "Tenders" },
+  { value: "transport", label: "Transport" },
+]
+
+interface EditServicePageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function EditServicePage({ params }: EditServicePageProps) {
   const router = useRouter()
-  const params = useParams()
-  const [loading, setLoading] = useState(false)
-  const [fetchingService, setFetchingService] = useState(true)
+  const { user } = useAuth()
+  const [service, setService] = useState<Service | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   const [uploadingImages, setUploadingImages] = useState(false)
-  const [images, setImages] = useState<string[]>([])
   const [uploadingVideos, setUploadingVideos] = useState(false)
-  const [videos, setVideos] = useState<string[]>([])
-  const [youtubeLinks, setYoutubeLinks] = useState<string[]>([])
-  const [features, setFeatures] = useState<string[]>([])
-  const [requirements, setRequirements] = useState<string[]>([])
-  const [amenities, setAmenities] = useState<string[]>([])
-  const [services, setServices] = useState<string[]>([])
 
-  const [formData, setFormData] = useState<Partial<Service>>({
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
-    serviceType: "agriculture",
+    serviceType: "",
     company: "",
     location: "",
-    contact: "",
-    email: "",
-    website: "",
     price: "",
-    rating: 5,
-    status: "active",
+    contactInfo: "",
+    images: [] as string[],
+    videos: [] as string[],
+    youtubeLinks: [] as string[],
   })
 
+  const [newYouTubeLink, setNewYouTubeLink] = useState("")
+
   useEffect(() => {
-    const fetchService = async () => {
-      if (!params.id || !user) return
-
-      try {
-        const db = await getFirebaseDb()
-        if (!db) throw new Error("Database not available")
-
-        const docRef = doc(db, "services", params.id as string)
-        const docSnap = await getDoc(docRef)
-
-        if (docSnap.exists()) {
-          const serviceData = { id: docSnap.id, ...docSnap.data() } as Service
-
-          // Check if user has permission to edit this service
-          if (userRole !== "admin" && serviceData.createdBy !== user.uid) {
-            toast.error("You don't have permission to edit this service")
-            router.push("/dashboard/marketing")
-            return
-          }
-
-          setFormData(serviceData)
-          setImages(serviceData.images || [])
-          setVideos(serviceData.videos || [])
-          setYoutubeLinks(serviceData.youtubeLinks || [])
-          setFeatures(serviceData.features || [])
-          setRequirements(serviceData.requirements || [])
-          setAmenities(serviceData.amenities || [])
-          setServices(serviceData.services || [])
-        } else {
-          toast.error("Service not found")
-          router.push("/dashboard/marketing")
-        }
-      } catch (error) {
-        console.error("Error fetching service:", error)
-        toast.error("Failed to load service")
-        router.push("/dashboard/marketing")
-      } finally {
-        setFetchingService(false)
-      }
+    if (user && params.id) {
+      fetchService()
     }
+  }, [user, params.id])
 
-    fetchService()
-  }, [params.id, user, userRole, router])
+  const fetchService = async () => {
+    try {
+      const db = await getFirebaseDb()
+      if (!db) return
 
-  const handleInputChange = (field: keyof Service, value: any) => {
+      const serviceDoc = await getDoc(doc(db, "services", params.id))
+      if (!serviceDoc.exists()) {
+        toast.error("Service not found")
+        router.push("/dashboard/marketing")
+        return
+      }
+
+      const serviceData = { id: serviceDoc.id, ...serviceDoc.data() } as Service
+
+      // Check if user can edit this service
+      const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL
+      if (!isAdmin && serviceData.userId !== user?.uid) {
+        toast.error("You don't have permission to edit this service")
+        router.push("/dashboard/marketing")
+        return
+      }
+
+      setService(serviceData)
+      setFormData({
+        title: serviceData.title || "",
+        description: serviceData.description || "",
+        serviceType: serviceData.serviceType || "",
+        company: serviceData.company || "",
+        location: serviceData.location || "",
+        price: serviceData.price || "",
+        contactInfo: serviceData.contactInfo || "",
+        images: serviceData.images || [],
+        videos: serviceData.videos || [],
+        youtubeLinks: serviceData.youtubeLinks || [],
+      })
+    } catch (error) {
+      console.error("Error fetching service:", error)
+      toast.error("Failed to fetch service")
+      router.push("/dashboard/marketing")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
+  const handleImageUpload = async (files: FileList) => {
+    if (!files.length) return
 
     setUploadingImages(true)
     try {
-      const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file))
-      const results = await Promise.all(uploadPromises)
-      const newImageUrls = results.map((result) => result.secure_url)
-      setImages((prev) => [...prev, ...newImageUrls])
-      toast.success(`${files.length} image(s) uploaded successfully`)
+      const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file, "image"))
+      const imageUrls = await Promise.all(uploadPromises)
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...imageUrls],
+      }))
+
+      toast.success(`${imageUrls.length} image(s) uploaded successfully`)
     } catch (error) {
       console.error("Error uploading images:", error)
       toast.error("Failed to upload images")
@@ -117,21 +140,20 @@ export default function EditService() {
     }
   }
 
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
+  const handleVideoUpload = async (files: FileList) => {
+    if (!files.length) return
 
     setUploadingVideos(true)
     try {
       const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file, "video"))
-      const results = await Promise.all(uploadPromises)
-      const newVideoUrls = results.map((result) => result.secure_url)
-      setVideos((prev) => [...prev, ...newVideoUrls])
-      toast.success(`${files.length} video(s) uploaded successfully`)
+      const videoUrls = await Promise.all(uploadPromises)
+
+      setFormData((prev) => ({
+        ...prev,
+        videos: [...prev.videos, ...videoUrls],
+      }))
+
+      toast.success(`${videoUrls.length} video(s) uploaded successfully`)
     } catch (error) {
       console.error("Error uploading videos:", error)
       toast.error("Failed to upload videos")
@@ -140,134 +162,116 @@ export default function EditService() {
     }
   }
 
+  const removeImage = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }))
+  }
+
   const removeVideo = (index: number) => {
-    setVideos((prev) => prev.filter((_, i) => i !== index))
+    setFormData((prev) => ({
+      ...prev,
+      videos: prev.videos.filter((_, i) => i !== index),
+    }))
   }
 
-  const addYoutubeLink = () => {
-    const link = prompt("Enter YouTube Link:")
-    if (link) {
-      setYoutubeLinks((prev) => [...prev, link])
-    }
+  const addYouTubeLink = () => {
+    if (!newYouTubeLink.trim()) return
+
+    setFormData((prev) => ({
+      ...prev,
+      youtubeLinks: [...prev.youtubeLinks, newYouTubeLink.trim()],
+    }))
+    setNewYouTubeLink("")
   }
 
-  const removeYoutubeLink = (index: number) => {
-    setYoutubeLinks((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const addFeature = () => {
-    const feature = prompt("Enter Feature:")
-    if (feature) {
-      setFeatures((prev) => [...prev, feature])
-    }
-  }
-
-  const removeFeature = (index: number) => {
-    setFeatures((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const addRequirement = () => {
-    const requirement = prompt("Enter Requirement:")
-    if (requirement) {
-      setRequirements((prev) => [...prev, requirement])
-    }
-  }
-
-  const removeRequirement = (index: number) => {
-    setRequirements((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const addAmenity = () => {
-    const amenity = prompt("Enter Amenity:")
-    if (amenity) {
-      setAmenities((prev) => [...prev, amenity])
-    }
-  }
-
-  const removeAmenity = (index: number) => {
-    setAmenities((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const addService = () => {
-    const service = prompt("Enter Service:")
-    if (service) {
-      setServices((prev) => [...prev, service])
-    }
-  }
-
-  const removeService = (index: number) => {
-    setServices((prev) => prev.filter((_, i) => i !== index))
+  const removeYouTubeLink = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      youtubeLinks: prev.youtubeLinks.filter((_, i) => i !== index),
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user || !params.id) return
+    if (!user || !service) return
 
-    setLoading(true)
+    setSubmitting(true)
     try {
       const db = await getFirebaseDb()
-      if (!db) throw new Error("Database not available")
+      if (!db) return
 
-      const serviceData: Partial<Service> = {
+      const updateData = {
         ...formData,
-        images,
-        videos,
-        youtubeLinks,
-        features,
-        requirements,
-        amenities,
-        services,
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date(),
       }
 
-      await updateDoc(doc(db, "services", params.id as string), serviceData)
+      await updateDoc(doc(db, "services", params.id), updateData)
+
       toast.success("Service updated successfully!")
       router.push("/dashboard/marketing")
     } catch (error) {
       console.error("Error updating service:", error)
       toast.error("Failed to update service")
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
-  if (!user || (userRole !== "marketing" && userRole !== "admin")) {
-    return <div>Access denied</div>
-  }
-
-  if (fetchingService) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading service...</span>
+      <div className="container py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading service...</p>
+          </div>
+        </div>
       </div>
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-yellow-950/30 dark:via-gray-950 dark:to-blue-950/30">
+  if (!service) {
+    return (
       <div className="container py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="outline" size="sm" asChild>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
+          <Button asChild>
             <Link href="/dashboard/marketing">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Link>
           </Button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container py-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/marketing">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold">Edit Service</h1>
-            <p className="text-muted-foreground">Update your service listing</p>
+            <p className="text-muted-foreground">Update your service information</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>Service Details</CardTitle>
-              <CardDescription>Update the basic information about your service</CardDescription>
+              <CardTitle>Basic Information</CardTitle>
+              <CardDescription>Update the basic details of your service</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="title">Service Title *</Label>
                   <Input
@@ -278,6 +282,7 @@ export default function EditService() {
                     required
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="serviceType">Service Type *</Label>
                   <Select
@@ -288,19 +293,53 @@ export default function EditService() {
                       <SelectValue placeholder="Select service type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="agriculture">Agriculture</SelectItem>
-                      <SelectItem value="construction">Construction</SelectItem>
-                      <SelectItem value="education">Education</SelectItem>
-                      <SelectItem value="entertainment">Entertainment</SelectItem>
-                      <SelectItem value="health">Health</SelectItem>
-                      <SelectItem value="hotel-industry">Hotel & Industry</SelectItem>
-                      <SelectItem value="jobs">Jobs</SelectItem>
-                      <SelectItem value="sermon">Sermon</SelectItem>
-                      <SelectItem value="sme-products">SME Products</SelectItem>
-                      <SelectItem value="tenders">Tenders</SelectItem>
-                      <SelectItem value="transport">Transport</SelectItem>
+                      {serviceTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="company">Company/Organization</Label>
+                  <Input
+                    id="company"
+                    value={formData.company}
+                    onChange={(e) => handleInputChange("company", e.target.value)}
+                    placeholder="Enter company name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => handleInputChange("location", e.target.value)}
+                    placeholder="Enter location"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price (Optional)</Label>
+                  <Input
+                    id="price"
+                    value={formData.price}
+                    onChange={(e) => handleInputChange("price", e.target.value)}
+                    placeholder="e.g., $100, Free, Contact for pricing"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="contactInfo">Contact Information</Label>
+                  <Input
+                    id="contactInfo"
+                    value={formData.contactInfo}
+                    onChange={(e) => handleInputChange("contactInfo", e.target.value)}
+                    placeholder="Phone, email, or other contact info"
+                  />
                 </div>
               </div>
 
@@ -310,369 +349,190 @@ export default function EditService() {
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Describe your service (you can use *bold*, _italic_, __underline__ formatting)"
+                  placeholder="Describe your service in detail"
                   rows={4}
                   required
                 />
-                <p className="text-xs text-muted-foreground">
-                  Tip: Use *text* for bold, _text_ for italic, __text__ for underline
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company">Company *</Label>
-                  <Input
-                    id="company"
-                    value={formData.company}
-                    onChange={(e) => handleInputChange("company", e.target.value)}
-                    placeholder="Company name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange("location", e.target.value)}
-                    placeholder="City, Country"
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-              <CardDescription>How customers can reach you</CardDescription>
+              <CardTitle>Media</CardTitle>
+              <CardDescription>Add images and videos to showcase your service</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contact">Contact Number</Label>
-                  <Input
-                    id="contact"
-                    value={formData.contact}
-                    onChange={(e) => handleInputChange("contact", e.target.value)}
-                    placeholder="+1234567890"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="contact@company.com"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="website">Website</Label>
-                  <Input
-                    id="website"
-                    value={formData.website}
-                    onChange={(e) => handleInputChange("website", e.target.value)}
-                    placeholder="https://example.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price</Label>
-                  <Input
-                    id="price"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange("price", e.target.value)}
-                    placeholder="e.g., $100, Contact for pricing"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Images</CardTitle>
-              <CardDescription>Upload images to showcase your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Label htmlFor="images" className="cursor-pointer">
-                  <div className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
-                    <Upload className="h-4 w-4" />
-                    <span>Upload Images</span>
+            <CardContent className="space-y-6">
+              {/* Images Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Images</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
+                      className="hidden"
+                      id="image-upload"
+                      disabled={uploadingImages}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById("image-upload")?.click()}
+                      disabled={uploadingImages}
+                    >
+                      {uploadingImages ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Images
+                        </>
+                      )}
+                    </Button>
                   </div>
-                  <Input
-                    id="images"
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </Label>
-                {uploadingImages && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading...
+                </div>
+
+                {formData.images.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {formData.images.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={image || "/placeholder.svg"}
+                          alt={`Service image ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeImage(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                        <div className="absolute bottom-1 left-1">
+                          <Badge variant="secondary" className="text-xs">
+                            <ImageIcon className="h-3 w-3 mr-1" />
+                            IMG
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
 
-              {images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {images.map((image, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={image || "/placeholder.svg"}
-                        alt={`Service image ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeImage(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Videos</CardTitle>
-              <CardDescription>Upload videos to showcase your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Label htmlFor="videos" className="cursor-pointer">
-                  <div className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
-                    <Upload className="h-4 w-4" />
-                    <span>Upload Videos</span>
+              {/* Videos Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Videos</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="video/*"
+                      multiple
+                      onChange={(e) => e.target.files && handleVideoUpload(e.target.files)}
+                      className="hidden"
+                      id="video-upload"
+                      disabled={uploadingVideos}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById("video-upload")?.click()}
+                      disabled={uploadingVideos}
+                    >
+                      {uploadingVideos ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Videos
+                        </>
+                      )}
+                    </Button>
                   </div>
-                  <Input
-                    id="videos"
-                    type="file"
-                    multiple
-                    accept="video/*"
-                    onChange={handleVideoUpload}
-                    className="hidden"
-                  />
-                </Label>
-                {uploadingVideos && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading...
+                </div>
+
+                {formData.videos.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {formData.videos.map((video, index) => (
+                      <div key={index} className="relative group">
+                        <video src={video} className="w-full h-24 object-cover rounded-lg border" muted />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeVideo(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Play className="h-6 w-6 text-white drop-shadow-lg" />
+                        </div>
+                        <div className="absolute bottom-1 left-1">
+                          <Badge variant="secondary" className="text-xs">
+                            <Video className="h-3 w-3 mr-1" />
+                            VID
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
 
-              {videos.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {videos.map((video, index) => (
-                    <div key={index} className="relative group">
-                      <video
-                        src={video || "/placeholder.svg"}
-                        className="w-full h-24 object-cover rounded-lg"
-                        controls
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeVideo(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
+              {/* YouTube Links Section */}
+              <div className="space-y-4">
+                <Label>YouTube Links</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={newYouTubeLink}
+                    onChange={(e) => setNewYouTubeLink(e.target.value)}
+                    placeholder="Paste YouTube URL here"
+                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addYouTubeLink())}
+                  />
+                  <Button type="button" variant="outline" onClick={addYouTubeLink}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
                 </div>
-              )}
+
+                {formData.youtubeLinks.length > 0 && (
+                  <div className="space-y-2">
+                    {formData.youtubeLinks.map((link, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 border rounded-lg">
+                        <div className="flex-1 text-sm truncate">{link}</div>
+                        <Button type="button" variant="outline" size="sm" onClick={() => removeYouTubeLink(index)}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>YouTube Links</CardTitle>
-              <CardDescription>Add YouTube links for your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button type="button" variant="secondary" onClick={addYoutubeLink}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add YouTube Link
-              </Button>
-
-              {youtubeLinks.length > 0 && (
-                <div className="space-y-2">
-                  {youtubeLinks.map((link, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded-md">
-                      <a
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="truncate text-blue-600 hover:underline"
-                      >
-                        {link}
-                      </a>
-                      <Button type="button" variant="destructive" size="sm" onClick={() => removeYoutubeLink(index)}>
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Features</CardTitle>
-              <CardDescription>Add key features of your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button type="button" variant="secondary" onClick={addFeature}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Feature
-              </Button>
-
-              {features.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {features.map((feature, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full"
-                    >
-                      <span className="text-sm">{feature}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
-                        onClick={() => removeFeature(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Requirements</CardTitle>
-              <CardDescription>Add any requirements for your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button type="button" variant="secondary" onClick={addRequirement}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Requirement
-              </Button>
-
-              {requirements.length > 0 && (
-                <div className="space-y-2">
-                  {requirements.map((requirement, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded-md">
-                      <span className="text-sm">{requirement}</span>
-                      <Button type="button" variant="destructive" size="sm" onClick={() => removeRequirement(index)}>
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Amenities</CardTitle>
-              <CardDescription>Add amenities available with your service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button type="button" variant="secondary" onClick={addAmenity}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Amenity
-              </Button>
-
-              {amenities.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {amenities.map((amenity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full"
-                    >
-                      <span className="text-sm">{amenity}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
-                        onClick={() => removeAmenity(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Additional Services</CardTitle>
-              <CardDescription>Add any additional services you provide</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button type="button" variant="secondary" onClick={addService}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Service
-              </Button>
-
-              {services.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {services.map((service, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full"
-                    >
-                      <span className="text-sm">{service}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
-                        onClick={() => removeService(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-end gap-4">
+          <div className="flex items-center justify-end gap-4">
             <Button type="button" variant="outline" asChild>
               <Link href="/dashboard/marketing">Cancel</Link>
             </Button>
-            <Button type="submit" disabled={loading || !formData.title || !formData.description || !formData.company}>
-              {loading ? (
+            <Button type="submit" disabled={submitting}>
+              {submitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
                   Updating...
                 </>
               ) : (
