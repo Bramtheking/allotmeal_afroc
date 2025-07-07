@@ -1,3 +1,14 @@
+export interface CloudinaryUploadResult {
+  public_id: string
+  secure_url: string
+  url: string
+  format: string
+  resource_type: string
+  bytes: number
+  width?: number
+  height?: number
+}
+
 export const uploadToCloudinary = async (file: File, resourceType: "image" | "video" = "image"): Promise<string> => {
   const formData = new FormData()
   formData.append("file", file)
@@ -9,91 +20,55 @@ export const uploadToCloudinary = async (file: File, resourceType: "image" | "vi
       ? `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload`
       : `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`
 
-  const response = await fetch(endpoint, {
-    method: "POST",
-    body: formData,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to upload ${resourceType}`)
-  }
-
-  const data = await response.json()
-  return data.secure_url
-}
-
-export const deleteFromCloudinary = async (
-  publicId: string,
-  resourceType: "image" | "video" = "image",
-): Promise<boolean> => {
   try {
-    const response = await fetch("/api/cloudinary/delete", {
+    const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ publicId, resourceType }),
+      body: formData,
     })
 
-    return response.ok
+    if (!response.ok) {
+      throw new Error(`Failed to upload ${resourceType}`)
+    }
+
+    const result: CloudinaryUploadResult = await response.json()
+    return result.secure_url
   } catch (error) {
-    console.error("Error deleting from Cloudinary:", error)
-    return false
+    console.error(`Error uploading ${resourceType}:`, error)
+    throw error
   }
 }
 
-// Helper function to extract public ID from Cloudinary URL
-export const getPublicIdFromUrl = (url: string): string => {
-  const parts = url.split("/")
-  const filename = parts[parts.length - 1]
-  return filename.split(".")[0]
-}
-
-// Helper function to get video thumbnail from Cloudinary
 export const getVideoThumbnail = (videoUrl: string): string | null => {
-  if (!videoUrl || !videoUrl.includes("cloudinary.com")) {
-    return null
-  }
-
   try {
-    // Extract the public ID from the video URL
-    const urlParts = videoUrl.split("/")
-    const uploadIndex = urlParts.findIndex((part) => part === "upload")
-    if (uploadIndex === -1) return null
+    // Extract public_id from Cloudinary video URL
+    const match = videoUrl.match(/\/v\d+\/(.+)\.(mp4|mov|avi|mkv|webm)$/)
+    if (!match) return null
 
-    const publicIdWithExtension = urlParts.slice(uploadIndex + 2).join("/")
-    const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, "") // Remove file extension
+    const publicId = match[1]
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 
     // Generate thumbnail URL
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-    return `https://res.cloudinary.com/${cloudName}/video/upload/so_0,w_400,h_300,c_fill/${publicId}.jpg`
+    return `https://res.cloudinary.com/${cloudName}/video/upload/so_0,w_300,h_200,c_fill/${publicId}.jpg`
   } catch (error) {
     console.error("Error generating video thumbnail:", error)
     return null
   }
 }
 
-// Helper function to get YouTube thumbnail
 export const getYouTubeThumbnail = (youtubeUrl: string): string | null => {
-  if (!youtubeUrl) return null
-
   try {
-    let videoId = ""
+    // Extract video ID from various YouTube URL formats
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+    const match = youtubeUrl.match(regExp)
 
-    if (youtubeUrl.includes("youtube.com/watch?v=")) {
-      videoId = youtubeUrl.split("v=")[1]?.split("&")[0]
-    } else if (youtubeUrl.includes("youtu.be/")) {
-      videoId = youtubeUrl.split("youtu.be/")[1]?.split("?")[0]
-    } else if (youtubeUrl.includes("youtube.com/embed/")) {
-      videoId = youtubeUrl.split("embed/")[1]?.split("?")[0]
-    }
-
-    if (videoId) {
+    if (match && match[2].length === 11) {
+      const videoId = match[2]
       return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
     }
+
+    return null
   } catch (error) {
     console.error("Error generating YouTube thumbnail:", error)
+    return null
   }
-
-  return null
 }
