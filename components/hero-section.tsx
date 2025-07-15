@@ -39,12 +39,12 @@ export function HeroSection() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.5 }}
               >
-                <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden">
+                <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-xl bg-white/90 backdrop-blur-sm">
                   <Image
                     src="/logo.png"
                     alt="Allotmeal Afroc Ltd Logo"
                     fill
-                    className="object-contain rounded-full"
+                    className="object-cover rounded-full scale-110"
                     priority
                   />
                 </div>
