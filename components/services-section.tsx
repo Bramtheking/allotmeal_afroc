@@ -298,7 +298,7 @@ export function ServicesSection() {
                   </div>
                   <div className="w-px h-4 bg-gray-300 dark:bg-gray-600" />
                   <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-amber-500 fill-current" />
+                    {/* <Star className="h-4 w-4 text-amber-500 fill-current" /> */}
                     <span>Expert Support</span>
                   </div>
                 </div>
