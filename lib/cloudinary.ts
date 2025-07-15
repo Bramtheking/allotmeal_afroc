@@ -1,7 +1,7 @@
 export const uploadToCloudinary = async (file: File, resourceType: "image" | "video" = "image"): Promise<string> => {
   const formData = new FormData()
   formData.append("file", file)
-  formData.append("allotmeal_preset", "unsigned_preset") // You need to create this in Cloudinary
+  formData.append("upload_preset", "allotmeal_preset") // Corrected field name and value
   formData.append("cloud_name", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "")
 
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
