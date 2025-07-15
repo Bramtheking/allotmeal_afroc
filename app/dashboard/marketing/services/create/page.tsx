@@ -36,7 +36,9 @@ import { uploadToCloudinary } from "@/lib/cloudinary"
 const serviceTypes = [
   { value: "agriculture", label: "Agriculture" },
   { value: "construction", label: "Construction" },
-  { value: "education", label: "Education" },
+  { value: "education-school", label: "Education - School" },
+  { value: "education-college", label: "Education - College" },
+  { value: "education-university", label: "Education - University" },
   { value: "entertainment", label: "Entertainment" },
   { value: "health", label: "Health" },
   { value: "hotel-industry", label: "Hotel & Industry" },
@@ -164,8 +166,19 @@ export default function CreateService() {
         throw new Error("Database not available")
       }
 
+      // Extract base service type and institution type for education
+      let baseServiceType = formData.serviceType
+      let institutionType = undefined
+
+      if (formData.serviceType.startsWith("education-")) {
+        baseServiceType = "education"
+        institutionType = formData.serviceType.replace("education-", "")
+      }
+
       const serviceData = {
         ...formData,
+        serviceType: baseServiceType,
+        institutionType,
         userId: user.uid,
         userEmail: user.email,
         status: "active",
