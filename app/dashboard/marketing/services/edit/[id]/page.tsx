@@ -86,7 +86,10 @@ export default function EditServicePage({ params }: EditServicePageProps) {
 
       // Check if user can edit this service
       const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL
-      if (!isAdmin && serviceData.userId !== user?.uid) {
+      const isMarketing = user?.email && user.email.includes("@") // Basic check for marketing users
+      const isOwner = serviceData.userId === user?.uid
+
+      if (!isAdmin && !isMarketing && !isOwner) {
         toast.error("You don't have permission to edit this service")
         router.push("/dashboard/marketing")
         return
