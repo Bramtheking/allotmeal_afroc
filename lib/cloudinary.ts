@@ -1,7 +1,8 @@
 export const uploadToCloudinary = async (file: File, resourceType: "image" | "video" = "image"): Promise<string> => {
   const formData = new FormData()
   formData.append("file", file)
-  formData.append("upload_preset", "ml_default") // You'll need to set this up in Cloudinary
+  formData.append("upload_preset", "unsigned_preset") // You need to create this in Cloudinary
+  formData.append("cloud_name", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "")
 
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
   if (!cloudName) {
