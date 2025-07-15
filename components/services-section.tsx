@@ -1,12 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { collection, getDocs, query, limit, where } from "firebase/firestore"
-import { getFirebaseDb } from "@/lib/firebase"
-import type { Service } from "@/lib/types"
 import {
   Building2,
   Briefcase,
@@ -23,11 +20,7 @@ import {
   MessageCircle,
   Sparkles,
   Star,
-  MapPin,
-  Play,
 } from "lucide-react"
-import Link from "next/link"
-import { getVideoThumbnail, getYouTubeThumbnail } from "@/lib/cloudinary"
 import { ServiceOptionsDialog } from "./service-options-dialog"
 
 const services = [
@@ -156,57 +149,6 @@ const services = [
 
 export function ServicesSection() {
   const [selectedService, setSelectedService] = useState<string | null>(null)
-  const [featuredServices, setFeaturedServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchFeaturedServices()
-  }, [])
-
-  const fetchFeaturedServices = async () => {
-    try {
-      const db = await getFirebaseDb()
-      if (!db) return
-
-      // Fetch active services, limited to 6 for featured section
-      const servicesQuery = query(collection(db, "services"), where("status", "==", "active"), limit(6))
-
-      const snapshot = await getDocs(servicesQuery)
-      const fetchedServices = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Service[]
-
-      setFeaturedServices(fetchedServices)
-    } catch (error) {
-      console.error("Error fetching featured services:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getServiceThumbnail = (service: Service) => {
-    // Priority: images → video thumbnails → YouTube thumbnails → placeholder
-    if (service.images && service.images.length > 0) {
-      return service.images[0]
-    }
-
-    if (service.videos && service.videos.length > 0) {
-      const thumbnail = getVideoThumbnail(service.videos[0])
-      if (thumbnail) return thumbnail
-    }
-
-    if (service.youtubeLinks && service.youtubeLinks.length > 0) {
-      const thumbnail = getYouTubeThumbnail(service.youtubeLinks[0])
-      if (thumbnail) return thumbnail
-    }
-
-    return "/placeholder.svg?height=200&width=300"
-  }
-
-  const hasVideoContent = (service: Service) => {
-    return (service.videos && service.videos.length > 0) || (service.youtubeLinks && service.youtubeLinks.length > 0)
-  }
 
   const scrollToContact = () => {
     const contactSection = document.getElementById("contact")
@@ -320,88 +262,6 @@ export function ServicesSection() {
             )
           })}
         </div>
-
-        {/* Featured Services from Database */}
-        {featuredServices.length > 0 && (
-          <div className="mb-20">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold mb-4">Featured Services</h3>
-              <p className="text-muted-foreground">Real services from our community</p>
-            </div>
-
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="overflow-hidden">
-                    <div className="h-48 bg-muted animate-pulse" />
-                    <CardContent className="p-6">
-                      <div className="h-4 bg-muted rounded animate-pulse mb-2" />
-                      <div className="h-3 bg-muted rounded animate-pulse mb-4 w-2/3" />
-                      <div className="h-3 bg-muted rounded animate-pulse w-1/2" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featuredServices.map((service) => (
-                  <Link key={service.id} href={`/services/${service.serviceType}/${service.id}`}>
-                    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 group">
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={getServiceThumbnail(service) || "/placeholder.svg"}
-                          alt={service.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = "/placeholder.svg?height=200&width=300"
-                          }}
-                        />
-                        {hasVideoContent(service) && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <div className="bg-white/90 rounded-full p-3">
-                              <Play className="h-6 w-6 text-gray-800" />
-                            </div>
-                          </div>
-                        )}
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-primary text-primary-foreground">{service.serviceType}</Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-6">
-                        <h4 className="font-semibold text-lg mb-2 line-clamp-1 group-hover:text-primary transition-colors">
-                          {service.title}
-                        </h4>
-                        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{service.description}</p>
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="flex items-center text-muted-foreground">
-                            {service.location && (
-                              <>
-                                <MapPin className="h-3 w-3 mr-1" />
-                                <span className="truncate">{service.location}</span>
-                              </>
-                            )}
-                          </div>
-                          {service.rating && (
-                            <div className="flex items-center">
-                              <Star className="h-3 w-3 text-yellow-500 mr-1" />
-                              <span className="font-medium">{service.rating}</span>
-                            </div>
-                          )}
-                        </div>
-                        {service.price && (
-                          <div className="mt-3 pt-3 border-t">
-                            <span className="font-semibold text-primary">{service.price}</span>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Call to Action */}
         <div className="relative">
