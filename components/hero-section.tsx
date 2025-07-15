@@ -44,7 +44,7 @@ export function HeroSection() {
                     src="/logo.png"
                     alt="Allotmeal Afroc Ltd Logo"
                     fill
-                    className="object-cover rounded-full scale-90"
+                    className="object-cover rounded-full scale-75"
                     priority
                   />
                 </div>
