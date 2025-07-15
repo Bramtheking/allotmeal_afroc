@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 export function HeroSection() {
   const [mounted, setMounted] = useState(false)
@@ -32,12 +33,28 @@ export function HeroSection() {
             transition={{ duration: 0.5 }}
           >
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 leading-tight">
+              <motion.div
+                className="flex flex-col items-center gap-4 mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+              >
+                <div className="relative w-24 h-24 md:w-32 md:h-32">
+                  <Image
+                    src="/logo.png"
+                    alt="Allotmeal Afroc Ltd Logo"
+                    fill
+                    className="object-contain rounded-full"
+                    priority
+                  />
+                </div>
+              </motion.div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 leading-tight text-center">
                 <span className="bg-gradient-to-r from-yellow-500 via-yellow-400 to-blue-600 bg-clip-text text-transparent">
                   Allotmeal Afroc Ltd
                 </span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground">
+              <p className="text-xl md:text-2xl text-muted-foreground text-center">
                 Home of Africa&apos;s choice of heritage and opportunities
               </p>
             </motion.div>
