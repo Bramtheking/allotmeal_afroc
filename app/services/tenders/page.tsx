@@ -115,7 +115,8 @@ export default function TendersPage() {
   }, [searchTerm, filterIndustry, filterValue, tenders])
 
   const getTendersByType = (type: string) => {
-    return filteredTenders.filter((tender) => tender.tenderType?.toLowerCase() === type.toLowerCase())
+    // Since marketing dashboard doesn't save tenderType field, show all tenders
+    return filteredTenders
   }
 
   if (loading) {

@@ -71,7 +71,8 @@ export default function EntertainmentPage() {
   }, [])
 
   const getEntertainmentByType = (type: string) => {
-    return entertainment.filter((item) => item.category?.toLowerCase() === type.toLowerCase())
+    // Since marketing dashboard doesn't save category field, show all entertainment
+    return entertainment
   }
 
   if (loading) {

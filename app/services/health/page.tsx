@@ -30,36 +30,6 @@ import type { Service } from "@/lib/types"
 import { motion } from "framer-motion"
 import { Input } from "@/components/ui/input"
 
-// Mock data function
-const getMockHealth = (): Service[] => [
-  {
-    id: "1",
-    title: "Mock Campaign",
-    healthType: "campaign",
-    location: "Mock Location",
-    description: "Mock description for a campaign",
-    images: ["https://via.placeholder.com/150"],
-    status: "active",
-  },
-  {
-    id: "2",
-    title: "Mock Clinic",
-    healthType: "clinic",
-    location: "Mock Location",
-    description: "Mock description for a clinic",
-    images: ["https://via.placeholder.com/150"],
-    status: "active",
-  },
-  {
-    id: "3",
-    title: "Mock Program",
-    healthType: "program",
-    location: "Mock Location",
-    description: "Mock description for a program",
-    images: ["https://via.placeholder.com/150"],
-    status: "active",
-  },
-]
 
 export default function HealthPage() {
   const [health, setHealth] = useState<Service[]>([])
@@ -102,7 +72,8 @@ export default function HealthPage() {
   }, [])
 
   const getHealthByType = (type: string) => {
-    return health.filter((item) => item.healthType?.toLowerCase() === type.toLowerCase())
+    // Since marketing dashboard doesn't save healthType field, show all health services
+    return health
   }
 
   if (loading) {

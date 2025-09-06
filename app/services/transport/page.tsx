@@ -116,7 +116,8 @@ export default function TransportPage() {
   }, [transport, searchTerm, locationFilter, priceFilter])
 
   const getTransportByType = (type: string) => {
-    return filteredTransport.filter((item) => item.transportType?.toLowerCase() === type.toLowerCase())
+    // Since marketing dashboard doesn't save transportType field, show all transport
+    return filteredTransport
   }
 
   const clearFilters = () => {
