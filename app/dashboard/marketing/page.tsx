@@ -434,6 +434,12 @@ export default function MarketingDashboard() {
                           View
                         </Link>
                       </Button>
+                      <Button size="sm" variant="outline" asChild className="flex-1 bg-transparent">
+                        <Link href={`/dashboard/marketing/advertisements/edit/${advertisement.id}`}>
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Link>
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
