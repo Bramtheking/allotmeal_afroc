@@ -127,6 +127,13 @@ export default function CreateAdvertisement() {
         impressions: 0,
       } as Omit<Advertisement, "id">
 
+      // Remove any undefined fields to prevent Firestore errors
+      Object.keys(adData).forEach(key => {
+        if (adData[key as keyof typeof adData] === undefined) {
+          delete adData[key as keyof typeof adData]
+        }
+      })
+
       await addDoc(collection(db, "advertisements"), adData)
       toast.success("Advertisement created successfully!")
       router.push("/dashboard/marketing")
