@@ -55,9 +55,9 @@ export default function CreateAdvertisement() {
 
     setUploadingImages(true)
     try {
-      const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file))
+      const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file, "image"))
       const results = await Promise.all(uploadPromises)
-      const newImageUrls = results.map((result) => result.secure_url)
+      const newImageUrls = results
       setImages((prev) => [...prev, ...newImageUrls])
       toast.success(`${files.length} image(s) uploaded successfully`)
     } catch (error) {
@@ -80,7 +80,7 @@ export default function CreateAdvertisement() {
     try {
       const uploadPromises = Array.from(files).map((file) => uploadToCloudinary(file, "video"))
       const results = await Promise.all(uploadPromises)
-      const newVideoUrls = results.map((result) => result.secure_url)
+      const newVideoUrls = results
       setVideos((prev) => [...prev, ...newVideoUrls])
       toast.success(`${files.length} video(s) uploaded successfully`)
     } catch (error) {
@@ -115,22 +115,27 @@ export default function CreateAdvertisement() {
       const db = await getFirebaseDb()
       if (!db) throw new Error("Database not available")
 
-      const adData: Omit<Advertisement, "id"> = {
-        ...formData,
-        images,
-        videos,
-        youtubeLinks,
+      // Create clean data object with only defined values
+      const cleanFormData = Object.fromEntries(
+        Object.entries(formData).filter(([_, value]) => value !== undefined && value !== "")
+      )
+
+      const adData: any = {
+        ...cleanFormData,
+        images: images || [],
+        videos: videos || [],
+        youtubeLinks: youtubeLinks || [],
         createdBy: user.uid,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         clicks: 0,
         impressions: 0,
-      } as Omit<Advertisement, "id">
+      }
 
-      // Remove any undefined fields to prevent Firestore errors
+      // Remove any remaining undefined fields to prevent Firestore errors
       Object.keys(adData).forEach(key => {
-        if (adData[key as keyof typeof adData] === undefined) {
-          delete adData[key as keyof typeof adData]
+        if (adData[key] === undefined) {
+          delete adData[key]
         }
       })
 
@@ -422,7 +427,7 @@ export default function CreateAdvertisement() {
                     <div key={index} className="relative group">
                       <video
                         src={video || "/placeholder.svg"}
-                        alt={`Advertisement video ${index + 1}`}
+                        title={`Advertisement video ${index + 1}`}
                         className="w-full h-24 object-cover rounded-lg"
                         controls
                       />
