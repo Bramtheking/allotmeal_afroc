@@ -10,6 +10,8 @@ const nextConfig = {
     unoptimized: true,
     domains: ['res.cloudinary.com'],
   },
+  // Configure for Replit environment
+  // Allow all hosts for Replit proxy
   async rewrites() {
     return []
   },
@@ -21,6 +23,10 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOWALL',
           },
         ],
       },

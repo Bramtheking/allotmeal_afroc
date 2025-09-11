@@ -26,9 +26,13 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "./node_modules/.bin/next dev --hostname 0.0.0.0 --port 5000"
+args = "npm run dev -- --hostname 0.0.0.0 --port 5000"
 waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 36295
+externalPort = 3000
