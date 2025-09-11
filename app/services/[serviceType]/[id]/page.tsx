@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, MapPin, Phone, Mail, Globe, Star, Play, Share2 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
+import VisitorTracker from "@/components/visitor-tracker"
 
 export default function ServiceDetailPage() {
   const params = useParams()
@@ -117,6 +118,7 @@ export default function ServiceDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-yellow-950/30 dark:via-gray-950 dark:to-blue-950/30">
+      <VisitorTracker page={`/services/${params.serviceType}/${params.id}`} />
       <div className="container py-8">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" size="sm" onClick={() => router.back()}>

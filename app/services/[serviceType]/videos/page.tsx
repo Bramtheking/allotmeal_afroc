@@ -8,6 +8,7 @@ import { ArrowLeft, Play, ExternalLink, Calendar, User, Eye } from "lucide-react
 import Link from "next/link"
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
+import VisitorTracker from "@/components/visitor-tracker"
 
 interface Service {
   id: string
@@ -117,6 +118,7 @@ export default function ServiceVideosPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-950 dark:to-gray-900">
+      <VisitorTracker page={`/services/${serviceType}/videos`} />
       <div className="container py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
