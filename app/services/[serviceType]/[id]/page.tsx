@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, MapPin, Phone, Mail, Globe, Star, Play } from "lucide-react"
+import { ArrowLeft, MapPin, Phone, Mail, Globe, Star, Play, Share2 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -52,13 +52,45 @@ export default function ServiceDetailPage() {
     } else if (service?.email) {
       window.open(`mailto:${service.email}`, "_blank")
     } else {
-      toast.info("Contact information not available")
+      // Use default contact information as fallback
+      const defaultPhone = "+254741797609"
+      const defaultEmail = "allotmealafrockenya@gmail.com"
+      
+      // Create action selection
+      const usePhone = confirm("Contact us via phone or email?\nClick OK for Phone, Cancel for Email")
+      if (usePhone) {
+        window.open(`tel:${defaultPhone}`, "_blank")
+      } else {
+        window.open(`mailto:${defaultEmail}?subject=Inquiry about ${service?.title || 'Service'}&body=Hello, I would like to inquire about the ${service?.title || 'service'} listed on your website.`, "_blank")
+      }
     }
   }
 
   const getYouTubeEmbedUrl = (url: string) => {
     const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)
     return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : null
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: service?.title,
+          text: service?.description,
+          url: window.location.href,
+        })
+      } catch (error) {
+        console.log("Error sharing:", error)
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href)
+        toast.success("Link copied to clipboard!")
+      } catch (error) {
+        toast.error("Failed to copy link")
+      }
+    }
   }
 
   if (loading) {
@@ -337,7 +369,8 @@ export default function ServiceDetailPage() {
                   </Button>
                 )}
 
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={handleShare}>
+                  <Share2 className="h-4 w-4 mr-2" />
                   Share Service
                 </Button>
               </CardContent>

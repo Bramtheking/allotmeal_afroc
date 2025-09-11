@@ -1,0 +1,18 @@
+[
+  {
+    "id": "partner-1",
+    "name": "Partner Organization 1",
+    "role": "Technology Partner",
+    "image": "/partners/partner1.jpg",
+    "website": "https://example.com",
+    "description": "Leading technology solutions provider"
+  },
+  {
+    "id": "partner-2", 
+    "name": "Partner Organization 2",
+    "role": "Business Partner",
+    "image": "/partners/partner2.jpg",
+    "website": "https://example.com",
+    "description": "Strategic business development partner"
+  }
+]
