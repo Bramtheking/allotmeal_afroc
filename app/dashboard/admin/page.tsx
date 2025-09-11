@@ -20,6 +20,8 @@ import {
   Eye,
   TrendingUp,
   Calendar,
+  Mail,
+  Copy,
 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -50,6 +52,10 @@ export default function AdminDashboard() {
   const [recentUsers, setRecentUsers] = useState<User[]>([])
   const [recentServices, setRecentServices] = useState<Service[]>([])
   const [recentAds, setRecentAds] = useState<Advertisement[]>([])
+  const [newsletterStats, setNewsletterStats] = useState({
+    totalSubscribers: 0,
+    recentSubscribers: [] as Array<{email: string, subscribeDate: string}>
+  })
 
   useEffect(() => {
     if (!user || userRole !== "admin") {
@@ -64,10 +70,11 @@ export default function AdminDashboard() {
       const db = await getFirebaseDb()
       if (!db) return
 
-      const [usersSnapshot, servicesSnapshot, adsSnapshot] = await Promise.all([
+      const [usersSnapshot, servicesSnapshot, adsSnapshot, newsletterSnapshot] = await Promise.all([
         getDocs(collection(db, "users")),
         getDocs(collection(db, "services")),
         getDocs(collection(db, "advertisements")),
+        getDocs(collection(db, "newsletter_subscribers")),
       ])
 
       // Get manual visitor stats from localStorage
@@ -88,6 +95,15 @@ export default function AdminDashboard() {
         advertisements.push({ id: doc.id, ...doc.data() } as Advertisement)
       })
 
+      const newsletter: Array<{email: string, subscribeDate: string}> = []
+      newsletterSnapshot.forEach((doc) => {
+        const data = doc.data()
+        newsletter.push({ 
+          email: data.email, 
+          subscribeDate: data.subscribeDate 
+        })
+      })
+
       const newStats = {
         totalUsers: users.length,
         totalServices: services.length,
@@ -106,6 +122,10 @@ export default function AdminDashboard() {
       setRecentUsers(users.slice(0, 5))
       setRecentServices(services.slice(0, 5))
       setRecentAds(advertisements.slice(0, 5))
+      setNewsletterStats({
+        totalSubscribers: newsletter.length,
+        recentSubscribers: newsletter.sort((a, b) => new Date(b.subscribeDate).getTime() - new Date(a.subscribeDate).getTime()).slice(0, 5)
+      })
     } catch (error) {
       console.error("Error fetching dashboard data:", error)
       toast.error("Failed to fetch dashboard data")
@@ -189,7 +209,7 @@ export default function AdminDashboard() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -200,6 +220,17 @@ export default function AdminDashboard() {
                   <p className="text-xs text-muted-foreground">
                     {stats.regularUsers} regular, {stats.marketingUsers} marketing, {stats.adminUsers} admin
                   </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Newsletter Subscribers</CardTitle>
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{newsletterStats.totalSubscribers}</div>
+                  <p className="text-xs text-muted-foreground">Active email subscriptions</p>
                 </CardContent>
               </Card>
 
@@ -300,7 +331,7 @@ export default function AdminDashboard() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Recent Users</CardTitle>
@@ -376,6 +407,71 @@ export default function AdminDashboard() {
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {service.createdAt ? new Date(service.createdAt).toLocaleDateString() : "Unknown"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Newsletter Subscribers</span>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={async () => {
+                        const emails = newsletterStats.recentSubscribers.map(sub => sub.email).join(", ")
+                        try {
+                          await navigator.clipboard.writeText(emails)
+                          toast.success("Email addresses copied to clipboard!")
+                        } catch (error) {
+                          toast.error("Failed to copy emails")
+                        }
+                      }}
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy All
+                    </Button>
+                  </CardTitle>
+                  <CardDescription>Recent email subscriptions</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {newsletterStats.totalSubscribers === 0 ? (
+                    <p className="text-muted-foreground text-center py-4">No subscribers yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {newsletterStats.recentSubscribers.map((subscriber, index) => (
+                        <div key={index} className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                              <Mail className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm truncate">{subscriber.email}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={async () => {
+                                try {
+                                  await navigator.clipboard.writeText(subscriber.email)
+                                  toast.success("Email copied!")
+                                } catch (error) {
+                                  toast.error("Failed to copy email")
+                                }
+                              }}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                            <div className="text-xs text-muted-foreground">
+                              {new Date(subscriber.subscribeDate).toLocaleDateString()}
                             </div>
                           </div>
                         </div>
