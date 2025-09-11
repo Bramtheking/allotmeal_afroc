@@ -22,6 +22,7 @@ import { motion } from "framer-motion"
 const navigation = [
   { name: "Home", href: "/#home" },
   { name: "Services", href: "/#services" },
+  { name: "Blog", href: "/blog" },
   { name: "About", href: "/#about" },
   { name: "Contact", href: "/#contact" },
 ]
@@ -59,6 +60,9 @@ function Navbar() {
         // We're already on home page, just scroll
         scrollToElement(elementId)
       }
+    } else {
+      // Handle regular links
+      router.push(href)
     }
   }
 
@@ -89,8 +93,13 @@ function Navbar() {
   }
 
   const isActiveLink = (href: string) => {
-    // All anchor links are active when on home page
-    return pathname === "/"
+    if (href.startsWith("/#")) {
+      // Anchor links are active when on home page
+      return pathname === "/"
+    } else {
+      // Regular links are active when pathname matches
+      return pathname === href || pathname.startsWith(href + "/")
+    }
   }
 
   return (

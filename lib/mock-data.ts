@@ -1,4 +1,5 @@
 import type { Service } from "./types"
+import type { BlogPost, BlogCategory } from "./types/blog"
 
 // Mock data for different service types to use when Firebase is not available
 export const getMockJobs = (): Service[] => [
@@ -439,3 +440,149 @@ export const getMockDataForServiceType = (serviceType: string): Service[] => {
       return []
   }
 }
+
+// Mock blog data
+export const getMockBlogPosts = (): BlogPost[] => [
+  {
+    id: "blog-1",
+    title: "The Future of African Business: Embracing Digital Transformation",
+    slug: "future-of-african-business-digital-transformation",
+    content: `<h2>Digital transformation is reshaping African business</h2>
+    <p>Africa is experiencing unprecedented growth in digital adoption, with businesses across the continent embracing new technologies to drive innovation and growth. From mobile payments to cloud computing, African entrepreneurs are leading the charge in digital innovation.</p>
+    
+    <h3>Key Areas of Growth</h3>
+    <p>Several sectors are seeing remarkable transformation:</p>
+    <ul>
+      <li><strong>Fintech:</strong> Mobile money solutions have revolutionized financial services</li>
+      <li><strong>Agriculture:</strong> Smart farming technologies are increasing productivity</li>
+      <li><strong>Healthcare:</strong> Telemedicine is expanding access to quality care</li>
+      <li><strong>Education:</strong> Online learning platforms are democratizing education</li>
+    </ul>
+    
+    <h3>The AllotMeal Approach</h3>
+    <p>At AllotMeal Afroc Ltd, we're committed to supporting this digital transformation by connecting businesses with the resources and networks they need to thrive in the digital age.</p>
+    
+    <p>Our platform serves as a bridge between traditional African business practices and modern digital solutions, ensuring that growth is both sustainable and inclusive.</p>`,
+    excerpt: "Discover how digital transformation is reshaping African business and creating new opportunities for growth and innovation across the continent.",
+    featuredImage: "/api/placeholder/800/400",
+    categories: ["Business", "Technology"],
+    tags: ["digital-transformation", "africa", "business-growth", "innovation"],
+    author: "Sarah Kimani",
+    authorId: "admin-1",
+    status: "published",
+    publishedAt: new Date("2024-01-20T10:00:00Z"),
+    createdAt: new Date("2024-01-18T09:00:00Z"),
+    updatedAt: new Date("2024-01-20T10:00:00Z"),
+    views: 1250,
+    likes: 89
+  },
+  {
+    id: "blog-2", 
+    title: "Sustainable Tourism in Kenya: Preserving Heritage While Creating Opportunities",
+    slug: "sustainable-tourism-kenya-heritage-opportunities",
+    content: `<h2>Kenya's tourism industry is evolving</h2>
+    <p>As one of Africa's premier tourist destinations, Kenya is pioneering sustainable tourism practices that preserve our rich cultural heritage while creating meaningful economic opportunities for local communities.</p>
+    
+    <h3>Community-Based Tourism</h3>
+    <p>Local communities are at the heart of Kenya's sustainable tourism initiatives. By involving indigenous communities in tourism planning and operations, we ensure that the benefits of tourism reach those who need them most.</p>
+    
+    <h3>Wildlife Conservation</h3>
+    <p>Sustainable tourism plays a crucial role in wildlife conservation. Tourism revenue directly supports conservation efforts, creating a virtuous cycle where protecting wildlife becomes economically beneficial.</p>
+    
+    <h3>Cultural Preservation</h3>
+    <p>Tourism can be a powerful tool for cultural preservation. By showcasing traditional crafts, music, and customs to visitors, communities have economic incentives to maintain their cultural heritage.</p>`,
+    excerpt: "Explore how Kenya is leading the way in sustainable tourism, balancing conservation with economic development and cultural preservation.",
+    featuredImage: "/api/placeholder/800/400",
+    categories: ["Tourism", "Sustainability"],
+    tags: ["kenya", "tourism", "sustainability", "conservation", "culture"],
+    author: "James Mwangi",
+    authorId: "admin-2",
+    status: "published",
+    publishedAt: new Date("2024-01-15T08:30:00Z"),
+    createdAt: new Date("2024-01-12T14:00:00Z"),
+    updatedAt: new Date("2024-01-15T08:30:00Z"),
+    views: 892,
+    likes: 67
+  },
+  {
+    id: "blog-3",
+    title: "Empowering SMEs: How Technology is Leveling the Playing Field",
+    slug: "empowering-smes-technology-leveling-playing-field",
+    content: `<h2>Small businesses, big opportunities</h2>
+    <p>Small and Medium Enterprises (SMEs) form the backbone of African economies, yet they often face significant challenges in accessing markets, finance, and technology. Today's digital revolution is changing that narrative.</p>
+    
+    <h3>Access to Global Markets</h3>
+    <p>E-commerce platforms and digital marketing tools have opened up global markets to even the smallest businesses. African SMEs can now sell their products and services to customers worldwide.</p>
+    
+    <h3>Digital Payment Solutions</h3>
+    <p>Mobile money and digital payment platforms have made it easier for SMEs to accept payments, manage cash flow, and build customer trust through secure transactions.</p>
+    
+    <h3>Cloud-Based Tools</h3>
+    <p>Cloud computing has democratized access to business tools that were once only available to large corporations. From accounting software to customer relationship management systems, SMEs now have access to enterprise-grade solutions at affordable prices.</p>`,
+    excerpt: "Learn how technology is empowering small and medium enterprises across Africa, creating new opportunities for growth and success.",
+    featuredImage: "/api/placeholder/800/400",
+    categories: ["Business", "SME"],
+    tags: ["sme", "technology", "entrepreneurship", "digital-tools", "africa"],
+    author: "Grace Wanjiku",
+    authorId: "admin-3",
+    status: "published",
+    publishedAt: new Date("2024-01-10T12:00:00Z"),
+    createdAt: new Date("2024-01-08T10:30:00Z"),
+    updatedAt: new Date("2024-01-10T12:00:00Z"),
+    views: 1456,
+    likes: 124
+  }
+]
+
+export const getMockBlogCategories = (): BlogCategory[] => [
+  {
+    id: "category-1",
+    name: "Business",
+    slug: "business",
+    description: "Insights and strategies for business growth and development",
+    color: "#3B82F6",
+    postCount: 2,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-20T00:00:00Z")
+  },
+  {
+    id: "category-2",
+    name: "Technology",
+    slug: "technology", 
+    description: "Latest trends and innovations in technology",
+    color: "#8B5CF6",
+    postCount: 2,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-20T00:00:00Z")
+  },
+  {
+    id: "category-3",
+    name: "Tourism",
+    slug: "tourism",
+    description: "Travel, culture, and tourism industry insights",
+    color: "#10B981",
+    postCount: 1,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-15T00:00:00Z")
+  },
+  {
+    id: "category-4",
+    name: "SME",
+    slug: "sme",
+    description: "Resources and insights for small and medium enterprises",
+    color: "#F59E0B",
+    postCount: 1,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-10T00:00:00Z")
+  },
+  {
+    id: "category-5",
+    name: "Sustainability",
+    slug: "sustainability",
+    description: "Environmental and social responsibility in business",
+    color: "#059669",
+    postCount: 1,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-15T00:00:00Z")
+  }
+]
