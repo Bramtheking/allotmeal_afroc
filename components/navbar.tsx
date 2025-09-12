@@ -103,8 +103,8 @@ function Navbar() {
   }
 
   const getNavLinkColor = (href: string) => {
-    // Always show navigation links with primary color styling
-    return "text-foreground hover:text-primary"
+    // Always show navigation links with blue primary color styling
+    return "text-primary hover:text-primary/80"
   }
 
   return (
