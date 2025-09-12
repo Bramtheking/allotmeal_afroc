@@ -102,6 +102,11 @@ function Navbar() {
     }
   }
 
+  const getNavLinkColor = (href: string) => {
+    // Always show navigation links with primary color styling
+    return "text-foreground hover:text-primary"
+  }
+
   return (
     <motion.nav
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
@@ -148,9 +153,7 @@ function Navbar() {
             <button
               key={item.name}
               onClick={() => handleNavClick(item.href)}
-              className={`text-sm font-medium transition-colors hover:text-primary relative ${
-                isActiveLink(item.href) ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors relative ${getNavLinkColor(item.href)}`}
             >
               {item.name}
               {isActiveLink(item.href) && (
@@ -267,8 +270,8 @@ function Navbar() {
                     <button
                       key={item.name}
                       onClick={() => handleNavClick(item.href)}
-                      className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 rounded text-left w-full ${
-                        isActiveLink(item.href) ? "text-primary bg-primary/10" : "text-muted-foreground"
+                      className={`text-sm font-medium transition-colors px-2 py-1 rounded text-left w-full ${getNavLinkColor(item.href)} ${
+                        isActiveLink(item.href) ? "bg-primary/10" : ""
                       }`}
                     >
                       {item.name}
