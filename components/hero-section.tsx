@@ -1,12 +1,28 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import Image from "next/image"
 
-export function HeroSection() {
+interface HeroSectionProps {
+  onHeroReady?: () => void
+}
+
+export function HeroSection({ onHeroReady }: HeroSectionProps) {
+  const [isHeroLoaded, setIsHeroLoaded] = useState(false)
+
+  useEffect(() => {
+    // Wait for hero content to fully render (after all animations complete)
+    const timer = setTimeout(() => {
+      setIsHeroLoaded(true)
+      onHeroReady?.()
+    }, 1000) // Wait 1 second for animations to complete
+
+    return () => clearTimeout(timer)
+  }, [onHeroReady])
 
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
