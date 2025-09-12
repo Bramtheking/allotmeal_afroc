@@ -19,7 +19,7 @@ export function HeroSection({ onHeroReady }: HeroSectionProps) {
     const timer = setTimeout(() => {
       setIsHeroLoaded(true)
       onHeroReady?.()
-    }, 1000) // Wait 1 second for animations to complete
+    }, 300) // Much faster - just wait for initial animations
 
     return () => clearTimeout(timer)
   }, [onHeroReady])
