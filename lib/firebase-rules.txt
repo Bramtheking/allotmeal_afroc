@@ -29,5 +29,18 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
     }
+    
+    match /newsletter_subscribers/{docId} {
+      // Only admins/marketing can read in dashboards
+      allow read: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin','marketing'];
+      // Allow public signups (unauth) but only create with strict schema
+      allow create: if request.resource.data.keys().hasOnly(['email','subscribeDate','status']) &&
+        request.resource.data.email is string &&
+        request.resource.data.subscribeDate is string &&
+        request.resource.data.status in ['active','unsubscribed'];
+      allow update, delete: if false;
+    }
   }
 }
