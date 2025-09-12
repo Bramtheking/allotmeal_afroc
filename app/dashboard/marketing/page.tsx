@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Edit, Trash2, Eye, Play, MapPin, Calendar, DollarSign, Users, TrendingUp, Star } from "lucide-react"
+import { Plus, Edit, Trash2, Eye, Play, MapPin, Calendar, DollarSign, Users, TrendingUp, Star, BookOpen, FileText } from "lucide-react"
 import Link from "next/link"
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"
 import { getFirebaseDb } from "@/lib/firebase"
 import { useAuth } from "@/lib/auth-context"
 import type { Service, Advertisement } from "@/lib/types"
+import type { BlogPost, BlogCategory } from "@/lib/types/blog"
 import { toast } from "sonner"
 import { getVideoThumbnail, getYouTubeThumbnail } from "@/lib/cloudinary"
 
@@ -18,6 +19,8 @@ export default function MarketingDashboard() {
   const { user } = useAuth()
   const [services, setServices] = useState<Service[]>([])
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([])
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  const [blogCategories, setBlogCategories] = useState<BlogCategory[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -62,6 +65,26 @@ export default function MarketingDashboard() {
 
       console.log("Advertisements fetched:", advertisementsData.length)
       setAdvertisements(advertisementsData)
+
+      // Fetch blog posts
+      const blogPostsSnapshot = await getDocs(collection(db, "blog_posts"))
+      const blogPostsData = blogPostsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as BlogPost[]
+
+      console.log("Blog posts fetched:", blogPostsData.length)
+      setBlogPosts(blogPostsData)
+
+      // Fetch blog categories
+      const blogCategoriesSnapshot = await getDocs(collection(db, "blog_categories"))
+      const blogCategoriesData = blogCategoriesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as BlogCategory[]
+
+      console.log("Blog categories fetched:", blogCategoriesData.length)
+      setBlogCategories(blogCategoriesData)
     } catch (error) {
       console.error("Error fetching data:", error)
       toast.error("Failed to fetch data")
@@ -99,6 +122,22 @@ export default function MarketingDashboard() {
     } catch (error) {
       console.error("Error deleting advertisement:", error)
       toast.error("Failed to delete advertisement")
+    }
+  }
+
+  const handleDeleteBlogPost = async (blogId: string) => {
+    if (!confirm("Are you sure you want to delete this blog post?")) return
+
+    try {
+      const db = await getFirebaseDb()
+      if (!db) return
+
+      await deleteDoc(doc(db, "blog_posts", blogId))
+      setBlogPosts(blogPosts.filter((post) => post.id !== blogId))
+      toast.success("Blog post deleted successfully")
+    } catch (error) {
+      console.error("Error deleting blog post:", error)
+      toast.error("Failed to delete blog post")
     }
   }
 
@@ -206,6 +245,12 @@ export default function MarketingDashboard() {
               Add Advertisement
             </Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href="/dashboard/marketing/blog/create">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Blog Post
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -259,6 +304,7 @@ export default function MarketingDashboard() {
         <TabsList>
           <TabsTrigger value="services">Services ({services.length})</TabsTrigger>
           <TabsTrigger value="advertisements">Advertisements ({advertisements.length})</TabsTrigger>
+          <TabsTrigger value="blog">Blog Posts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="services" className="space-y-6">
@@ -452,6 +498,124 @@ export default function MarketingDashboard() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="blog" className="space-y-6">
+          {blogPosts.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <div className="text-center">
+                  <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No blog posts yet</h3>
+                  <p className="text-muted-foreground mb-4">Create your first blog post to get started</p>
+                  <Button asChild>
+                    <Link href="/dashboard/marketing/blog/create">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Blog Post
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  <Button asChild>
+                    <Link href="/dashboard/marketing/blog/create">
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Post
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href="/dashboard/marketing/blog/categories">
+                      <FileText className="mr-2 h-4 w-4" />
+                      Manage Categories
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {blogPosts.map((post) => (
+                  <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="relative h-48 overflow-hidden">
+                      {post.featuredImage ? (
+                        <img
+                          src={post.featuredImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "/placeholder.svg?height=200&width=300"
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <BookOpen className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="absolute top-4 left-4">
+                        <Badge variant={post.status === "published" ? "default" : post.status === "draft" ? "secondary" : "destructive"}>
+                          {post.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardHeader>
+                      <CardTitle className="line-clamp-2">{post.title}</CardTitle>
+                      <CardDescription className="line-clamp-2">{post.excerpt}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex flex-wrap gap-1">
+                        {post.categories?.slice(0, 3).map((category) => (
+                          <Badge key={category} variant="outline" className="text-xs">
+                            {category}
+                          </Badge>
+                        ))}
+                        {post.categories && post.categories.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{post.categories.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "N/A"}
+                        </div>
+                        <div className="flex items-center">
+                          <Eye className="h-4 w-4 mr-1" />
+                          {post.views || 0} views
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" asChild className="flex-1 bg-transparent">
+                          <Link href={`/blog/${post.slug}`}>
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Link>
+                        </Button>
+                        <Button size="sm" variant="outline" asChild className="flex-1 bg-transparent">
+                          <Link href={`/dashboard/marketing/blog/edit/${post.id}`}>
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Link>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDeleteBlogPost(post.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
         </TabsContent>

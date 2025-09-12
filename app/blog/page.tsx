@@ -14,7 +14,6 @@ import { getFirebaseDb } from "@/lib/firebase"
 import type { BlogPost, BlogCategory } from "@/lib/types/blog"
 import { formatDistanceToNow } from "date-fns"
 import VisitorTracker from "@/components/visitor-tracker"
-import { getMockBlogPosts, getMockBlogCategories } from "@/lib/mock-data"
 
 const POSTS_PER_PAGE = 9
 
@@ -36,10 +35,10 @@ export default function BlogPage() {
     try {
       const db = await getFirebaseDb()
       if (!db) {
-        // Use mock data when Firebase is not available
-        console.log("Using mock data for blog")
-        setPosts(getMockBlogPosts())
-        setCategories(getMockBlogCategories())
+        // Firebase not available - show empty state
+        console.log("Firebase not available - no blog posts to display")
+        setPosts([])
+        setCategories([])
         setLoading(false)
         return
       }
@@ -92,9 +91,9 @@ export default function BlogPage() {
 
     } catch (error) {
       console.error("Error fetching blog data:", error)
-      // Fallback to mock data
-      setPosts(getMockBlogPosts())
-      setCategories(getMockBlogCategories())
+      // Show empty state on error
+      setPosts([])
+      setCategories([])
     } finally {
       setLoading(false)
     }
@@ -237,7 +236,12 @@ export default function BlogPage() {
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No blog posts found</h3>
             <p className="text-muted-foreground">
-              {searchTerm ? "Try adjusting your search terms" : "Check back later for new content"}
+              {searchTerm 
+                ? "Try adjusting your search terms" 
+                : posts.length === 0 && categories.length === 0 
+                ? "No blog posts available. Contact administrators to add content."
+                : "Check back later for new content"
+              }
             </p>
           </motion.div>
         ) : (
