@@ -12,6 +12,7 @@ import { useInView } from "react-intersection-observer"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
+import { NewsletterSignup } from "./newsletter-signup"
 
 export function ContactSection() {
   const { ref, inView } = useInView({
@@ -90,9 +91,14 @@ export function ContactSection() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-6">Contact Us</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12">
             Get in touch with our team for more information about our services and how we can help you.
           </p>
+          
+          {/* Newsletter Signup */}
+          <div className="max-w-md mx-auto mb-8">
+            <NewsletterSignup />
+          </div>
         </motion.div>
 
         <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 gap-12">

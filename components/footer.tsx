@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react"
-import { NewsletterSignup } from "./newsletter-signup"
 
 export function Footer() {
   return (
@@ -153,10 +152,6 @@ export function Footer() {
               </li>
             </ul>
           </div>
-        </div>
-
-        <div className="mt-12">
-          <NewsletterSignup />
         </div>
 
         <div className="border-t mt-12 pt-8 text-center text-muted-foreground">

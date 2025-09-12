@@ -67,8 +67,15 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
+      // Load manual visitor stats first (works regardless of Firebase)
+      const manualStats = getManualVisitorStats()
+      setVisitorStats(manualStats)
+      
       const db = await getFirebaseDb()
-      if (!db) return
+      if (!db) {
+        setLoading(false)
+        return
+      }
 
       const [usersSnapshot, servicesSnapshot, adsSnapshot, newsletterSnapshot] = await Promise.all([
         getDocs(collection(db, "users")),
