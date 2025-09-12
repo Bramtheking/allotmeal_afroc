@@ -73,6 +73,8 @@ export default function AdminDashboard() {
       
       const db = await getFirebaseDb()
       if (!db) {
+        // Show a message that Firebase is not configured, but keep visitor stats
+        console.log("[Admin Dashboard] Firebase not configured - showing visitor stats only")
         setLoading(false)
         return
       }
@@ -216,7 +218,7 @@ export default function AdminDashboard() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -225,7 +227,10 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.totalUsers}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.regularUsers} regular, {stats.marketingUsers} marketing, {stats.adminUsers} admin
+                    {stats.totalUsers === 0 && !loading ? 
+                      "Firebase not configured" : 
+                      `${stats.regularUsers} regular, ${stats.marketingUsers} marketing, ${stats.adminUsers} admin`
+                    }
                   </p>
                 </CardContent>
               </Card>
@@ -237,29 +242,12 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{newsletterStats.totalSubscribers}</div>
-                  <p className="text-xs text-muted-foreground">Active email subscriptions</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Services</CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalServices}</div>
-                  <p className="text-xs text-muted-foreground">{stats.activeServices} active</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Advertisements</CardTitle>
-                  <Megaphone className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalAdvertisements}</div>
-                  <p className="text-xs text-muted-foreground">{stats.activeAdvertisements} active</p>
+                  <p className="text-xs text-muted-foreground">
+                    {newsletterStats.totalSubscribers === 0 && !loading ?
+                      "Firebase not configured" :
+                      "Active email subscriptions"
+                    }
+                  </p>
                 </CardContent>
               </Card>
 

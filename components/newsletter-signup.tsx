@@ -31,7 +31,19 @@ export function NewsletterSignup() {
     try {
       const db = await getFirebaseDb()
       if (!db) {
-        throw new Error("Database not available")
+        // Development mode fallback - store in localStorage
+        const mockSubscribers = JSON.parse(localStorage.getItem("newsletter_subscribers_dev") || "[]")
+        const subscription = {
+          email: email.trim().toLowerCase(),
+          subscribeDate: new Date().toISOString(),
+          status: "active"
+        }
+        mockSubscribers.push(subscription)
+        localStorage.setItem("newsletter_subscribers_dev", JSON.stringify(mockSubscribers))
+        
+        toast.success("Successfully subscribed! (dev mode - not saved to Firebase)")
+        setEmail("")
+        return
       }
 
       await addDoc(collection(db, "newsletter_subscribers"), {
