@@ -49,6 +49,7 @@ export default function AdminDashboard() {
     uniqueVisitorsOnly: true,
   })
   const [loading, setLoading] = useState(true)
+  const [firebaseAvailable, setFirebaseAvailable] = useState(true)
   const [recentUsers, setRecentUsers] = useState<User[]>([])
   const [recentServices, setRecentServices] = useState<Service[]>([])
   const [recentAds, setRecentAds] = useState<Advertisement[]>([])
@@ -75,9 +76,12 @@ export default function AdminDashboard() {
       if (!db) {
         // Show a message that Firebase is not configured, but keep visitor stats
         console.log("[Admin Dashboard] Firebase not configured - showing visitor stats only")
+        setFirebaseAvailable(false)
         setLoading(false)
         return
       }
+
+      setFirebaseAvailable(true)
 
       const [usersSnapshot, servicesSnapshot, adsSnapshot, newsletterSnapshot] = await Promise.all([
         getDocs(collection(db, "users")),
@@ -227,7 +231,7 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.totalUsers}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.totalUsers === 0 && !loading ? 
+                    {!firebaseAvailable ? 
                       "Firebase not configured" : 
                       `${stats.regularUsers} regular, ${stats.marketingUsers} marketing, ${stats.adminUsers} admin`
                     }
@@ -243,7 +247,7 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">{newsletterStats.totalSubscribers}</div>
                   <p className="text-xs text-muted-foreground">
-                    {newsletterStats.totalSubscribers === 0 && !loading ?
+                    {!firebaseAvailable ?
                       "Firebase not configured" :
                       "Active email subscriptions"
                     }
