@@ -4,7 +4,6 @@
 
 [dev]
   command = "npm run dev"
-  port = 3000
   targetPort = 3000
 
 [[plugins]]

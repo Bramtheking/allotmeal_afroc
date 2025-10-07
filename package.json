@@ -63,7 +63,7 @@
     "react-dom": "^18",
     "react-hook-form": "latest",
     "react-intersection-observer": "latest",
-    "react-quill": "^0.0.2",
+    "react-quill": "^2.0.0",
     "react-resizable-panels": "latest",
     "recharts": "latest",
     "sonner": "latest",
