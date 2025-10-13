@@ -78,12 +78,13 @@ export function MpesaPaymentDialog({
       let settings = null
       let pricing = null
       let retryCount = 0
-      const maxRetries = 3
+      const maxRetries = 5 // Increased for mobile
       
       while (retryCount < maxRetries && (!settings || !pricing)) {
         if (retryCount > 0) {
           console.log(`Retrying to fetch pricing data (attempt ${retryCount + 1}/${maxRetries})...`)
-          await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1 second between retries
+          // Progressive delay: 1s, 2s, 3s, 4s
+          await new Promise(resolve => setTimeout(resolve, retryCount * 1000))
         }
         
         const results = await Promise.all([
@@ -95,8 +96,10 @@ export function MpesaPaymentDialog({
         pricing = results[1]
         
         if (settings && pricing) {
-          console.log("Successfully fetched pricing data")
+          console.log("Successfully fetched pricing data", { serviceType, pricing })
           break
+        } else {
+          console.log(`Retry ${retryCount + 1}: settings=${!!settings}, pricing=${!!pricing}`)
         }
         
         retryCount++
@@ -348,8 +351,11 @@ export function MpesaPaymentDialog({
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md">
-          <div className="flex items-center justify-center py-8">
+          <div className="flex flex-col items-center justify-center py-8 gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground text-center">
+              Loading payment settings...
+            </p>
           </div>
         </DialogContent>
       </Dialog>

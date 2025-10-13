@@ -56,22 +56,28 @@ export interface MpesaTransaction {
 
 export async function getMpesaSettings(): Promise<MpesaSettings | null> {
   try {
+    console.log("[getMpesaSettings] Fetching M-Pesa settings")
+    
     // Use async wait to ensure Firebase is initialized (helps with mobile)
     const { waitForFirebaseDb } = await import("./firebase")
     const db = await waitForFirebaseDb()
     if (!db) {
-      console.error("Firebase DB not available for settings fetch")
+      console.error("[getMpesaSettings] Firebase DB not available for settings fetch")
       return null
     }
 
+    console.log("[getMpesaSettings] Firebase DB ready, fetching settings")
     const settingsDoc = await getDoc(doc(db, "mpesa_settings", "global"))
     if (settingsDoc.exists()) {
-      return settingsDoc.data() as MpesaSettings
+      const data = settingsDoc.data() as MpesaSettings
+      console.log("[getMpesaSettings] Found settings:", data)
+      return data
     }
     
+    console.log("[getMpesaSettings] No settings document found, using defaults")
     return { isPaused: false, updatedAt: new Date().toISOString(), updatedBy: "system" }
   } catch (error) {
-    console.error("Error getting M-Pesa settings:", error)
+    console.error("[getMpesaSettings] Error getting M-Pesa settings:", error)
     return null
   }
 }
@@ -94,22 +100,29 @@ export async function updateMpesaSettings(settings: Partial<MpesaSettings>, user
 
 export async function getServicePricing(serviceType: string): Promise<MpesaServicePricing | null> {
   try {
+    console.log(`[getServicePricing] Fetching pricing for service type: ${serviceType}`)
+    
     // Use async wait to ensure Firebase is initialized (helps with mobile)
     const { waitForFirebaseDb } = await import("@/lib/firebase")
     const db = await waitForFirebaseDb()
     if (!db) {
-      console.error("Firebase DB not available for pricing fetch")
+      console.error("[getServicePricing] Firebase DB not available for pricing fetch")
       return null
     }
 
+    console.log(`[getServicePricing] Firebase DB ready, fetching document: mpesa_service_pricing/${serviceType}`)
     const pricingDoc = await getDoc(doc(db, "mpesa_service_pricing", serviceType))
+    
     if (pricingDoc.exists()) {
-      return pricingDoc.data() as MpesaServicePricing
+      const data = pricingDoc.data() as MpesaServicePricing
+      console.log(`[getServicePricing] Found pricing:`, data)
+      return data
     }
     
+    console.warn(`[getServicePricing] No pricing document found for service type: ${serviceType}`)
     return null
   } catch (error) {
-    console.error("Error getting service pricing:", error)
+    console.error("[getServicePricing] Error getting service pricing:", error)
     return null
   }
 }

@@ -32,12 +32,22 @@ const isFirebaseConfigValid = () => {
 try {
   if (!isFirebaseConfigValid()) {
     console.warn("Firebase configuration incomplete - using mock data fallback")
+    console.warn("Config check:", {
+      hasApiKey: !!firebaseConfig.apiKey,
+      hasAuthDomain: !!firebaseConfig.authDomain,
+      hasProjectId: !!firebaseConfig.projectId,
+      hasStorageBucket: !!firebaseConfig.storageBucket,
+      hasMessagingSenderId: !!firebaseConfig.messagingSenderId,
+      hasAppId: !!firebaseConfig.appId,
+    })
     throw new Error("Firebase configuration incomplete")
   }
 
   if (getApps().length === 0) {
+    console.log("Initializing Firebase app...")
     app = initializeApp(firebaseConfig)
   } else {
+    console.log("Using existing Firebase app")
     app = getApps()[0]
   }
 
@@ -45,9 +55,10 @@ try {
   auth = getAuth(app)
   storage = getStorage(app)
 
-  console.log("Firebase initialized successfully")
+  console.log("Firebase initialized successfully", { projectId: firebaseConfig.projectId })
 } catch (error) {
   console.error("Firebase initialization error:", error)
+  console.error("Error details:", error instanceof Error ? error.message : "Unknown error")
   // Set all Firebase services to null to ensure fallback to mock data
   db = null
   auth = null
@@ -71,7 +82,7 @@ export const getFirebaseDb = () => {
 }
 
 // Async version that waits for Firebase to be ready (useful for mobile)
-export const waitForFirebaseDb = async (maxWaitMs = 5000): Promise<Firestore | null> => {
+export const waitForFirebaseDb = async (maxWaitMs = 10000): Promise<Firestore | null> => {
   if (typeof window === "undefined") {
     return null
   }
@@ -83,7 +94,14 @@ export const waitForFirebaseDb = async (maxWaitMs = 5000): Promise<Firestore | n
 
   // Wait for Firebase to initialize (useful on slower mobile connections)
   const startTime = Date.now()
+  let lastLogTime = 0
   while (!db && Date.now() - startTime < maxWaitMs) {
+    // Log progress every 2 seconds
+    if (Date.now() - lastLogTime > 2000) {
+      console.log(`Waiting for Firebase initialization... ${Math.floor((Date.now() - startTime) / 1000)}s`)
+      lastLogTime = Date.now()
+    }
+    
     await new Promise(resolve => setTimeout(resolve, 100))
     
     // Try to re-initialize if needed
