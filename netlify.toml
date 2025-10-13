@@ -13,7 +13,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Scheduled function to auto-expire advertisements
-[[functions]]
-  name = "expire-advertisements"
+# Scheduled function configuration
+[functions."expire-advertisements"]
   schedule = "0 * * * *"  # Run every hour
