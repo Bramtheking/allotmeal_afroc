@@ -74,12 +74,37 @@ export function MpesaPaymentDialog({
         }
       }
 
-      const [settings, pricing] = await Promise.all([
-        getMpesaSettings(),
-        getServicePricing(serviceType)
-      ])
+      // Add retry logic for mobile devices - Firebase might be slower to initialize
+      let settings = null
+      let pricing = null
+      let retryCount = 0
+      const maxRetries = 3
+      
+      while (retryCount < maxRetries && (!settings || !pricing)) {
+        if (retryCount > 0) {
+          console.log(`Retrying to fetch pricing data (attempt ${retryCount + 1}/${maxRetries})...`)
+          await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1 second between retries
+        }
+        
+        const results = await Promise.all([
+          getMpesaSettings(),
+          getServicePricing(serviceType)
+        ])
+        
+        settings = results[0]
+        pricing = results[1]
+        
+        if (settings && pricing) {
+          console.log("Successfully fetched pricing data")
+          break
+        }
+        
+        retryCount++
+      }
 
+      // Only bypass payment if we're certain payment is not required
       if (settings?.isPaused) {
+        console.log("Payment is paused by admin")
         setLoading(false)
         setTimeout(() => {
           toast.success("Payment requirement is currently paused")
@@ -89,18 +114,19 @@ export function MpesaPaymentDialog({
         return
       }
 
+      // If pricing is still null after retries, show error instead of bypassing
       if (!pricing) {
+        console.error("Failed to load pricing after retries. Service type:", serviceType)
         setLoading(false)
-        setTimeout(() => {
-          toast.success("No payment required for this service")
-          onSuccess()
-          onClose()
-        }, 0)
+        setErrorMessage(`Failed to load payment settings. Please ensure pricing is configured for service type: ${serviceType}. Contact support if this persists.`)
         return
       }
 
       const requiredAmount = actionType === "Continue" ? pricing.continueAmount : pricing.videosAmount
+      
+      // Only bypass payment if amount is explicitly set to 0
       if (requiredAmount === 0) {
+        console.log(`Payment not required - amount is set to 0 for ${actionType}`)
         setLoading(false)
         setTimeout(() => {
           toast.success("No payment required")
@@ -110,10 +136,11 @@ export function MpesaPaymentDialog({
         return
       }
 
+      console.log(`Payment required: KSh ${requiredAmount}`)
       setAmount(requiredAmount)
     } catch (error) {
       console.error("Error checking whitelist/pricing:", error)
-      setErrorMessage("Failed to load payment settings")
+      setErrorMessage("Failed to load payment settings. Please check your internet connection and try again.")
     } finally {
       setLoading(false)
     }

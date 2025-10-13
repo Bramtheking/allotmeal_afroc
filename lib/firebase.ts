@@ -1,7 +1,7 @@
-import { initializeApp, getApps } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
-import { getAuth } from "firebase/auth"
-import { getStorage } from "firebase/storage"
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
+import { getFirestore, type Firestore } from "firebase/firestore"
+import { getAuth, type Auth } from "firebase/auth"
+import { getStorage, type FirebaseStorage } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,10 +13,10 @@ const firebaseConfig = {
 }
 
 // Initialize Firebase
-let app
-let db
-let auth
-let storage
+let app: FirebaseApp | undefined
+let db: Firestore | null = null
+let auth: Auth | null = null
+let storage: FirebaseStorage | null = null
 
 const isFirebaseConfigValid = () => {
   return (
@@ -65,6 +65,43 @@ export const getFirebaseDb = () => {
   if (!db) {
     console.log("Firebase database not available - check environment variables or using mock data fallback")
     return null
+  }
+
+  return db
+}
+
+// Async version that waits for Firebase to be ready (useful for mobile)
+export const waitForFirebaseDb = async (maxWaitMs = 5000): Promise<Firestore | null> => {
+  if (typeof window === "undefined") {
+    return null
+  }
+
+  // If already initialized, return immediately
+  if (db) {
+    return db
+  }
+
+  // Wait for Firebase to initialize (useful on slower mobile connections)
+  const startTime = Date.now()
+  while (!db && Date.now() - startTime < maxWaitMs) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // Try to re-initialize if needed
+    if (!db && getApps().length === 0 && isFirebaseConfigValid()) {
+      try {
+        const app = initializeApp(firebaseConfig)
+        db = getFirestore(app)
+        auth = getAuth(app)
+        storage = getStorage(app)
+        console.log("Firebase initialized (delayed)")
+      } catch (error) {
+        console.error("Firebase delayed initialization error:", error)
+      }
+    }
+  }
+
+  if (!db) {
+    console.warn("Firebase database not available after waiting")
   }
 
   return db

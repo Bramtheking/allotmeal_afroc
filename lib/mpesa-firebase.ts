@@ -56,8 +56,13 @@ export interface MpesaTransaction {
 
 export async function getMpesaSettings(): Promise<MpesaSettings | null> {
   try {
-    const db = getFirebaseDb()
-    if (!db) return null
+    // Use async wait to ensure Firebase is initialized (helps with mobile)
+    const { waitForFirebaseDb } = await import("./firebase")
+    const db = await waitForFirebaseDb()
+    if (!db) {
+      console.error("Firebase DB not available for settings fetch")
+      return null
+    }
 
     const settingsDoc = await getDoc(doc(db, "mpesa_settings", "global"))
     if (settingsDoc.exists()) {
@@ -89,8 +94,13 @@ export async function updateMpesaSettings(settings: Partial<MpesaSettings>, user
 
 export async function getServicePricing(serviceType: string): Promise<MpesaServicePricing | null> {
   try {
-    const db = getFirebaseDb()
-    if (!db) return null
+    // Use async wait to ensure Firebase is initialized (helps with mobile)
+    const { waitForFirebaseDb } = await import("@/lib/firebase")
+    const db = await waitForFirebaseDb()
+    if (!db) {
+      console.error("Firebase DB not available for pricing fetch")
+      return null
+    }
 
     const pricingDoc = await getDoc(doc(db, "mpesa_service_pricing", serviceType))
     if (pricingDoc.exists()) {
