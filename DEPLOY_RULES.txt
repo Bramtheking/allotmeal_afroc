@@ -1,0 +1,17 @@
+IMPORTANT: Deploy Updated Firestore Rules
+==========================================
+
+The firestore.rules file has been updated to allow anonymous users to:
+- Read M-Pesa pricing (mpesa_service_pricing)
+- Read M-Pesa settings (mpesa_settings)  
+- Read whitelist data (mpesa_whitelist)
+
+TO DEPLOY:
+1. Go to Firebase Console: https://console.firebase.google.com
+2. Select your project
+3. Navigate to: Firestore Database → Rules tab
+4. Copy ALL content from: firestore.rules
+5. Paste into the Firebase Console rules editor
+6. Click "Publish"
+
+Without deploying these rules, mobile users will still get permission errors!

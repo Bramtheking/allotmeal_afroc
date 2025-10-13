@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - users can read/write their own data, admins can read all
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin'];
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin'];
+    }
+    
+    // Services collection - public read, marketing/admin write
+    match /services/{serviceId} {
+      allow read: if true;
+      allow create: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+      allow update, delete: if request.auth != null && 
+        (resource.data.createdBy == request.auth.uid || 
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin']));
+    }
+    
+    // Advertisements collection - public read, marketing/admin write
+    match /advertisements/{adId} {
+      allow read: if true;
+      allow create: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+      allow update, delete: if request.auth != null && 
+        (resource.data.createdBy == request.auth.uid || 
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin']));
+    }
+
+    // Blog Posts collection - public read, marketing/admin write
+    match /blog_posts/{postId} {
+      allow read: if true;
+      allow create: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+      allow update, delete: if request.auth != null && 
+        (resource.data.createdBy == request.auth.uid || 
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin']));
+    }
+
+    // Blog Categories collection - public read, marketing/admin write
+    match /blog_categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+    }
+
+    // M-Pesa Settings collection - PUBLIC READ (users need to check if payment is paused), admin write
+    match /mpesa_settings/{settingId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin'];
+    }
+
+    // M-Pesa Service Pricing collection - PUBLIC READ (users need to see prices before paying), admin write
+    match /mpesa_service_pricing/{serviceType} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin'];
+    }
+
+    // M-Pesa Whitelist collection - PUBLIC READ (for whitelist checking before payment), admin write
+    match /mpesa_whitelist/{whitelistId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin'];
+    }
+
+    // M-Pesa Transactions collection - PUBLIC READ/WRITE for M-Pesa callbacks
+    match /mpesa_transactions/{transactionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // M-Pesa Callback Results - PUBLIC WRITE for M-Pesa callbacks, PUBLIC READ for payment verification
+    match /mpesa_callback_results/{callbackId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Newsletter Subscribers collection - public write (for subscriptions), admin read
+    match /newsletter_subscribers/{subscriberId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin'];
+    }
+  }
+}

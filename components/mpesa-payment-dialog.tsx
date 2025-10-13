@@ -58,7 +58,7 @@ export function MpesaPaymentDialog({
         return
       }
 
-      // First check if user email is whitelisted
+      // Check if user email is whitelisted (only if logged in)
       if (user?.email) {
         console.log("Checking email whitelist for:", user.email)
         const emailWhitelisted = await isWhitelisted(user.email)
@@ -73,6 +73,7 @@ export function MpesaPaymentDialog({
           return
         }
       }
+      // Note: Anonymous users can still pay, whitelist is optional
 
       // Add retry logic for mobile devices - Firebase might be slower to initialize
       let settings = null
@@ -180,6 +181,7 @@ export function MpesaPaymentDialog({
     let pollInterval: NodeJS.Timeout | null = null
 
     try {
+      // Allow anonymous payment - track by phone number and transaction ID
       const transactionId = await saveTransaction({
         merchantRequestId: "",
         checkoutRequestId: "",
@@ -187,7 +189,7 @@ export function MpesaPaymentDialog({
         amount,
         serviceType,
         actionType,
-        userId: user?.uid,
+        userId: user?.uid || undefined,
         userEmail: user?.email || undefined,
         timestamp: new Date().toISOString(),
         status: "pending",
@@ -203,7 +205,7 @@ export function MpesaPaymentDialog({
           amount,
           serviceType,
           actionType,
-          userId: user?.uid,
+          userId: user?.uid || null, // Optional - anonymous payment allowed
           transactionId,
         }),
       })
