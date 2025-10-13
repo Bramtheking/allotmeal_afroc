@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 3000
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Scheduled function to auto-expire advertisements
+[[functions]]
+  name = "expire-advertisements"
+  schedule = "0 * * * *"  # Run every hour
