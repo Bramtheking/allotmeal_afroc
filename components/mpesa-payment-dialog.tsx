@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, CheckCircle2, XCircle, Smartphone, DollarSign } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { isWhitelisted, getServicePricing, getMpesaSettings, saveTransaction, updateTransactionById } from "@/lib/mpesa-firebase"
+import { hasActivePaidSession, recordPaymentSession } from "@/lib/payment-session"
 import { toast } from "sonner"
 
 interface MpesaPaymentDialogProps {
@@ -55,6 +56,18 @@ export function MpesaPaymentDialog({
       if (customAmount !== undefined) {
         setAmount(customAmount)
         setLoading(false)
+        return
+      }
+
+      // Check if user has already paid in this session (cookie check)
+      if (hasActivePaidSession(serviceType, actionType)) {
+        console.log("Active payment session found, bypassing payment")
+        setLoading(false)
+        setTimeout(() => {
+          toast.success("You have already paid for this service in this session")
+          onSuccess()
+          onClose()
+        }, 0)
         return
       }
 
@@ -277,6 +290,9 @@ export function MpesaPaymentDialog({
                   mpesaReceiptNumber: callbackData.mpesaReceiptNumber,
                   transactionDate: callbackData.transactionDate,
                 })
+                
+                // Record payment session in cookies (3-hour session)
+                recordPaymentSession(serviceType, actionType, phoneNumber, transactionId)
                 
                 setStatus("success")
                 toast.success("Payment successful!")

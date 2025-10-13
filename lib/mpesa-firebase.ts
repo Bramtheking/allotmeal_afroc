@@ -318,7 +318,12 @@ export async function saveTransaction(transaction: Omit<MpesaTransaction, "id">)
     const db = getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
-    const docRef = await addDoc(collection(db, "mpesa_transactions"), transaction)
+    // Filter out undefined values - Firestore doesn't accept them
+    const cleanTransaction = Object.fromEntries(
+      Object.entries(transaction).filter(([_, value]) => value !== undefined)
+    )
+
+    const docRef = await addDoc(collection(db, "mpesa_transactions"), cleanTransaction)
     return docRef.id
   } catch (error) {
     console.error("Error saving transaction:", error)
@@ -331,6 +336,11 @@ export async function updateTransaction(checkoutRequestId: string, updates: Part
     const db = getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
+    // Filter out undefined values - Firestore doesn't accept them
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined)
+    )
+
     const transactionsQuery = query(
       collection(db, "mpesa_transactions"),
       where("checkoutRequestId", "==", checkoutRequestId),
@@ -340,7 +350,7 @@ export async function updateTransaction(checkoutRequestId: string, updates: Part
     const snapshot = await getDocs(transactionsQuery)
     if (!snapshot.empty) {
       const transactionDoc = snapshot.docs[0]
-      await updateDoc(doc(db, "mpesa_transactions", transactionDoc.id), updates)
+      await updateDoc(doc(db, "mpesa_transactions", transactionDoc.id), cleanUpdates)
     }
   } catch (error) {
     console.error("Error updating transaction:", error)
@@ -353,7 +363,12 @@ export async function updateTransactionById(id: string, updates: Partial<MpesaTr
     const db = getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
-    await updateDoc(doc(db, "mpesa_transactions", id), updates)
+    // Filter out undefined values - Firestore doesn't accept them
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined)
+    )
+
+    await updateDoc(doc(db, "mpesa_transactions", id), cleanUpdates)
   } catch (error) {
     console.error("Error updating transaction by ID:", error)
     throw error
