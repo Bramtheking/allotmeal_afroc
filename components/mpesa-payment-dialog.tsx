@@ -411,7 +411,7 @@ export function MpesaPaymentDialog({
               <Label htmlFor="phone">M-Pesa Phone Number</Label>
               <Input
                 id="phone"
-                placeholder="0712345678 or 254712345678"
+                placeholder="Enter Phone number here"
                 value={phoneNumber}
                 onChange={(e) => handlePhoneNumberChange(e.target.value)}
                 className="text-lg"
