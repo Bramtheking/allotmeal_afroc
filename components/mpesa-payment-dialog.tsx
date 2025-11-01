@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, CheckCircle2, XCircle, Smartphone, DollarSign } from "lucide-react"
+import { Loader2, CheckCircle2, XCircle, Smartphone } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { isWhitelisted, getServicePricing, getMpesaSettings, saveTransaction, updateTransactionById } from "@/lib/mpesa-firebase"
 import { hasActivePaidSession, recordPaymentSession } from "@/lib/payment-session"
@@ -18,7 +18,7 @@ interface MpesaPaymentDialogProps {
   onSuccess: () => void
   serviceType: string
   actionType: "Continue" | "Videos"
-  amount?: number // Optional custom amount for advertisements
+  amount?: number
 }
 
 type PaymentStatus = "input" | "processing" | "success" | "failed"
@@ -52,14 +52,12 @@ export function MpesaPaymentDialog({
     setErrorMessage("")
     
     try {
-      // If custom amount is provided (for advertisements), use it directly
       if (customAmount !== undefined) {
         setAmount(customAmount)
         setLoading(false)
         return
       }
 
-      // Check if user has already paid in this session (cookie check)
       if (hasActivePaidSession(serviceType, actionType)) {
         console.log("Active payment session found, bypassing payment")
         setLoading(false)
@@ -71,7 +69,6 @@ export function MpesaPaymentDialog({
         return
       }
 
-      // Check if user email is whitelisted (only if logged in)
       if (user?.email) {
         console.log("Checking email whitelist for:", user.email)
         const emailWhitelisted = await isWhitelisted(user.email)
@@ -86,18 +83,15 @@ export function MpesaPaymentDialog({
           return
         }
       }
-      // Note: Anonymous users can still pay, whitelist is optional
 
-      // Add retry logic for mobile devices - Firebase might be slower to initialize
       let settings = null
       let pricing = null
       let retryCount = 0
-      const maxRetries = 5 // Increased for mobile
+      const maxRetries = 5
       
       while (retryCount < maxRetries && (!settings || !pricing)) {
         if (retryCount > 0) {
           console.log(`Retrying to fetch pricing data (attempt ${retryCount + 1}/${maxRetries})...`)
-          // Progressive delay: 1s, 2s, 3s, 4s
           await new Promise(resolve => setTimeout(resolve, retryCount * 1000))
         }
         
@@ -119,7 +113,6 @@ export function MpesaPaymentDialog({
         retryCount++
       }
 
-      // Only bypass payment if we're certain payment is not required
       if (settings?.isPaused) {
         console.log("Payment is paused by admin")
         setLoading(false)
@@ -131,22 +124,23 @@ export function MpesaPaymentDialog({
         return
       }
 
-      // If pricing is still null after retries, show error instead of bypassing
       if (!pricing) {
-        console.error("Failed to load pricing after retries. Service type:", serviceType)
+        console.log("No pricing configured, allowing access")
         setLoading(false)
-        setErrorMessage(`Failed to load payment settings. Please ensure pricing is configured for service type: ${serviceType}. Contact support if this persists.`)
+        setTimeout(() => {
+          onSuccess()
+          onClose()
+        }, 0)
         return
       }
 
       const requiredAmount = actionType === "Continue" ? pricing.continueAmount : pricing.videosAmount
       
-      // Only bypass payment if amount is explicitly set to 0
-      if (requiredAmount === 0) {
-        console.log(`Payment not required - amount is set to 0 for ${actionType}`)
+      // If amount is undefined, null, or not a valid number, let them through
+      if (requiredAmount === undefined || requiredAmount === null || isNaN(requiredAmount) || requiredAmount === 0) {
+        console.log(`No payment required for ${actionType}`)
         setLoading(false)
         setTimeout(() => {
-          toast.success("No payment required")
           onSuccess()
           onClose()
         }, 0)
@@ -166,7 +160,6 @@ export function MpesaPaymentDialog({
   const handlePhoneNumberChange = async (value: string) => {
     setPhoneNumber(value)
     
-    // Check whitelist when user has entered enough digits
     const cleaned = value.replace(/\D/g, '')
     if (cleaned.length >= 9) {
       console.log("Checking phone whitelist for:", value)
@@ -194,7 +187,6 @@ export function MpesaPaymentDialog({
     let pollInterval: NodeJS.Timeout | null = null
 
     try {
-      // Allow anonymous payment - track by phone number and transaction ID
       const transactionId = await saveTransaction({
         merchantRequestId: "",
         checkoutRequestId: "",
@@ -218,7 +210,7 @@ export function MpesaPaymentDialog({
           amount,
           serviceType,
           actionType,
-          userId: user?.uid || null, // Optional - anonymous payment allowed
+          userId: user?.uid || null,
           transactionId,
         }),
       })
@@ -244,7 +236,6 @@ export function MpesaPaymentDialog({
         const checkoutId = data.data.CheckoutRequestID
         const merchantId = data.data.MerchantRequestID
         setCheckoutRequestId(checkoutId)
-        // Persist identifiers on the transaction immediately for reliable callback reconciliation
         try {
           await updateTransactionById(transactionId, {
             checkoutRequestId: checkoutId,
@@ -291,7 +282,6 @@ export function MpesaPaymentDialog({
                   transactionDate: callbackData.transactionDate,
                 })
                 
-                // Record payment session in cookies (3-hour session)
                 recordPaymentSession(serviceType, actionType, phoneNumber, transactionId)
                 
                 setStatus("success")
@@ -401,7 +391,6 @@ export function MpesaPaymentDialog({
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Amount to Pay</span>
                 <div className="flex items-center gap-1 text-2xl font-bold text-green-600 dark:text-green-400">
-                  <DollarSign className="h-5 w-5" />
                   KSh {amount.toFixed(2)}
                 </div>
               </div>
