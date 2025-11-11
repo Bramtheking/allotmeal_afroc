@@ -119,14 +119,13 @@ export default function ServiceDetailPage() {
     )
   }
 
-  return (
-    <ServicePaymentGate
-      serviceType={params.serviceType as string}
-      serviceId={params.id as string}
-      serviceName={service.title}
-    >
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-yellow-950/30 dark:via-gray-950 dark:to-blue-950/30">
-        <VisitorTracker page={`/services/${params.serviceType}/${params.id}`} />
+  // For jobs, don't use ServicePaymentGate - payment happens when applying
+  const isJobService = params.serviceType === "jobs"
+  console.log("Service type:", params.serviceType, "Is job service:", isJobService)
+  
+  const pageContent = (
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-yellow-950/30 dark:via-gray-950 dark:to-blue-950/30">
+      <VisitorTracker page={`/services/${params.serviceType}/${params.id}`} />
       <div className="container py-8">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" size="sm" onClick={() => router.back()}>
@@ -399,7 +398,6 @@ export default function ServiceDetailPage() {
           </div>
         </div>
       </div>
-      </div>
 
       {/* Job Application Dialog */}
       {params.serviceType === "jobs" && service && (
@@ -410,6 +408,24 @@ export default function ServiceDetailPage() {
           jobId={service.id || ""}
         />
       )}
-    </ServicePaymentGate>
+    </div>
   )
+
+  // Jobs: No payment gate (free to view, pay only when applying)
+  // Other services: Payment gate required (pay to view details)
+  if (isJobService) {
+    console.log("Rendering job without payment gate")
+    return pageContent
+  } else {
+    console.log("Rendering service with payment gate")
+    return (
+      <ServicePaymentGate
+        serviceType={params.serviceType as string}
+        serviceId={params.id as string}
+        serviceName={service.title}
+      >
+        {pageContent}
+      </ServicePaymentGate>
+    )
+  }
 }
