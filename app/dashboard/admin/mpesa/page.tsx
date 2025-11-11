@@ -125,7 +125,7 @@ export default function MpesaAdminPage() {
       return
     }
 
-    if (!continueAmount && !videosAmount && !postServiceAmount) {
+    if (!continueAmount && !videosAmount && !postServiceAmount && !jobApplicationAmount) {
       toast.error("Please enter at least one amount")
       return
     }
@@ -140,11 +140,13 @@ export default function MpesaAdminPage() {
         updatedBy: user.uid,
       }
 
-      // Add job application amount only for jobs service
-      if (selectedService === "jobs" && jobApplicationAmount) {
+      // Add job application amount for jobs service (always include it, even if 0)
+      if (selectedService === "jobs") {
         pricingData.jobApplicationAmount = parseFloat(jobApplicationAmount) || 0
+        console.log("Saving job application amount:", pricingData.jobApplicationAmount)
       }
 
+      console.log("Saving pricing data:", pricingData)
       await setServicePricing(pricingData, user.uid)
 
       toast.success("Pricing updated successfully")

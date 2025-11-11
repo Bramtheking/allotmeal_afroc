@@ -131,9 +131,13 @@ export function PostServiceDialog({ isOpen, onClose }: PostServiceDialogProps) {
     setTimeout(() => {
       onClose()
       if (user) {
+        // User is logged in, go directly to create page
         router.push(`/dashboard/marketing/services/create?serviceType=${selectedService}&fromPayment=true`)
       } else {
-        router.push(`/login?redirect=/dashboard/marketing/services/create?serviceType=${selectedService}&fromPayment=true`)
+        // User not logged in, redirect to login first
+        const redirectUrl = encodeURIComponent(`/dashboard/marketing/services/create?serviceType=${selectedService}&fromPayment=true`)
+        router.push(`/login?redirect=${redirectUrl}`)
+        toast.info("Please log in to complete your service listing")
       }
     }, 2000)
   }

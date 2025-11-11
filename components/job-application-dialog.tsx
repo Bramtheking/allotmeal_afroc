@@ -48,9 +48,13 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
     setLoading(true)
     try {
       const pricing = await getServicePricing("jobs")
+      console.log("Job application pricing loaded:", pricing)
+      
       if (pricing && pricing.jobApplicationAmount !== undefined) {
         setApplicationFee(pricing.jobApplicationAmount)
+        console.log("Job application fee set to:", pricing.jobApplicationAmount)
       } else {
+        console.log("No job application amount configured, defaulting to 0")
         setApplicationFee(0) // Free if not configured
       }
     } catch (error) {
@@ -92,9 +96,6 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
 
   const submitApplication = async () => {
     try {
-      // Here you would typically save the application to Firebase
-      // For now, we'll just show success
-      
       const applicationData = {
         jobId,
         jobTitle,
@@ -106,13 +107,22 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
         applicationFee: applicationFee || 0,
         appliedAt: new Date().toISOString(),
         userId: user?.uid || null,
+        status: "pending",
       }
 
       console.log("Application submitted:", applicationData)
       
-      // TODO: Save to Firebase
-      // const db = await getFirebaseDb()
-      // await addDoc(collection(db, "job_applications"), applicationData)
+      // Save to Firebase
+      const { getFirebaseDb } = await import("@/lib/firebase")
+      const { addDoc, collection } = await import("firebase/firestore")
+      
+      const db = await getFirebaseDb()
+      if (db) {
+        await addDoc(collection(db, "job_applications"), applicationData)
+        console.log("Application saved to Firebase")
+      } else {
+        console.log("Firebase not available, application data logged only")
+      }
       
       setStep("success")
       toast.success("Application submitted successfully!")
