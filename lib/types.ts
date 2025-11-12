@@ -49,7 +49,7 @@ export interface Service {
   subscriptionType?: string
 
   // Jobs specific fields
-  jobType?: "casual" | "permanent"
+  jobType?: "casual" | "permanent" | "full-time" | "part-time" | "contract"
   salary?: string
   experience?: string
   requirements?: string[]
