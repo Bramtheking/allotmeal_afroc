@@ -29,8 +29,25 @@ export default function ServiceDetailPage() {
         const db = await getFirebaseDb()
         if (!db || !params.id) return
 
-        const docRef = doc(db, "services", params.id as string)
-        const docSnap = await getDoc(docRef)
+        const idOrSlug = params.id as string
+        
+        // Try to fetch by ID first
+        let docSnap = await getDoc(doc(db, "services", idOrSlug))
+        
+        // If not found and looks like a slug, search by slug
+        if (!docSnap.exists() && idOrSlug.includes('-')) {
+          const { collection, query, where, getDocs } = await import("firebase/firestore")
+          const q = query(collection(db, "services"), where("slug", "==", idOrSlug))
+          const querySnapshot = await getDocs(q)
+          
+          if (!querySnapshot.empty) {
+            const firstDoc = querySnapshot.docs[0]
+            const serviceData = { id: firstDoc.id, ...firstDoc.data() } as Service
+            setService(serviceData)
+            setLoading(false)
+            return
+          }
+        }
 
         if (docSnap.exists()) {
           const serviceData = { id: docSnap.id, ...docSnap.data() } as Service

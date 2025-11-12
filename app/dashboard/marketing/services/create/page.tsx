@@ -216,6 +216,8 @@ export default function CreateService() {
 
       // Extract base service type and specific type fields
       let baseServiceType = formData.serviceType
+      
+      // Generate slug for SEO-friendly URLs (will be updated after doc creation)
       const serviceData: any = {
         ...formData,
         serviceType: baseServiceType,
@@ -241,7 +243,15 @@ export default function CreateService() {
         }
       })
 
-      await addDoc(collection(db, "services"), serviceData)
+      const docRef = await addDoc(collection(db, "services"), serviceData)
+      
+      // Generate and save slug with document ID
+      const { generateUniqueSlug } = await import("@/lib/slug-utils")
+      const slug = generateUniqueSlug(formData.title, docRef.id)
+      
+      const { updateDoc, doc } = await import("firebase/firestore")
+      await updateDoc(doc(db, "services", docRef.id), { slug })
+      
       toast.success("Service created successfully!")
       router.push("/dashboard/marketing")
     } catch (error) {

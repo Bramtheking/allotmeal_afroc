@@ -12,6 +12,7 @@ export interface User {
 
 export interface Service {
   id?: string
+  slug?: string // SEO-friendly URL slug
   title: string
   description: string
   serviceType: string

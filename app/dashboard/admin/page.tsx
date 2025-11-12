@@ -301,6 +301,24 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Package className="h-5 w-5" />
+                    Job Applications
+                  </CardTitle>
+                  <CardDescription>View and manage job applications</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild className="w-full">
+                    <Link href="/dashboard/admin/applications">
+                      <Package className="h-4 w-4 mr-2" />
+                      View Applications
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
                     Content Management
                   </CardTitle>
                   <CardDescription>Oversee all services and content</CardDescription>

@@ -95,7 +95,22 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
   }
 
   const submitApplication = async () => {
+    setLoading(true)
     try {
+      let resumeUrl = null
+      
+      // Upload resume to Cloudinary if provided
+      if (resumeFile) {
+        try {
+          const { uploadToCloudinary } = await import("@/lib/cloudinary")
+          resumeUrl = await uploadToCloudinary(resumeFile, "raw") // 'raw' for documents
+          console.log("Resume uploaded:", resumeUrl)
+        } catch (uploadError) {
+          console.error("Error uploading resume:", uploadError)
+          toast.error("Failed to upload resume. Submitting without it...")
+        }
+      }
+      
       const applicationData = {
         jobId,
         jobTitle,
@@ -103,11 +118,13 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
         email,
         phone,
         coverLetter,
-        resumeFile: resumeFile?.name || null,
+        resumeUrl, // Cloudinary URL
+        resumeFileName: resumeFile?.name || null,
         applicationFee: applicationFee || 0,
         appliedAt: new Date().toISOString(),
         userId: user?.uid || null,
         status: "pending",
+        read: false, // Track if admin has read it
       }
 
       console.log("Application submitted:", applicationData)
@@ -134,6 +151,8 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
     } catch (error) {
       console.error("Error submitting application:", error)
       toast.error("Failed to submit application. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -265,8 +284,18 @@ export function JobApplicationDialog({ isOpen, onClose, jobTitle, jobId }: JobAp
                       type="button"
                       variant="outline"
                       onClick={() => document.getElementById("resume")?.click()}
+                      disabled={loading}
                     >
-                      {resumeFile ? resumeFile.name : "Upload Resume"}
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : resumeFile ? (
+                        resumeFile.name
+                      ) : (
+                        "Upload Resume"
+                      )}
                     </Button>
                     <p className="text-xs text-muted-foreground mt-2">
                       PDF, DOC, or DOCX (Max 5MB)

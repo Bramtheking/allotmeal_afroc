@@ -26,6 +26,7 @@ import type { Service } from "@/lib/types"
 import { getMockJobs } from "@/lib/mock-data"
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
+import { JobApplicationDialog } from "@/components/job-application-dialog"
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Service[]>([])
@@ -33,6 +34,8 @@ export default function JobsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [locationFilter, setLocationFilter] = useState("")
   const [jobTypeFilter, setJobTypeFilter] = useState("")
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false)
+  const [selectedJobForApplication, setSelectedJobForApplication] = useState<Service | null>(null)
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -113,6 +116,11 @@ export default function JobsPage() {
 
   const handleSearch = () => {
     console.log("Searching with:", { searchTerm, locationFilter, jobTypeFilter })
+  }
+
+  const handleApplyNow = (job: Service) => {
+    setSelectedJobForApplication(job)
+    setShowPaymentDialog(true)
   }
 
   if (loading) {
@@ -459,13 +467,13 @@ export default function JobsPage() {
                             asChild
                             className="border-emerald-200 hover:bg-emerald-50 bg-transparent"
                           >
-                            <Link href={`/services/jobs/${job.id}`}>View Details</Link>
+                            <Link href={`/services/jobs/${job.slug || job.id}`}>View Details</Link>
                           </Button>
                           <Button
-                            asChild
+                            onClick={() => handleApplyNow(job)}
                             className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
                           >
-                            <Link href={`/services/jobs/${job.id}`}>Apply Now</Link>
+                            Apply Now
                           </Button>
                         </CardFooter>
                       </Card>
@@ -637,6 +645,19 @@ export default function JobsPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Job Application Dialog */}
+      {selectedJobForApplication && (
+        <JobApplicationDialog
+          isOpen={showPaymentDialog}
+          onClose={() => {
+            setShowPaymentDialog(false)
+            setSelectedJobForApplication(null)
+          }}
+          jobTitle={selectedJobForApplication.title}
+          jobId={selectedJobForApplication.id || ""}
+        />
+      )}
     </div>
   )
 }
