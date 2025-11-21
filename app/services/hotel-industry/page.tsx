@@ -35,12 +35,12 @@ export default function HotelIndustryPage() {
   const [townFilter, setTownFilter] = useState("")
   const [priceFilter, setPriceFilter] = useState<"all" | "budget" | "mid" | "luxury">("all")
 
-  // Kenyan towns list
+  // Kenyan towns list (alphabetically sorted)
   const kenyanTowns = [
-    "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Thika", "Malindi", "Kitale",
-    "Garissa", "Kakamega", "Nyeri", "Meru", "Kisii", "Kericho", "Naivasha", "Machakos",
-    "Lamu", "Kilifi", "Bungoma", "Homa Bay", "Migori", "Embu", "Nanyuki", "Voi",
-    "Webuye", "Mumias", "Narok", "Isiolo", "Kitui", "Wajir", "Mandera", "Lodwar"
+    "Bungoma", "Eldoret", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kakamega", "Kericho",
+    "Kilifi", "Kisii", "Kisumu", "Kitale", "Kitui", "Lamu", "Lodwar", "Machakos",
+    "Malindi", "Mandera", "Meru", "Migori", "Mombasa", "Mumias", "Nairobi", "Naivasha",
+    "Nakuru", "Nanyuki", "Narok", "Nyeri", "Thika", "Voi", "Wajir", "Webuye"
   ]
   const [sortBy, setSortBy] = useState<"newest" | "a-z" | "z-a" | "price-low" | "price-high">("newest")
 
@@ -228,13 +228,13 @@ export default function HotelIndustryPage() {
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-teal-500 z-10 pointer-events-none" />
                     <select
-                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-teal-400 bg-white appearance-none"
+                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-teal-400 bg-white text-gray-900"
                       value={townFilter}
                       onChange={(e) => setTownFilter(e.target.value)}
                     >
-                      <option value="">All Towns</option>
+                      <option value="" className="text-gray-900">All Towns</option>
                       {kenyanTowns.map((town) => (
-                        <option key={town} value={town}>
+                        <option key={town} value={town} className="text-gray-900">
                           {town}
                         </option>
                       ))}
@@ -291,29 +291,29 @@ export default function HotelIndustryPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700">Price Range</label>
                   <select
-                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-amber-400 bg-white px-4"
+                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-amber-400 bg-white text-gray-900 px-4"
                     value={priceFilter}
                     onChange={(e) => setPriceFilter(e.target.value as "all" | "budget" | "mid" | "luxury")}
                   >
-                    <option value="all">All Prices</option>
-                    <option value="budget">Budget (Under KSh 5,000)</option>
-                    <option value="mid">Mid-Range (KSh 5,000 - 15,000)</option>
-                    <option value="luxury">Luxury (KSh 15,000+)</option>
+                    <option value="all" className="text-gray-900">All Prices</option>
+                    <option value="budget" className="text-gray-900">Budget (Under KSh 5,000)</option>
+                    <option value="mid" className="text-gray-900">Mid-Range (KSh 5,000 - 15,000)</option>
+                    <option value="luxury" className="text-gray-900">Luxury (KSh 15,000+)</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700">Sort By</label>
                   <select
-                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-amber-400 bg-white px-4"
+                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-amber-400 bg-white text-gray-900 px-4"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as "newest" | "a-z" | "z-a" | "price-low" | "price-high")}
                   >
-                    <option value="newest">Newest First</option>
-                    <option value="a-z">Name: A to Z</option>
-                    <option value="z-a">Name: Z to A</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
+                    <option value="newest" className="text-gray-900">Newest First</option>
+                    <option value="a-z" className="text-gray-900">Name: A to Z</option>
+                    <option value="z-a" className="text-gray-900">Name: Z to A</option>
+                    <option value="price-low" className="text-gray-900">Price: Low to High</option>
+                    <option value="price-high" className="text-gray-900">Price: High to Low</option>
                   </select>
                 </div>
 

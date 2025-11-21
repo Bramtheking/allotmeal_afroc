@@ -130,12 +130,12 @@ export default function AgriculturePage() {
     console.log("Searching with:", { searchTerm, townFilter, priceFilter })
   }
 
-  // Kenyan towns list
+  // Kenyan towns list (alphabetically sorted)
   const kenyanTowns = [
-    "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Thika", "Malindi", "Kitale",
-    "Garissa", "Kakamega", "Nyeri", "Meru", "Kisii", "Kericho", "Naivasha", "Machakos",
-    "Lamu", "Kilifi", "Bungoma", "Homa Bay", "Migori", "Embu", "Nanyuki", "Voi",
-    "Webuye", "Mumias", "Narok", "Isiolo", "Kitui", "Wajir", "Mandera", "Lodwar"
+    "Bungoma", "Eldoret", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kakamega", "Kericho",
+    "Kilifi", "Kisii", "Kisumu", "Kitale", "Kitui", "Lamu", "Lodwar", "Machakos",
+    "Malindi", "Mandera", "Meru", "Migori", "Mombasa", "Mumias", "Nairobi", "Naivasha",
+    "Nakuru", "Nanyuki", "Narok", "Nyeri", "Thika", "Voi", "Wajir", "Webuye"
   ]
 
   if (loading) {
@@ -240,13 +240,13 @@ export default function AgriculturePage() {
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-lime-500 z-10" />
                     <select
-                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-lime-400 bg-white"
+                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-lime-400 bg-white text-gray-900"
                       value={townFilter}
                       onChange={(e) => setTownFilter(e.target.value)}
                     >
-                      <option value="">All Towns</option>
+                      <option value="" className="text-gray-900">All Towns</option>
                       {kenyanTowns.map((town) => (
-                        <option key={town} value={town}>
+                        <option key={town} value={town} className="text-gray-900">
                           {town}
                         </option>
                       ))}
@@ -259,14 +259,14 @@ export default function AgriculturePage() {
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-emerald-500" />
                     <select
-                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-emerald-400 bg-white"
+                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-emerald-400 bg-white text-gray-900"
                       value={priceFilter}
                       onChange={(e) => setPriceFilter(e.target.value)}
                     >
-                      <option value="">Any Price</option>
-                      <option value="0-1000">$0 - $1,000</option>
-                      <option value="1000-5000">$1,000 - $5,000</option>
-                      <option value="5000+">$5,000+</option>
+                      <option value="" className="text-gray-900">Any Price</option>
+                      <option value="0-1000" className="text-gray-900">$0 - $1,000</option>
+                      <option value="1000-5000" className="text-gray-900">$1,000 - $5,000</option>
+                      <option value="5000+" className="text-gray-900">$5,000+</option>
                     </select>
                   </div>
                 </div>

@@ -71,12 +71,12 @@ export default function CreateService() {
     youtubeLinks: [] as string[],
   })
 
-  // Kenyan towns list
+  // Kenyan towns list (alphabetically sorted)
   const kenyanTowns = [
-    "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Thika", "Malindi", "Kitale",
-    "Garissa", "Kakamega", "Nyeri", "Meru", "Kisii", "Kericho", "Naivasha", "Machakos",
-    "Lamu", "Kilifi", "Bungoma", "Homa Bay", "Migori", "Embu", "Nanyuki", "Voi",
-    "Webuye", "Mumias", "Narok", "Isiolo", "Kitui", "Wajir", "Mandera", "Lodwar"
+    "Bungoma", "Eldoret", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kakamega", "Kericho",
+    "Kilifi", "Kisii", "Kisumu", "Kitale", "Kitui", "Lamu", "Lodwar", "Machakos",
+    "Malindi", "Mandera", "Meru", "Migori", "Mombasa", "Mumias", "Nairobi", "Naivasha",
+    "Nakuru", "Nanyuki", "Narok", "Nyeri", "Thika", "Voi", "Wajir", "Webuye"
   ]
   const [currentTag, setCurrentTag] = useState("")
   const [currentYouTubeLink, setCurrentYouTubeLink] = useState("")

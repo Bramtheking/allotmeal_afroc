@@ -354,7 +354,7 @@ export default function TendersPage() {
                               </div>
                               <div className="flex items-center gap-2 text-gray-600">
                                 <MapPin className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm">{tender.location}</span>
+                                <span className="text-sm">{(tender.town || "Kitale") + ", Kenya"}</span>
                               </div>
                             </div>
                             <Badge className="bg-green-500 text-white">OPEN</Badge>
@@ -454,7 +454,7 @@ export default function TendersPage() {
                               </div>
                               <div className="flex items-center gap-2 text-gray-600">
                                 <MapPin className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm">{tender.location}</span>
+                                <span className="text-sm">{(tender.town || "Kitale") + ", Kenya"}</span>
                               </div>
                             </div>
                             <Badge className="bg-blue-500 text-white">PUBLIC</Badge>
@@ -580,4 +580,5 @@ export default function TendersPage() {
     </div>
   )
 }
+
 

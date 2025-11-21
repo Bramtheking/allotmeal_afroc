@@ -39,12 +39,12 @@ export default function TransportPage() {
   const [townFilter, setTownFilter] = useState("")
   const [priceFilter, setPriceFilter] = useState("")
 
-  // Kenyan towns list
+  // Kenyan towns list (alphabetically sorted)
   const kenyanTowns = [
-    "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Thika", "Malindi", "Kitale",
-    "Garissa", "Kakamega", "Nyeri", "Meru", "Kisii", "Kericho", "Naivasha", "Machakos",
-    "Lamu", "Kilifi", "Bungoma", "Homa Bay", "Migori", "Embu", "Nanyuki", "Voi",
-    "Webuye", "Mumias", "Narok", "Isiolo", "Kitui", "Wajir", "Mandera", "Lodwar"
+    "Bungoma", "Eldoret", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kakamega", "Kericho",
+    "Kilifi", "Kisii", "Kisumu", "Kitale", "Kitui", "Lamu", "Lodwar", "Machakos",
+    "Malindi", "Mandera", "Meru", "Migori", "Mombasa", "Mumias", "Nairobi", "Naivasha",
+    "Nakuru", "Nanyuki", "Narok", "Nyeri", "Thika", "Voi", "Wajir", "Webuye"
   ]
   const [loading, setLoading] = useState(true)
 
@@ -252,14 +252,14 @@ export default function TransportPage() {
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500" />
                     <select
-                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-indigo-400 bg-white"
+                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-indigo-400 bg-white text-gray-900"
                       value={priceFilter}
                       onChange={(e) => setPriceFilter(e.target.value)}
                     >
-                      <option value="">Any Price</option>
-                      <option value="0-50">$0 - $50</option>
-                      <option value="50-200">$50 - $200</option>
-                      <option value="200+">$200+</option>
+                      <option value="" className="text-gray-900">Any Price</option>
+                      <option value="0-50" className="text-gray-900">$0 - $50</option>
+                      <option value="50-200" className="text-gray-900">$50 - $200</option>
+                      <option value="200+" className="text-gray-900">$200+</option>
                     </select>
                   </div>
                 </div>

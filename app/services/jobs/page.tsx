@@ -47,12 +47,12 @@ export default function JobsPage() {
   const [townFilter, setTownFilter] = useState("")
   const [jobTypeFilter, setJobTypeFilter] = useState("")
 
-  // Kenyan towns list
+  // Kenyan towns list (alphabetically sorted)
   const kenyanTowns = [
-    "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Thika", "Malindi", "Kitale",
-    "Garissa", "Kakamega", "Nyeri", "Meru", "Kisii", "Kericho", "Naivasha", "Machakos",
-    "Lamu", "Kilifi", "Bungoma", "Homa Bay", "Migori", "Embu", "Nanyuki", "Voi",
-    "Webuye", "Mumias", "Narok", "Isiolo", "Kitui", "Wajir", "Mandera", "Lodwar"
+    "Bungoma", "Eldoret", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kakamega", "Kericho",
+    "Kilifi", "Kisii", "Kisumu", "Kitale", "Kitui", "Lamu", "Lodwar", "Machakos",
+    "Malindi", "Mandera", "Meru", "Migori", "Mombasa", "Mumias", "Nairobi", "Naivasha",
+    "Nakuru", "Nanyuki", "Narok", "Nyeri", "Thika", "Voi", "Wajir", "Webuye"
   ]
   const [priceFilter, setPriceFilter] = useState<"all" | "free" | "paid">("all")
   const [sortBy, setSortBy] = useState<"newest" | "a-z" | "z-a">("newest")
@@ -268,13 +268,13 @@ export default function JobsPage() {
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-teal-500 z-10 pointer-events-none" />
                     <select
-                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-teal-400 bg-white"
+                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-teal-400 bg-white text-gray-900"
                       value={townFilter}
                       onChange={(e) => setTownFilter(e.target.value)}
                     >
-                      <option value="">All Towns</option>
+                      <option value="" className="text-gray-900">All Towns</option>
                       {kenyanTowns.map((town) => (
-                        <option key={town} value={town}>
+                        <option key={town} value={town} className="text-gray-900">
                           {town}
                         </option>
                       ))}
@@ -287,14 +287,14 @@ export default function JobsPage() {
                   <div className="relative">
                     <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-blue-500" />
                     <select
-                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-blue-400 bg-white"
+                      className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-blue-400 bg-white text-gray-900"
                       value={jobTypeFilter}
                       onChange={(e) => setJobTypeFilter(e.target.value)}
                     >
-                      <option value="">All Types</option>
-                      <option value="full-time">Full Time</option>
-                      <option value="part-time">Part Time</option>
-                      <option value="contract">Contract</option>
+                      <option value="" className="text-gray-900">All Types</option>
+                      <option value="full-time" className="text-gray-900">Full Time</option>
+                      <option value="part-time" className="text-gray-900">Part Time</option>
+                      <option value="contract" className="text-gray-900">Contract</option>
                     </select>
                   </div>
                 </div>
@@ -305,26 +305,26 @@ export default function JobsPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700">Price</label>
                   <select
-                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-emerald-400 bg-white px-4"
+                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-emerald-400 bg-white text-gray-900 px-4"
                     value={priceFilter}
                     onChange={(e) => setPriceFilter(e.target.value as "all" | "free" | "paid")}
                   >
-                    <option value="all">All Prices</option>
-                    <option value="free">Free / Contact for Quote</option>
-                    <option value="paid">Paid Positions</option>
+                    <option value="all" className="text-gray-900">All Prices</option>
+                    <option value="free" className="text-gray-900">Free / Contact for Quote</option>
+                    <option value="paid" className="text-gray-900">Paid Positions</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700">Sort By</label>
                   <select
-                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-emerald-400 bg-white px-4"
+                    className="w-full h-12 border border-gray-200 rounded-lg focus:border-emerald-400 bg-white text-gray-900 px-4"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as "newest" | "a-z" | "z-a")}
                   >
-                    <option value="newest">Newest First</option>
-                    <option value="a-z">Title: A to Z</option>
-                    <option value="z-a">Title: Z to A</option>
+                    <option value="newest" className="text-gray-900">Newest First</option>
+                    <option value="a-z" className="text-gray-900">Title: A to Z</option>
+                    <option value="z-a" className="text-gray-900">Title: Z to A</option>
                   </select>
                 </div>
 
