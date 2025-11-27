@@ -31,6 +31,7 @@ const services = [
     description: "Luxury accommodations, resorts, and hospitality services for your perfect stay.",
     icon: Building2,
     image: "/services/hotel.jpg",
+    video: "https://cdn.pixabay.com/video/2022/05/31/119026-716990947_tiny.mp4", // Hotel lobby/service
     color: "from-amber-500 to-orange-500",
     bgColor: "bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20",
     count: "150+ Hotels",
@@ -42,6 +43,7 @@ const services = [
     description: "Find your dream career with our extensive job listings and opportunities.",
     icon: Briefcase,
     image: "/services/jobs.jpg",
+    video: "https://cdn.pixabay.com/video/2020/05/17/39943-421700348_tiny.mp4", // Office/working
     color: "from-emerald-500 to-teal-500",
     bgColor: "bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20",
     count: "500+ Positions",
@@ -53,6 +55,7 @@ const services = [
     description: "Professional construction services, materials, and project management solutions.",
     icon: Hammer,
     image: "/services/construction.jpg",
+    video: "https://cdn.pixabay.com/video/2022/11/29/141672-777466897_tiny.mp4", // Construction site
     color: "from-orange-500 to-red-500",
     bgColor: "bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20",
     count: "200+ Projects",
@@ -64,6 +67,7 @@ const services = [
     description: "Modern farming solutions, livestock, and agricultural products for sustainable growth.",
     icon: Wheat,
     image: "/services/agriculture.jpg",
+    video: "https://cdn.pixabay.com/video/2021/08/10/84944-586506492_tiny.mp4", // Farming/tractor
     color: "from-green-500 to-lime-500",
     bgColor: "bg-gradient-to-br from-green-50 to-lime-50 dark:from-green-950/20 dark:to-lime-950/20",
     count: "300+ Farms",
@@ -75,6 +79,7 @@ const services = [
     description: "Events, shows, and entertainment services to make your occasions memorable.",
     icon: Music,
     image: "/services/entertainment.jpg",
+    video: "https://cdn.pixabay.com/video/2022/10/25/136478-764088476_tiny.mp4", // Music/concert
     color: "from-purple-500 to-pink-500",
     bgColor: "bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20",
     count: "100+ Events",
@@ -86,6 +91,7 @@ const services = [
     description: "Small and medium enterprise products, services, and business solutions.",
     icon: Package,
     image: "/services/sme-products.jpg",
+    video: "https://cdn.pixabay.com/video/2020/03/29/34782-403049056_tiny.mp4", // Shopping/products
     color: "from-indigo-500 to-purple-500",
     bgColor: "bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20",
     count: "400+ Products",
@@ -97,6 +103,7 @@ const services = [
     description: "Government and private sector tender opportunities and procurement services.",
     icon: FileText,
     image: "/services/tenders.jpg",
+    video: "https://cdn.pixabay.com/video/2023/04/25/160690-821932088_tiny.mp4", // Documents/business
     color: "from-slate-600 to-gray-700",
     bgColor: "bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/20 dark:to-gray-950/20",
     count: "50+ Tenders",
@@ -108,6 +115,7 @@ const services = [
     description: "Educational institutions, courses, and learning opportunities for all ages.",
     icon: GraduationCap,
     image: "/services/education.jpg",
+    video: "https://cdn.pixabay.com/video/2022/03/29/112881-693806009_tiny.mp4", // Students/learning
     color: "from-cyan-500 to-teal-500",
     bgColor: "bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20",
     count: "80+ Schools",
@@ -119,6 +127,7 @@ const services = [
     description: "Healthcare services, medical facilities, and wellness programs for better living.",
     icon: Heart,
     image: "/services/health.jpg",
+    video: "https://cdn.pixabay.com/video/2021/08/04/84254-583982142_tiny.mp4", // Medical/healthcare
     color: "from-rose-500 to-pink-500",
     bgColor: "bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20",
     count: "60+ Clinics",
@@ -130,6 +139,7 @@ const services = [
     description: "Transportation services, logistics, and mobility solutions for all your needs.",
     icon: Truck,
     image: "/services/transport.jpg",
+    video: "https://cdn.pixabay.com/video/2019/08/01/25373-352034375_tiny.mp4", // Vehicles/transport
     color: "from-yellow-500 to-orange-500",
     bgColor: "bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20",
     count: "120+ Vehicles",
@@ -141,6 +151,7 @@ const services = [
     description: "Spiritual content, sermons, and religious services for your faith journey.",
     icon: Church,
     image: "/services/sermon.jpg",
+    video: "https://cdn.pixabay.com/video/2020/06/15/42619-431896783_tiny.mp4", // Church/worship
     color: "from-violet-500 to-purple-600",
     bgColor: "bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20",
     count: "200+ Sermons",
@@ -215,16 +226,34 @@ export function ServicesSection() {
 
                 <CardHeader className="pb-4 relative">
                   <div className="relative mb-6">
-                    <div className="aspect-[4/3] w-full rounded-xl overflow-hidden mb-4 shadow-lg">
-                      <img
-                        src={service.image || "/placeholder.svg"}
-                        alt={service.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.src = `/placeholder.svg?height=240&width=320&text=${encodeURIComponent(service.title)}`
-                        }}
-                      />
+                    <div className="aspect-[4/3] w-full rounded-xl overflow-hidden mb-4 shadow-lg relative">
+                      {service.video ? (
+                        <video
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        >
+                          <source src={service.video} type="video/mp4" />
+                          {/* Fallback to image if video fails */}
+                          <img
+                            src={service.image || "/placeholder.svg"}
+                            alt={service.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </video>
+                      ) : (
+                        <img
+                          src={service.image || "/placeholder.svg"}
+                          alt={service.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = `/placeholder.svg?height=240&width=320&text=${encodeURIComponent(service.title)}`
+                          }}
+                        />
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     <div
