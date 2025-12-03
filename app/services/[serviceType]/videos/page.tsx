@@ -176,20 +176,44 @@ export default function ServiceVideosPage({ params }: PageProps) {
                   <CardContent className="space-y-3">
                     {/* Uploaded Videos */}
                     {service.videos && service.videos.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Uploaded Videos</h4>
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-sm flex items-center gap-2">
+                          <Play className="h-4 w-4 text-green-600" />
+                          Uploaded Videos
+                        </h4>
                         {service.videos.map((videoUrl, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <Play className="h-4 w-4 text-green-600" />
-                            <a
-                              href={videoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-primary hover:underline flex-1 truncate"
-                            >
-                              Video {index + 1}
-                            </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                          <div key={index} className="space-y-2">
+                            <div className="aspect-video w-full rounded-lg overflow-hidden bg-gray-900 relative group">
+                              <video
+                                controls
+                                className="w-full h-full object-contain"
+                                preload="metadata"
+                                poster={videoUrl + "#t=0.1"}
+                              >
+                                <source src={videoUrl} type="video/mp4" />
+                                <source src={videoUrl} type="video/webm" />
+                                <source src={videoUrl} type="video/ogg" />
+                                Your browser does not support the video tag.
+                              </video>
+                              {/* Play overlay */}
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                  <Play className="h-8 w-8 text-white fill-white" />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <span>Video {index + 1}</span>
+                              <a
+                                href={videoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 hover:text-primary transition-colors"
+                              >
+                                Open in new tab
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            </div>
                           </div>
                         ))}
                       </div>
