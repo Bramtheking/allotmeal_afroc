@@ -58,18 +58,27 @@ export function FeaturedAdvertisements() {
             status: adData.status,
             placement: adData.placement,
             endDate: adData.endDate,
-            hasImages: adData.images?.length || 0
+            hasImages: adData.images?.length || 0,
+            expired: adData.endDate ? adData.endDate < now : false
           })
           
           // Only show ads for "advertisement-section" placement or no placement (old ads)
           const isCorrectPlacement = !adData.placement || adData.placement === "advertisement-section"
+          const notExpired = !adData.endDate || adData.endDate > now
+          
+          console.log(`Placement check for ${adData.title}:`, {
+            hasPlacement: !!adData.placement,
+            placementValue: adData.placement,
+            isCorrectPlacement,
+            notExpired
+          })
           
           // Filter out expired ads and wrong placement
-          if (isCorrectPlacement && (!adData.endDate || adData.endDate > now)) {
+          if (isCorrectPlacement && notExpired) {
             ads.push({ id: doc.id, ...adData })
             console.log(`✓ Including ad: ${adData.title} (placement: ${adData.placement || "default"})`)
           } else {
-            console.log(`✗ Excluding ad: ${adData.title} (expired or wrong placement)`)
+            console.log(`✗ Excluding ad: ${adData.title} - correct placement: ${isCorrectPlacement}, not expired: ${notExpired}`)
           }
         })
 

@@ -44,15 +44,15 @@ export function PlacementAdvertisements({ placement, maxAds = 6 }: PlacementAdve
         }
 
         console.log(`Fetching advertisements for placement: ${placement}`)
+        
+        // First, get all active ads
         const q = query(
           collection(db, "advertisements"),
-          where("status", "==", "active"),
-          where("placement", "==", placement),
-          limit(maxAds)
+          where("status", "==", "active")
         )
 
         const querySnapshot = await getDocs(q)
-        console.log(`Found ${querySnapshot.size} active advertisements for ${placement}`)
+        console.log(`Found ${querySnapshot.size} total active advertisements`)
         
         const ads: Advertisement[] = []
         const now = new Date().toISOString()
@@ -60,17 +60,29 @@ export function PlacementAdvertisements({ placement, maxAds = 6 }: PlacementAdve
         querySnapshot.forEach((doc) => {
           const adData = doc.data() as Advertisement
           
-          // Filter out expired ads
-          if (!adData.endDate || adData.endDate > now) {
+          console.log(`Checking ad: ${adData.title}`, {
+            placement: adData.placement,
+            targetPlacement: placement,
+            status: adData.status,
+            endDate: adData.endDate,
+            expired: adData.endDate ? adData.endDate < now : false
+          })
+          
+          // Check if placement matches and not expired
+          const placementMatches = adData.placement === placement
+          const notExpired = !adData.endDate || adData.endDate > now
+          
+          if (placementMatches && notExpired) {
             ads.push({ id: doc.id, ...adData })
             console.log(`✓ Including ad: ${adData.title} at ${placement}`)
           } else {
-            console.log(`✗ Excluding expired ad: ${adData.title}`)
+            console.log(`✗ Excluding ad: ${adData.title} - placement match: ${placementMatches}, not expired: ${notExpired}`)
           }
         })
 
         console.log(`Final advertisements count for ${placement}: ${ads.length}`)
-        setAdvertisements(ads)
+        // Limit to maxAds
+        setAdvertisements(ads.slice(0, maxAds))
       } catch (error) {
         console.error(`Error fetching advertisements for ${placement}:`, error)
       } finally {

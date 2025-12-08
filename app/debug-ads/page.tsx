@@ -7,140 +7,134 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 export default function DebugAdsPage() {
-  const [allAds, setAllAds] = useState<any[]>([])
+  const [ads, setAds] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchAllAds = async () => {
+    const fetchAds = async () => {
       try {
         const db = await getFirebaseDb()
         if (!db) {
-          setError("Firebase DB not available")
+          console.log("No database")
+          setLoading(false)
           return
         }
 
-        console.log("Fetching ALL advertisements (no filters)...")
         const querySnapshot = await getDocs(collection(db, "advertisements"))
-        
-        const ads: any[] = []
-        const now = new Date().toISOString()
+        const allAds: any[] = []
         
         querySnapshot.forEach((doc) => {
-          const adData = doc.data()
-          ads.push({
-            id: doc.id,
-            title: adData.title,
-            status: adData.status,
-            startDate: adData.startDate,
-            endDate: adData.endDate,
-            isExpired: adData.endDate ? adData.endDate < now : false,
-            hasImages: adData.images?.length || 0,
-            createdAt: adData.createdAt,
-            isSelfService: adData.isSelfService,
-            paymentStatus: adData.paymentStatus,
-            ...adData
-          })
+          allAds.push({ id: doc.id, ...doc.data() })
         })
 
-        console.log(`Found ${ads.length} total advertisements`)
-        setAllAds(ads)
-      } catch (error: any) {
-        console.error("Error fetching advertisements:", error)
-        setError(error.message)
+        console.log("All ads from database:", allAds)
+        setAds(allAds)
+      } catch (error) {
+        console.error("Error:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchAllAds()
+    fetchAds()
   }, [])
 
   if (loading) {
     return <div className="container py-8">Loading...</div>
   }
 
-  if (error) {
-    return (
-      <div className="container py-8">
-        <Card className="border-red-500">
-          <CardHeader>
-            <CardTitle className="text-red-500">Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{error}</p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  const now = new Date().toISOString()
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">Advertisement Debug View</h1>
+      <h1 className="text-3xl font-bold mb-8">Advertisement Debug Page</h1>
       
-      <div className="mb-6 p-4 bg-muted rounded-lg">
-        <h2 className="text-xl font-semibold mb-2">Summary</h2>
-        <p>Total Advertisements: {allAds.length}</p>
-        <p>Active Status: {allAds.filter(ad => ad.status === "active").length}</p>
-        <p>Not Expired: {allAds.filter(ad => !ad.isExpired).length}</p>
-        <p>Active & Not Expired: {allAds.filter(ad => ad.status === "active" && !ad.isExpired).length}</p>
+      <div className="mb-8 p-4 bg-blue-50 rounded-lg">
+        <h2 className="font-bold mb-2">Current Time:</h2>
+        <p className="font-mono">{now}</p>
       </div>
 
       <div className="space-y-4">
-        {allAds.map((ad) => (
-          <Card key={ad.id} className={ad.status === "active" && !ad.isExpired ? "border-green-500" : "border-yellow-500"}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>{ad.title}</CardTitle>
-                <div className="flex gap-2">
-                  <Badge variant={ad.status === "active" ? "default" : "secondary"}>
-                    {ad.status || "NO STATUS"}
-                  </Badge>
-                  {ad.isExpired && <Badge variant="destructive">Expired</Badge>}
-                  {ad.isSelfService && <Badge variant="outline">Self-Service</Badge>}
+        {ads.map((ad) => {
+          const isExpired = ad.endDate && ad.endDate < now
+          const isActive = ad.status === "active"
+          
+          return (
+            <Card key={ad.id} className={isExpired ? "opacity-50" : ""}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>{ad.title}</span>
+                  <div className="flex gap-2">
+                    <Badge variant={isActive ? "default" : "secondary"}>
+                      {ad.status}
+                    </Badge>
+                    {isExpired && <Badge variant="destructive">EXPIRED</Badge>}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <strong>ID:</strong> {ad.id}
+                  </div>
+                  <div>
+                    <strong>Placement:</strong>{" "}
+                    <Badge variant="outline" className="ml-2">
+                      {ad.placement || "NOT SET"}
+                    </Badge>
+                  </div>
+                  <div>
+                    <strong>Status:</strong> {ad.status}
+                  </div>
+                  <div>
+                    <strong>Ad Type:</strong> {ad.adType}
+                  </div>
+                  <div>
+                    <strong>Start Date:</strong>{" "}
+                    {ad.startDate ? new Date(ad.startDate).toLocaleString() : "N/A"}
+                  </div>
+                  <div>
+                    <strong>End Date:</strong>{" "}
+                    {ad.endDate ? new Date(ad.endDate).toLocaleString() : "N/A"}
+                  </div>
+                  <div className="col-span-2">
+                    <strong>Company:</strong> {ad.company}
+                  </div>
+                  <div className="col-span-2">
+                    <strong>Images:</strong> {ad.images?.length || 0} image(s)
+                  </div>
+                  
+                  <div className="col-span-2 mt-4 p-3 bg-gray-50 rounded">
+                    <strong>Will Show In:</strong>
+                    <ul className="list-disc list-inside mt-2">
+                      {isActive && !isExpired && ad.placement === "below-video" && (
+                        <li className="text-green-600">✓ Below Video Section (Homepage)</li>
+                      )}
+                      {isActive && !isExpired && (ad.placement === "advertisement-section" || !ad.placement) && (
+                        <li className="text-green-600">✓ Main Advertisement Section (Homepage)</li>
+                      )}
+                      {isActive && !isExpired && ad.placement === "sidebar" && (
+                        <li className="text-green-600">✓ Sidebar (Service Detail Pages)</li>
+                      )}
+                      {!isActive && <li className="text-red-600">✗ Not active</li>}
+                      {isExpired && <li className="text-red-600">✗ Expired</li>}
+                      {isActive && !isExpired && ad.placement && !["below-video", "advertisement-section", "sidebar"].includes(ad.placement) && (
+                        <li className="text-orange-600">⚠ Unknown placement: {ad.placement}</li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <strong>ID:</strong> {ad.id}
-                </div>
-                <div>
-                  <strong>Status:</strong> {ad.status || "MISSING"}
-                </div>
-                <div>
-                  <strong>Start Date:</strong> {ad.startDate || "MISSING"}
-                </div>
-                <div>
-                  <strong>End Date:</strong> {ad.endDate || "MISSING"}
-                </div>
-                <div>
-                  <strong>Images:</strong> {ad.hasImages}
-                </div>
-                <div>
-                  <strong>Created At:</strong> {typeof ad.createdAt === 'object' && ad.createdAt?.seconds 
-                    ? new Date(ad.createdAt.seconds * 1000).toLocaleDateString()
-                    : ad.createdAt || "MISSING"}
-                </div>
-                <div>
-                  <strong>Payment Status:</strong> {ad.paymentStatus || "N/A"}
-                </div>
-                <div>
-                  <strong>Will Show:</strong> {ad.status === "active" && !ad.isExpired ? "✅ YES" : "❌ NO"}
-                </div>
-              </div>
-              {ad.description && (
-                <div className="mt-4">
-                  <strong>Description:</strong>
-                  <p className="text-muted-foreground line-clamp-2">{ad.description}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
+
+      {ads.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-lg text-muted-foreground">No advertisements found in database</p>
+        </div>
+      )}
     </div>
   )
 }
