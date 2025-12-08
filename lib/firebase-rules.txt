@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      // Users can read/write their own document
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Admin can read/write all user documents
+      allow read, write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // Marketing can read all user documents
+      allow read: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+    }
+    
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+    }
+    
+    match /advertisements/{adId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+    }
+    
+    match /newsletter_subscribers/{docId} {
+      // Allow anyone to create newsletter subscriptions (public signup)
+      allow create: if true;
+      // Only admins/marketing can read
+      allow read: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin','marketing'];
+      // No updates or deletes allowed
+      allow update, delete: if false;
+    }
+
+    match /blog_posts/{postId} {
+      // Allow anyone to read published posts
+      allow read: if resource.data.status == 'published';
+      
+      // Allow admins and marketing to read all posts
+      allow read: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+      
+      // Allow admins and marketing to create posts
+      allow create: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'] &&
+        request.resource.data.authorId == request.auth.uid;
+      
+      // Allow authors and admins to update their own posts
+      allow update: if request.auth != null &&
+        (resource.data.authorId == request.auth.uid ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+      
+      // Allow admins and authors to delete their own posts
+      allow delete: if request.auth != null &&
+        (resource.data.authorId == request.auth.uid ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    match /blog_categories/{categoryId} {
+      // Allow anyone to read categories
+      allow read: if true;
+      
+      // Only admins and marketing can write categories
+      allow write: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'marketing'];
+    }
+  }
+}

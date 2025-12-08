@@ -1,0 +1,112 @@
+Prompt for AI editor — Integrate M-Pesa STK Push on allotmealafroc.netlify.app
+
+Goal: Edit allotmealafroc.netlify.app so that STK Push payment is required to proceed from a service's Learn More → Continue or Learn More → Videos flow. Ensure full end-to-end functionality (STK Push request, callback handling, success/failure handling, logs) and admin controls as described below.
+
+Frontend behavior
+
+After a user clicks Learn More then Continue, or Learn More then Videos, require a payment via STK Push before allowing the user to proceed to the protected content.
+
+Payment UI should request phone number and amount (amount determined by admin settings; see Admin Dashboard).
+
+Show clear UI states: request sent, waiting for user to complete on phone, success, failure/cancelled.
+
+Use the site’s existing look/flows; integrate payment step into the existing Learn More → Continue / Videos interactions.
+
+Backend / Functions
+
+Use Netlify Functions for all server-side interactions with Safaricom Daraja (token generation, STK Push request, callback endpoint).
+
+Implement an endpoint for STK Push (/.netlify/functions/stkPush) and a callback endpoint (/.netlify/functions/callback) to receive Safaricom notifications.
+
+Do not hardcode credentials or URLs in code — read all credentials and base URL from environment variables (provided below).
+
+Log callback payloads and handle ResultCode (0 = success). Persist transaction records to Firebase.
+
+Admin Dashboard requirements
+
+In the admin dashboard, provide the ability to:
+
+Select any service and set the amount required for:
+
+the Continue action, and
+
+the Videos action.
+
+Apply settings per-service; all services must support this.
+
+Whitelist phone numbers so that inputting a whitelisted number bypasses payment.
+
+Whitelist Google sign-ins (specific Google accounts) so those users bypass payment.
+
+Pause / Resume the M-Pesa payment requirement globally (a toggle to disable/enable STK Push enforcement without removing settings).
+
+Admin changes should be stored in Firebase (existing implementation) and read by Netlify Functions and the frontend in real-time or on refresh.
+
+Whitelisting & Auth exemptions
+
+Whitelist by phone number (E.164 format) and by Google account email/ID.
+
+When a whitelisted phone or Google sign-in is detected, bypass payment and proceed immediately.
+
+Admin should be able to add/remove whitelist entries.
+
+Data/storage
+
+Use Firebase (already implemented on the site) to store:
+
+service pricing configuration,
+
+whitelist entries,
+
+transaction records and statuses,
+
+admin settings (pause/resume).
+
+Ensure transaction records include: MerchantRequestID, CheckoutRequestID, Phone, Amount, Service, ActionType (Continue | Videos), ResultCode, ResultDesc, Timestamp.
+
+Environment variables (CURRENT — sandbox values; code should use env vars and not assume these are final)
+MPESA_CONSUMER_KEY=bttAD7UeJYeiUxm0xloDuMYrs9uGYcJAyxzcwzzAhG1rgqkm
+MPESA_CONSUMER_SECRET=GUdHKmME1HnhVKoubG6azooqdxMKXFJLwoeiHRDg6qXTyQBZx9CrirR3eFshspFJ
+MPESA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
+MPESA_SHORTCODE=174379
+MPESA_BASE_URL=https://sandbox.safaricom.co.ke
+
+
+Important: The system must treat these as environment-configurable values (sandbox now, will be replaced with live values later). The integration must work by changing env variables only (consumer key/secret, passkey, shortcode, base URL).
+
+Testing vs Production
+
+Integration should work in sandbox with the provided environment variables.
+
+When moving to production, the maintainers will replace env vars with live values. The code should not require other changes besides updating env vars and switching MPESA_BASE_URL to https://api.safaricom.co.ke.
+
+The AI editor must not treat the current setup as permanently "test-only" — it should implement using env variables so switching to live is just changing env values.
+
+Site inspection
+
+Inspect the site thoroughly to find the exact pages/components where:
+
+Learn More → Continue is implemented
+
+Learn More → Videos is implemented
+
+Admin dashboard and Firebase access code exist
+
+Integrate payment UI and Netlify Function calls into those exact flows so the user experience remains consistent.
+
+Deliverables & confirmation
+
+Implement STK Push flow (frontend + Netlify Functions + callback handler).
+
+Integrate admin controls in existing admin dashboard and persist to Firebase.
+
+Ensure whitelist and pause/resume functionality works and is stored in Firebase.
+
+Add transaction logging to Firebase.
+
+Provide clear instructions and the exact callback URL used (so it can be submitted to Safaricom when requesting live access).
+
+Callback URL (example / where to tell Safaricom)
+
+Term | Meaning | Example
+Callback URL | Where M-Pesa sends payment results | https://allotmealafroc.netlify.app/.netlify/functions/callback
