@@ -387,12 +387,12 @@ export default function HotelIndustryPage() {
                     <CardHeader className="pb-4 space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2">
-                          <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-amber-600 transition-colors duration-300">
+                          <CardTitle className="text-xl font-bold text-amber-600 dark:text-amber-400">
                             {hotel.title}
                           </CardTitle>
-                          <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                          <div className="flex items-center gap-2 text-black dark:text-white">
                             <MapPin className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                            <span className="text-sm font-medium">{hotel.town || "Kitale"}, Kenya</span>
+                            <span className="text-sm font-semibold">{hotel.town || "Kitale"}, Kenya</span>
                           </div>
                         </div>
                       </div>
@@ -408,41 +408,41 @@ export default function HotelIndustryPage() {
                     </CardHeader>
                     
                     <CardContent className="space-y-4 flex-1">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 font-medium">{hotel.description}</p>
+                      <p className="text-sm text-black dark:text-white line-clamp-2 font-medium">{hotel.description}</p>
                       
                       {/* Room Features */}
                       <div className="grid grid-cols-2 gap-3">
                         <div className="flex items-center gap-2">
                           <Bed className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">King Bed</span>
+                          <span className="text-xs text-black dark:text-white font-semibold">King Bed</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Bath className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">Private Bath</span>
+                          <span className="text-xs text-black dark:text-white font-semibold">Private Bath</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Wifi className="h-4 w-4 text-green-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">Free WiFi</span>
+                          <span className="text-xs text-black dark:text-white font-semibold">Free WiFi</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Utensils className="h-4 w-4 text-amber-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">Restaurant</span>
+                          <span className="text-xs text-black dark:text-white font-semibold">Restaurant</span>
                         </div>
                       </div>
 
                       {/* Amenities */}
                       <div className="flex flex-wrap gap-2">
-                        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                          <Waves className="h-3 w-3 text-blue-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">Pool</span>
+                        <div className="flex items-center gap-1 bg-gray-800 dark:bg-gray-700 px-3 py-1.5 rounded-full">
+                          <Waves className="h-3 w-3 text-blue-400" />
+                          <span className="text-xs text-white font-semibold">Pool</span>
                         </div>
-                        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                          <Dumbbell className="h-3 w-3 text-red-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">Gym</span>
+                        <div className="flex items-center gap-1 bg-gray-800 dark:bg-gray-700 px-3 py-1.5 rounded-full">
+                          <Dumbbell className="h-3 w-3 text-red-400" />
+                          <span className="text-xs text-white font-semibold">Gym</span>
                         </div>
-                        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                          <Car className="h-3 w-3 text-gray-500" />
-                          <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">Parking</span>
+                        <div className="flex items-center gap-1 bg-gray-800 dark:bg-gray-700 px-3 py-1.5 rounded-full">
+                          <Car className="h-3 w-3 text-gray-300" />
+                          <span className="text-xs text-white font-semibold">Parking</span>
                         </div>
                       </div>
                       
