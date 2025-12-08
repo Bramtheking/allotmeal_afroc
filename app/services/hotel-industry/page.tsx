@@ -447,21 +447,23 @@ export default function HotelIndustryPage() {
                       </div>
                       
                       {/* Price */}
-                      <div className="flex items-end justify-between pt-4 border-t">
-                        <div>
-                          <p className="text-xs text-gray-500">From</p>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-blue-600 bg-clip-text text-transparent">
-                              {hotel.price || "$120"}
-                            </span>
-                            <span className="text-sm text-gray-500">/ night</span>
+                      {hotel.price && (
+                        <div className="flex items-end justify-between pt-4 border-t">
+                          <div>
+                            <p className="text-xs text-gray-500">From</p>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-blue-600 bg-clip-text text-transparent">
+                                {hotel.price}
+                              </span>
+                              <span className="text-sm text-gray-500">/ night</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-green-600 font-medium">Great Value</p>
+                            <p className="text-xs text-gray-500">Incl. taxes & fees</p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs text-green-600 font-medium">Great Value</p>
-                          <p className="text-xs text-gray-500">Incl. taxes & fees</p>
-                        </div>
-                      </div>
+                      )}
                     </CardContent>
                     
                     <CardFooter className="grid grid-cols-2 gap-3 pt-6">
