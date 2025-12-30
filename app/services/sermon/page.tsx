@@ -311,7 +311,7 @@ export default function SermonsPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Inspirational Messages
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Discover powerful sermons that inspire, encourage, and strengthen your faith journey
             </p>
           </div>
@@ -329,7 +329,7 @@ export default function SermonsPage() {
               <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                 Inspiring Sermons Coming Soon
               </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+              <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                 We're curating powerful messages from Africa's most inspiring spiritual leaders. Life-changing sermons
                 and teachings will be available soon!
               </p>
@@ -384,19 +384,19 @@ export default function SermonsPage() {
                     </div>
 
                     <CardHeader className="pb-4">
-                      <CardTitle className="text-xl font-bold group-hover:text-indigo-600 transition-colors duration-300 line-clamp-2">
+                      <CardTitle className="text-xl font-bold text-indigo-600 dark:text-indigo-400 line-clamp-2">
                         {sermon.title}
                       </CardTitle>
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-gray-900">
                           <User className="h-4 w-4 text-indigo-500" />
                           <span className="text-sm font-medium">{sermon.preacher}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-gray-900">
                           <Book className="h-4 w-4 text-purple-500" />
                           <span className="text-sm">{sermon.topic}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-gray-900">
                           <Calendar className="h-4 w-4 text-violet-500" />
                           <span className="text-sm">{sermon.sermonDate}</span>
                         </div>
@@ -404,7 +404,7 @@ export default function SermonsPage() {
                     </CardHeader>
 
                     <CardContent className="space-y-4 flex-1">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{sermon.description}</p>
+                      <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{sermon.description}</p>
 
                       {sermon.scripture && (
                         <div className="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-l-4 border-indigo-400">
@@ -460,7 +460,7 @@ export default function SermonsPage() {
               <Heart className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Inspiring Content</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Messages that touch hearts, transform lives, and strengthen faith communities.
             </p>
           </div>
@@ -470,7 +470,7 @@ export default function SermonsPage() {
               <Music className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Quality Audio/Video</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Crystal-clear streaming with professional audio and video production.
             </p>
           </div>
@@ -480,7 +480,7 @@ export default function SermonsPage() {
               <Users className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Global Community</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Join believers worldwide in worship, learning, and spiritual growth.
             </p>
           </div>
@@ -498,7 +498,7 @@ export default function SermonsPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Need Spiritual Guidance?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Connect with our pastoral team for prayer, counseling, or spiritual support and guidance.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">

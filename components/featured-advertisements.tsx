@@ -46,33 +46,39 @@ export function FeaturedAdvertisements() {
 
         const querySnapshot = await getDocs(q)
         console.log(`Found ${querySnapshot.size} active advertisements`)
-        
+
         const ads: Advertisement[] = []
         const now = new Date().toISOString()
-        
+
         querySnapshot.forEach((doc) => {
           const adData = doc.data() as Advertisement
-          console.log("Advertisement data:", { 
-            id: doc.id, 
-            title: adData.title, 
+          console.log("Advertisement data:", {
+            id: doc.id,
+            title: adData.title,
             status: adData.status,
             placement: adData.placement,
             endDate: adData.endDate,
             hasImages: adData.images?.length || 0,
             expired: adData.endDate ? adData.endDate < now : false
           })
-          
-          // Only show ads for "advertisement-section" placement or no placement (old ads)
-          const isCorrectPlacement = !adData.placement || adData.placement === "advertisement-section"
+
+          // Show ads for "advertisement-section", "services", or no placement (old ads)
+          // Also accept human-readable version just in case
+          const isCorrectPlacement =
+            !adData.placement ||
+            adData.placement === "advertisement-section" ||
+            adData.placement === "services" ||
+            adData.placement === "Advertisement Section (Default)"
+
           const notExpired = !adData.endDate || adData.endDate > now
-          
+
           console.log(`Placement check for ${adData.title}:`, {
             hasPlacement: !!adData.placement,
-            placementValue: adData.placement,
+            placementValue: `"${adData.placement}"`, // Wrap in quotes to see spaces
             isCorrectPlacement,
             notExpired
           })
-          
+
           // Filter out expired ads and wrong placement
           if (isCorrectPlacement && notExpired) {
             ads.push({ id: doc.id, ...adData })
@@ -142,7 +148,7 @@ export function FeaturedAdvertisements() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover amazing deals and opportunities from our featured partners
           </p>
-          
+
           {/* Advertise with us banner */}
           <div className="mt-8 max-w-4xl mx-auto">
             <Link href="/submit-advertisement">
@@ -175,89 +181,89 @@ export function FeaturedAdvertisements() {
         {advertisements.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {advertisements.map((ad) => (
-            <Card
-              key={ad.id}
-              className="group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm overflow-hidden"
-            >
-              <CardContent className="p-0">
-                {/* Image */}
-                {ad.images && ad.images.length > 0 && (
-                  <div className="aspect-video w-full bg-white rounded-t-lg overflow-hidden relative">
-                    <img
-                      src={ad.images[0] || "/placeholder.svg"}
-                      alt={ad.title}
-                      className="w-full h-full object-contain bg-white transition-transform duration-500 group-hover:scale-105"
-                      style={{ minHeight: "200px", maxHeight: "250px" }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.src = `/placeholder.svg?height=250&width=400&text=${encodeURIComponent(ad.title || "Advertisement")}`
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <Card
+                key={ad.id}
+                className="group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm overflow-hidden"
+              >
+                <CardContent className="p-0">
+                  {/* Image */}
+                  {ad.images && ad.images.length > 0 && (
+                    <div className="aspect-video w-full bg-white rounded-t-lg overflow-hidden relative">
+                      <img
+                        src={ad.images[0] || "/placeholder.svg"}
+                        alt={ad.title}
+                        className="w-full h-full object-contain bg-white transition-transform duration-500 group-hover:scale-105"
+                        style={{ minHeight: "200px", maxHeight: "250px" }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.src = `/placeholder.svg?height=250&width=400&text=${encodeURIComponent(ad.title || "Advertisement")}`
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                    {/* Ad Type Badge */}
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-lg">
-                        {ad.adType?.toUpperCase() || "FEATURED"}
-                      </Badge>
-                    </div>
-                  </div>
-                )}
-
-                {/* Content */}
-                <div className="p-6 space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
-                      {ad.title}
-                    </h3>
-
-                    {ad.company && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        <span>{ad.company}</span>
+                      {/* Ad Type Badge */}
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-lg">
+                          {ad.adType?.toUpperCase() || "FEATURED"}
+                        </Badge>
                       </div>
-                    )}
-
-                    {ad.location && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span>{ad.location}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {ad.description && (
-                    <div
-                      className="text-sm text-muted-foreground line-clamp-3 leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: formatText(ad.description) }}
-                    />
-                  )}
-
-                  {/* Price */}
-                  {ad.price && <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{ad.price}</div>}
-
-                  {/* Duration */}
-                  {ad.startDate && ad.endDate && (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>Valid until {new Date(ad.endDate).toLocaleDateString()}</span>
                     </div>
                   )}
 
-                  {/* Action Button */}
-                  <Button
-                    asChild
-                    className="w-full group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-500 transition-all duration-300"
-                  >
-                    <Link href={`/advertisements/${ad.id}`}>
-                      View Details
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  {/* Content */}
+                  <div className="p-6 space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
+                        {ad.title}
+                      </h3>
+
+                      {ad.company && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Building2 className="h-4 w-4" />
+                          <span>{ad.company}</span>
+                        </div>
+                      )}
+
+                      {ad.location && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4" />
+                          <span>{ad.location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {ad.description && (
+                      <div
+                        className="text-sm text-muted-foreground line-clamp-3 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: formatText(ad.description) }}
+                      />
+                    )}
+
+                    {/* Price */}
+                    {ad.price && <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{ad.price}</div>}
+
+                    {/* Duration */}
+                    {ad.startDate && ad.endDate && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        <span>Valid until {new Date(ad.endDate).toLocaleDateString()}</span>
+                      </div>
+                    )}
+
+                    {/* Action Button */}
+                    <Button
+                      asChild
+                      className="w-full group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-500 transition-all duration-300"
+                    >
+                      <Link href={`/advertisements/${ad.id}`}>
+                        View Details
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         ) : (
           <div className="text-center py-12">

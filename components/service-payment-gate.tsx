@@ -8,6 +8,8 @@ import { Lock, Home, CreditCard } from "lucide-react"
 import { MpesaPaymentDialog } from "./mpesa-payment-dialog"
 import { useAuth } from "@/lib/auth-context"
 
+import { hasActivePaidSession } from "@/lib/payment-session"
+
 interface ServicePaymentGateProps {
   serviceType: string
   serviceId: string
@@ -25,11 +27,15 @@ export function ServicePaymentGate({ serviceType, serviceId, serviceName, childr
   useEffect(() => {
     // Check if user has paid for this service
     const checkPaymentStatus = () => {
+      // Check localStorage for specific service payment
       const paymentKey = `service_paid_${serviceType}_${serviceId}`
-      const paid = localStorage.getItem(paymentKey) === "true"
+      const localPaid = localStorage.getItem(paymentKey) === "true"
       
-      console.log("Payment check:", { paymentKey, paid })
-      setHasPaid(paid)
+      // Check for active session (pays for all services of this type)
+      const sessionPaid = hasActivePaidSession(serviceType, "Continue")
+      
+      console.log("Payment check:", { paymentKey, localPaid, sessionPaid })
+      setHasPaid(localPaid || sessionPaid)
       setIsChecking(false)
     }
 

@@ -41,7 +41,7 @@ export default function SubmitAdvertisementPage() {
     location: "",
     website: "",
     duration: "1week",
-    placement: "advertisement-section", // Default placement
+    placement: "services", // Default placement
   })
 
   const handleInputChange = (field: string, value: string) => {
@@ -422,26 +422,26 @@ export default function SubmitAdvertisementPage() {
               <RadioGroup value={formData.placement} onValueChange={(value) => handleInputChange("placement", value)}>
                 <div className="space-y-3">
                   <div>
-                    <RadioGroupItem value="below-video" id="below-video" className="peer sr-only" />
+                    <RadioGroupItem value="homepage" id="homepage" className="peer sr-only" />
                     <Label
-                      htmlFor="below-video"
+                      htmlFor="homepage"
                       className="flex items-start gap-3 rounded-lg border-2 border-muted bg-white p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-purple-600 peer-data-[state=checked]:bg-purple-50 dark:peer-data-[state=checked]:bg-purple-950/20 cursor-pointer transition-all"
                     >
                       <div className="flex-1">
-                        <span className="text-lg font-semibold block mb-1">Below Featured Video</span>
-                        <span className="text-sm text-muted-foreground">Prime position right after the hero video, above services section</span>
+                        <span className="text-lg font-semibold block mb-1">Homepage (Below Featured Video)</span>
+                        <span className="text-sm text-muted-foreground">Prime position right after the hero video, maximum visibility</span>
                       </div>
                     </Label>
                   </div>
 
                   <div>
-                    <RadioGroupItem value="advertisement-section" id="advertisement-section" className="peer sr-only" />
+                    <RadioGroupItem value="services" id="services" className="peer sr-only" />
                     <Label
-                      htmlFor="advertisement-section"
+                      htmlFor="services"
                       className="flex items-start gap-3 rounded-lg border-2 border-muted bg-white p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-purple-600 peer-data-[state=checked]:bg-purple-50 dark:peer-data-[state=checked]:bg-purple-950/20 cursor-pointer transition-all"
                     >
                       <div className="flex-1">
-                        <span className="text-lg font-semibold block mb-1">Advertisement Section (Default)</span>
+                        <span className="text-lg font-semibold block mb-1">Featured Advertisements Section (Default)</span>
                         <span className="text-sm text-muted-foreground">Main featured advertisements section below services</span>
                       </div>
                     </Label>
@@ -456,6 +456,19 @@ export default function SubmitAdvertisementPage() {
                       <div className="flex-1">
                         <span className="text-lg font-semibold block mb-1">Sidebar Banner</span>
                         <span className="text-sm text-muted-foreground">Visible on service detail pages and blog posts</span>
+                      </div>
+                    </Label>
+                  </div>
+
+                  <div>
+                    <RadioGroupItem value="footer" id="footer" className="peer sr-only" />
+                    <Label
+                      htmlFor="footer"
+                      className="flex items-start gap-3 rounded-lg border-2 border-muted bg-white p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-purple-600 peer-data-[state=checked]:bg-purple-50 dark:peer-data-[state=checked]:bg-purple-950/20 cursor-pointer transition-all"
+                    >
+                      <div className="flex-1">
+                        <span className="text-lg font-semibold block mb-1">Footer Banner</span>
+                        <span className="text-sm text-muted-foreground">Appears at the bottom of every page</span>
                       </div>
                     </Label>
                   </div>

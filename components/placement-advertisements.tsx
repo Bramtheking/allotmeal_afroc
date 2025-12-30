@@ -11,7 +11,7 @@ import { MapPin, Building2, ArrowRight, Clock } from "lucide-react"
 import Link from "next/link"
 
 interface PlacementAdvertisementsProps {
-  placement: "below-video" | "below-services" | "sidebar"
+  placement: "homepage" | "services" | "sidebar" | "footer"
   maxAds?: number
 }
 
@@ -44,7 +44,7 @@ export function PlacementAdvertisements({ placement, maxAds = 6 }: PlacementAdve
         }
 
         console.log(`Fetching advertisements for placement: ${placement}`)
-        
+
         // First, get all active ads
         const q = query(
           collection(db, "advertisements"),
@@ -53,25 +53,34 @@ export function PlacementAdvertisements({ placement, maxAds = 6 }: PlacementAdve
 
         const querySnapshot = await getDocs(q)
         console.log(`Found ${querySnapshot.size} total active advertisements`)
-        
+
         const ads: Advertisement[] = []
         const now = new Date().toISOString()
-        
+
         querySnapshot.forEach((doc) => {
           const adData = doc.data() as Advertisement
-          
+
           console.log(`Checking ad: ${adData.title}`, {
-            placement: adData.placement,
+            placement: `"${adData.placement}"`,
             targetPlacement: placement,
             status: adData.status,
             endDate: adData.endDate,
             expired: adData.endDate ? adData.endDate < now : false
           })
-          
+
           // Check if placement matches and not expired
-          const placementMatches = adData.placement === placement
+          // Check for both value and potential human-readable label
+          let placementMatches = adData.placement === placement
+
+          // Handle label mismatches if data was saved with labels
+          if (!placementMatches && adData.placement) {
+            // Map "homepage" to "below-video" as per user request
+            if (placement === "below-video" && (adData.placement === "Below Featured Video" || adData.placement === "homepage")) placementMatches = true
+            if (placement === "sidebar" && adData.placement === "Sidebar Banner") placementMatches = true
+            if (placement === "below-services" && adData.placement === "Below Services") placementMatches = true
+          }
           const notExpired = !adData.endDate || adData.endDate > now
-          
+
           if (placementMatches && notExpired) {
             ads.push({ id: doc.id, ...adData })
             console.log(`✓ Including ad: ${adData.title} at ${placement}`)

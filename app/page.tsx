@@ -2,6 +2,7 @@
 
 import { HeroSection } from "@/components/hero-section"
 import { FeaturedVideoSection } from "@/components/featured-video-section"
+import { WorldCouplesDayBanner } from "@/components/world-couples-day-banner"
 import { ServicesSection } from "@/components/services-section"
 import { FeaturedAdvertisements } from "@/components/featured-advertisements"
 import { PlacementAdvertisements } from "@/components/placement-advertisements"
@@ -20,8 +21,10 @@ export default function HomePage() {
         <HeroSection />
       </section>
       <FeaturedVideoSection />
+      {/* World Couple's Day Banner */}
+      <WorldCouplesDayBanner />
       {/* Ads below featured video, above services */}
-      <PlacementAdvertisements placement="below-video" maxAds={3} />
+      <PlacementAdvertisements placement="homepage" maxAds={3} />
       <section id="services">
         <ServicesSection />
       </section>
@@ -32,6 +35,8 @@ export default function HomePage() {
       <StatsSection />
       <TestimonialsSection />
       <PartnersSection />
+      {/* Footer Advertisements */}
+      <PlacementAdvertisements placement="footer" maxAds={2} />
       <section id="contact">
         <ContactSection />
       </section>

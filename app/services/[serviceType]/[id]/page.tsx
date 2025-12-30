@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import VisitorTracker from "@/components/visitor-tracker"
 import { ServicePaymentGate } from "@/components/service-payment-gate"
 import { JobApplicationDialog } from "@/components/job-application-dialog"
+import { PlacementAdvertisements } from "@/components/placement-advertisements"
 
 export default function ServiceDetailPage() {
   const params = useParams()
@@ -30,16 +31,16 @@ export default function ServiceDetailPage() {
         if (!db || !params.id) return
 
         const idOrSlug = params.id as string
-        
+
         // Try to fetch by ID first
         let docSnap = await getDoc(doc(db, "services", idOrSlug))
-        
+
         // If not found and looks like a slug, search by slug
         if (!docSnap.exists() && idOrSlug.includes('-')) {
           const { collection, query, where, getDocs } = await import("firebase/firestore")
           const q = query(collection(db, "services"), where("slug", "==", idOrSlug))
           const querySnapshot = await getDocs(q)
-          
+
           if (!querySnapshot.empty) {
             const firstDoc = querySnapshot.docs[0]
             const serviceData = { id: firstDoc.id, ...firstDoc.data() } as Service
@@ -74,9 +75,9 @@ export default function ServiceDetailPage() {
       window.open(`mailto:${service.email}`, "_blank")
     } else {
       // Use default contact information as fallback
-      const defaultPhone = "+254741797609"
+      const defaultPhone = "+254 701 524543"
       const defaultEmail = "allotmealafrockenya@gmail.com"
-      
+
       // Create action selection
       const usePhone = confirm("Contact us via phone or email?\nClick OK for Phone, Cancel for Email")
       if (usePhone) {
@@ -139,7 +140,7 @@ export default function ServiceDetailPage() {
   // For jobs, don't use ServicePaymentGate - payment happens when applying
   const isJobService = params.serviceType === "jobs"
   console.log("Service type:", params.serviceType, "Is job service:", isJobService)
-  
+
   const pageContent = (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50 dark:from-yellow-950/30 dark:via-gray-950 dark:to-blue-950/30">
       <VisitorTracker page={`/services/${params.serviceType}/${params.id}`} />
@@ -366,9 +367,9 @@ export default function ServiceDetailPage() {
                 <Separator />
 
                 {params.serviceType === "jobs" ? (
-                  <Button 
-                    onClick={() => setShowJobApplicationDialog(true)} 
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600" 
+                  <Button
+                    onClick={() => setShowJobApplicationDialog(true)}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
                     size="lg"
                   >
                     <Briefcase className="mr-2 h-4 w-4" />
@@ -412,6 +413,9 @@ export default function ServiceDetailPage() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Sidebar Advertisements */}
+            <PlacementAdvertisements placement="sidebar" maxAds={2} />
           </div>
         </div>
       </div>
@@ -428,21 +432,7 @@ export default function ServiceDetailPage() {
     </div>
   )
 
-  // Jobs: No payment gate (free to view, pay only when applying)
-  // Other services: Payment gate required (pay to view details)
-  if (isJobService) {
-    console.log("Rendering job without payment gate")
-    return pageContent
-  } else {
-    console.log("Rendering service with payment gate")
-    return (
-      <ServicePaymentGate
-        serviceType={params.serviceType as string}
-        serviceId={params.id as string}
-        serviceName={service.title}
-      >
-        {pageContent}
-      </ServicePaymentGate>
-    )
-  }
+  // No payment gate - all services are free to view
+  // Payment only happens when accessing videos or specific actions
+  return pageContent
 }

@@ -225,7 +225,7 @@ export default function SMEProductsPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">
               Premium SME Products
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Support local businesses while getting quality products at competitive prices
             </p>
           </div>
@@ -243,7 +243,7 @@ export default function SMEProductsPage() {
               <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                 Exciting SME Products Coming Soon
               </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+              <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                 We're partnering with Africa's top SME manufacturers and suppliers. Check back soon for quality products
                 at competitive prices!
               </p>
@@ -292,19 +292,19 @@ export default function SMEProductsPage() {
                     </div>
 
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg font-bold group-hover:text-cyan-600 transition-colors duration-300 line-clamp-2">
+                      <CardTitle className="text-lg font-bold text-cyan-600 dark:text-cyan-400 line-clamp-2">
                         {product.title}
                       </CardTitle>
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         ))}
-                        <span className="text-sm text-gray-600 ml-1">(4.8)</span>
+                        <span className="text-sm text-gray-900 ml-1">(4.8)</span>
                       </div>
                     </CardHeader>
 
                     <CardContent className="space-y-3 flex-1">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{product.description}</p>
+                      <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{product.description}</p>
 
                       <div className="flex items-center justify-between">
                         <div>
@@ -315,7 +315,7 @@ export default function SMEProductsPage() {
                         </Badge>
                       </div>
 
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-gray-900">
                         <Store className="h-4 w-4 text-teal-500" />
                         <span className="text-sm">{product.company || "Premium SME"}</span>
                       </div>
@@ -356,7 +356,7 @@ export default function SMEProductsPage() {
               <Shield className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Quality Assured</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               All products are quality-checked and come with manufacturer warranties.
             </p>
           </div>
@@ -366,7 +366,7 @@ export default function SMEProductsPage() {
               <Truck className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Fast Delivery</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Quick and reliable shipping directly from local SME partners.
             </p>
           </div>
@@ -376,7 +376,7 @@ export default function SMEProductsPage() {
               <Award className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Support SMEs</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Every purchase supports African small businesses and local economies.
             </p>
           </div>
@@ -394,7 +394,7 @@ export default function SMEProductsPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent">
               Ready to Shop Premium SME Products?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Discover quality products from innovative African businesses and enjoy competitive prices with fast
               delivery.
             </p>

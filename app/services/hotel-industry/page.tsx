@@ -390,43 +390,43 @@ export default function HotelIndustryPage() {
                           <CardTitle className="text-xl font-bold text-amber-600 dark:text-amber-400">
                             {hotel.title}
                           </CardTitle>
-                          <div className="flex items-center gap-2 text-black dark:text-white">
+                          <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                            <span className="text-sm font-semibold">{hotel.town || "Kitale"}, Kenya</span>
+                            <span className="text-sm font-bold" style={{ color: '#1f2937' }}>{hotel.town || "Kitale"}, Kenya</span>
                           </div>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-4">
-                        <Badge variant="secondary" className="bg-green-100 text-green-700">
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 font-semibold">
                           Free Cancellation
                         </Badge>
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 font-semibold">
                           Instant Booking
                         </Badge>
                       </div>
                     </CardHeader>
                     
                     <CardContent className="space-y-4 flex-1">
-                      <p className="text-sm text-black dark:text-white line-clamp-2 font-medium">{hotel.description}</p>
+                      <p className="text-sm text-gray-900 dark:text-white line-clamp-2 font-semibold">{hotel.description}</p>
                       
                       {/* Room Features */}
                       <div className="grid grid-cols-2 gap-3">
                         <div className="flex items-center gap-2">
-                          <Bed className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs text-black dark:text-white font-semibold">King Bed</span>
+                          <Bed className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-bold" style={{ color: '#1f2937' }}>King Bed</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Bath className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs text-black dark:text-white font-semibold">Private Bath</span>
+                          <Bath className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-bold" style={{ color: '#1f2937' }}>Private Bath</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Wifi className="h-4 w-4 text-green-500" />
-                          <span className="text-xs text-black dark:text-white font-semibold">Free WiFi</span>
+                          <Wifi className="h-4 w-4 text-green-600" />
+                          <span className="text-sm font-bold" style={{ color: '#1f2937' }}>Free WiFi</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Utensils className="h-4 w-4 text-amber-500" />
-                          <span className="text-xs text-black dark:text-white font-semibold">Restaurant</span>
+                          <Utensils className="h-4 w-4 text-amber-600" />
+                          <span className="text-sm font-bold" style={{ color: '#1f2937' }}>Restaurant</span>
                         </div>
                       </div>
 

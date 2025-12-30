@@ -266,7 +266,7 @@ export default function TransportPage() {
               </div>
 
               {(searchTerm || townFilter || priceFilter) && (
-                <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+                <div className="mt-4 flex items-center justify-between text-sm text-gray-900">
                   <span>
                     Found {filteredTransport.length} transport service{filteredTransport.length !== 1 ? "s" : ""}
                     {searchTerm && ` matching "${searchTerm}"`}
@@ -304,7 +304,7 @@ export default function TransportPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">
               Premium Transport Solutions
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Reliable, efficient, and safe transport services connecting Africa to the world
             </p>
           </div>
@@ -348,7 +348,7 @@ export default function TransportPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Road Transport Networks Loading
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're connecting with Africa's leading logistics companies and transport operators. Comprehensive
                     road transport services launching soon!
                   </p>
@@ -400,34 +400,34 @@ export default function TransportPage() {
                         </div>
 
                         <CardHeader className="pb-4">
-                          <CardTitle className="text-xl font-bold group-hover:text-sky-600 transition-colors duration-300">
+                          <CardTitle className="text-xl font-bold text-sky-600 dark:text-sky-400">
                             {route.title}
                           </CardTitle>
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-900">
                             <Route className="h-4 w-4 text-sky-500" />
                             <span className="text-sm">{route.route || "City to City"}</span>
                           </div>
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{route.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{route.description}</p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">{route.duration || "4 hours"}</span>
+                              <span className="text-xs text-gray-900">{route.duration || "4 hours"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">{route.capacity || "50 seats"}</span>
+                              <span className="text-xs text-gray-900">{route.capacity || "50 seats"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <DollarSign className="h-4 w-4 text-emerald-500" />
-                              <span className="text-xs text-gray-600">{route.price || "$25"}</span>
+                              <span className="text-xs text-gray-900">{route.price || "$25"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-purple-500" />
-                              <span className="text-xs text-gray-600">Daily</span>
+                              <span className="text-xs text-gray-900">Daily</span>
                             </div>
                           </div>
 
@@ -473,7 +473,7 @@ export default function TransportPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Flight Services Connecting Soon
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're partnering with airlines to offer competitive flight booking and air cargo services. Sky-high
                     convenience coming soon!
                   </p>
@@ -525,34 +525,34 @@ export default function TransportPage() {
                         </div>
 
                         <CardHeader className="pb-4">
-                          <CardTitle className="text-xl font-bold group-hover:text-sky-600 transition-colors duration-300">
+                          <CardTitle className="text-xl font-bold text-sky-600 dark:text-sky-400">
                             {route.title}
                           </CardTitle>
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-900">
                             <Route className="h-4 w-4 text-sky-500" />
                             <span className="text-sm">{route.route || "City A to City B"}</span>
                           </div>
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{route.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{route.description}</p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">{route.duration || "2 hours"}</span>
+                              <span className="text-xs text-gray-900">{route.duration || "2 hours"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">{route.capacity || "150 seats"}</span>
+                              <span className="text-xs text-gray-900">{route.capacity || "150 seats"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <DollarSign className="h-4 w-4 text-emerald-500" />
-                              <span className="text-xs text-gray-600">{route.price || "$100"}</span>
+                              <span className="text-xs text-gray-900">{route.price || "$100"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-purple-500" />
-                              <span className="text-xs text-gray-600">Daily</span>
+                              <span className="text-xs text-gray-900">Daily</span>
                             </div>
                           </div>
 
@@ -598,7 +598,7 @@ export default function TransportPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Ocean Freight Solutions Loading
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     Cost-effective ocean freight and shipping solutions are being organized. International cargo
                     services launching soon!
                   </p>
@@ -650,34 +650,34 @@ export default function TransportPage() {
                         </div>
 
                         <CardHeader className="pb-4">
-                          <CardTitle className="text-xl font-bold group-hover:text-sky-600 transition-colors duration-300">
+                          <CardTitle className="text-xl font-bold text-sky-600 dark:text-sky-400">
                             {route.title}
                           </CardTitle>
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-900">
                             <Route className="h-4 w-4 text-sky-500" />
                             <span className="text-sm">{route.route || "Port A to Port B"}</span>
                           </div>
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{route.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{route.description}</p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">{route.duration || "7 days"}</span>
+                              <span className="text-xs text-gray-900">{route.duration || "7 days"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">{route.capacity || "1000 tons"}</span>
+                              <span className="text-xs text-gray-900">{route.capacity || "1000 tons"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <DollarSign className="h-4 w-4 text-emerald-500" />
-                              <span className="text-xs text-gray-600">{route.price || "$500"}</span>
+                              <span className="text-xs text-gray-900">{route.price || "$500"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-purple-500" />
-                              <span className="text-xs text-gray-600">Daily</span>
+                              <span className="text-xs text-gray-900">Daily</span>
                             </div>
                           </div>
 
@@ -723,7 +723,7 @@ export default function TransportPage() {
               <Globe className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Wide Network</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Extensive transport network connecting major cities and remote areas across Africa.
             </p>
           </div>
@@ -733,7 +733,7 @@ export default function TransportPage() {
               <Timer className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">On-Time Performance</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Reliable scheduling with real-time tracking and notifications for your journey.
             </p>
           </div>
@@ -743,7 +743,7 @@ export default function TransportPage() {
               <Zap className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Modern Fleet</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Contemporary vehicles and vessels equipped with safety features and comfort amenities.
             </p>
           </div>
@@ -761,7 +761,7 @@ export default function TransportPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">
               Ready to Start Your Journey?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Book your transport or get personalized assistance for logistics and travel planning.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">

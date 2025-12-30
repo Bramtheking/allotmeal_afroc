@@ -222,7 +222,7 @@ export default function HealthPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
               Premium Healthcare Services
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Connect with certified medical professionals and world-class healthcare facilities
             </p>
           </div>
@@ -266,7 +266,7 @@ export default function HealthPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Health Campaigns Coming
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're organizing community health initiatives and vaccination campaigns. Public health programs will
                     be available soon!
                   </p>
@@ -315,10 +315,10 @@ export default function HealthPage() {
                         <CardHeader className="pb-4 space-y-3">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2">
-                              <CardTitle className="text-xl font-bold group-hover:text-red-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-red-600 dark:text-red-400">
                                 {campaign.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <MapPin className="h-4 w-4 text-red-500 flex-shrink-0" />
                                 <span className="text-sm">{(campaign.town || "Kitale") + ", Kenya"}</span>
                               </div>
@@ -336,26 +336,26 @@ export default function HealthPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
                             {campaign.description}
                           </p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">Schedule</span>
+                              <span className="text-xs text-gray-900">Schedule</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">Beneficiaries</span>
+                              <span className="text-xs text-gray-900">Beneficiaries</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Shield className="h-4 w-4 text-red-500" />
-                              <span className="text-xs text-gray-600">Health Safety</span>
+                              <span className="text-xs text-gray-900">Health Safety</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Activity className="h-4 w-4 text-pink-500" />
-                              <span className="text-xs text-gray-600">Monitoring</span>
+                              <span className="text-xs text-gray-900">Monitoring</span>
                             </div>
                           </div>
                         </CardContent>
@@ -392,7 +392,7 @@ export default function HealthPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Premium Clinics Loading
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're connecting with top medical facilities and specialist clinics. Quality healthcare will be
                     accessible soon!
                   </p>
@@ -421,7 +421,7 @@ export default function HealthPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Wellness Programs Starting
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     Comprehensive health and wellness programs are being developed. Prevention and care programs will
                     launch soon!
                   </p>
@@ -450,7 +450,7 @@ export default function HealthPage() {
               <Shield className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Certified Professionals</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               All medical professionals are licensed, certified, and continuously trained.
             </p>
           </div>
@@ -460,7 +460,7 @@ export default function HealthPage() {
               <Ambulance className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">24/7 Emergency</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Round-the-clock emergency services with rapid response times.
             </p>
           </div>
@@ -470,7 +470,7 @@ export default function HealthPage() {
               <Pill className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Modern Equipment</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               State-of-the-art medical equipment and advanced diagnostic tools.
             </p>
           </div>
@@ -488,7 +488,7 @@ export default function HealthPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
               Need Medical Assistance?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Get immediate medical support, book appointments, or connect with healthcare professionals. Available 24/7 for emergencies.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">

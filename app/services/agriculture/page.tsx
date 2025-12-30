@@ -311,7 +311,7 @@ export default function AgriculturePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">Search Results</h3>
-                  <p className="text-gray-600">Found {allFiltered.length} agriculture services</p>
+                  <p className="text-gray-900">Found {allFiltered.length} agriculture services</p>
                 </div>
                 <Button
                   variant="outline"
@@ -364,7 +364,7 @@ export default function AgriculturePage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-green-600 to-lime-600 bg-clip-text text-transparent">
               Premium Agricultural Services
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               From sustainable farming solutions to premium livestock breeding programs
             </p>
           </div>
@@ -411,7 +411,7 @@ export default function AgriculturePage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     No Agriculture Services Found
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     {searchTerm || townFilter || priceFilter
                       ? "Try adjusting your search filters to find more results."
                       : "We're connecting with agricultural service providers. Check back soon for farming opportunities!"}
@@ -470,10 +470,10 @@ export default function AgriculturePage() {
                         <CardHeader className="pb-4 space-y-3">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2">
-                              <CardTitle className="text-xl font-bold group-hover:text-green-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-green-600 dark:text-green-400">
                                 {service.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <MapPin className="h-4 w-4 text-green-500 flex-shrink-0" />
                                 <span className="text-sm">{service.town || "Kitale"}, Kenya</span>
                               </div>
@@ -491,11 +491,11 @@ export default function AgriculturePage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{service.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{service.description}</p>
 
                           <div className="flex items-end justify-between pt-4 border-t">
                             <div>
-                              <p className="text-xs text-gray-500">Starting from</p>
+                              <p className="text-xs text-gray-900">Starting from</p>
                               <div className="flex items-baseline gap-1">
                                 <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-lime-600 bg-clip-text text-transparent">
                                   {service.price || "Contact for price"}
@@ -504,7 +504,7 @@ export default function AgriculturePage() {
                             </div>
                             <div className="text-right">
                               <p className="text-xs text-green-600 font-medium">Quality Assured</p>
-                              <p className="text-xs text-gray-500">Verified provider</p>
+                              <p className="text-xs text-gray-900">Verified provider</p>
                             </div>
                           </div>
                         </CardContent>
@@ -544,7 +544,7 @@ export default function AgriculturePage() {
                     <Sprout className="h-20 w-20 text-green-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">No Livestock Found</h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     {searchTerm || townFilter || priceFilter
                       ? "Try adjusting your search filters to find livestock."
                       : "We're connecting with livestock breeders. Check back soon!"}
@@ -579,13 +579,13 @@ export default function AgriculturePage() {
                         </div>
                         <CardHeader className="pb-4">
                           <CardTitle className="text-xl font-bold">{service.title}</CardTitle>
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-900">
                             <MapPin className="h-4 w-4 text-green-500" />
                             <span className="text-sm">{service.town || "Kitale"}, Kenya</span>
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <p className="text-sm text-gray-600 line-clamp-2">{service.description}</p>
+                          <p className="text-sm text-gray-900 line-clamp-2">{service.description}</p>
                         </CardContent>
                         <CardFooter className="grid grid-cols-2 gap-3">
                           <Button variant="outline" asChild>
@@ -610,7 +610,7 @@ export default function AgriculturePage() {
                     <Sprout className="h-20 w-20 text-green-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4">No Products Found</h3>
-                  <p className="text-lg text-gray-600 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 max-w-md mx-auto mb-8">
                     {searchTerm || townFilter || priceFilter
                       ? "Try adjusting your search filters."
                       : "Fresh agricultural products coming soon!"}
@@ -627,7 +627,7 @@ export default function AgriculturePage() {
                         <CardTitle>{service.title}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600">{service.description}</p>
+                        <p className="text-sm text-gray-900">{service.description}</p>
                       </CardContent>
                       <CardFooter className="grid grid-cols-2 gap-3">
                         <Button variant="outline" asChild>
@@ -650,7 +650,7 @@ export default function AgriculturePage() {
                     <Building className="h-20 w-20 text-green-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4">No Equipment Found</h3>
-                  <p className="text-lg text-gray-600 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 max-w-md mx-auto mb-8">
                     {searchTerm || townFilter || priceFilter
                       ? "Try adjusting your search filters."
                       : "Agricultural equipment solutions coming soon!"}
@@ -667,7 +667,7 @@ export default function AgriculturePage() {
                         <CardTitle>{service.title}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600">{service.description}</p>
+                        <p className="text-sm text-gray-900">{service.description}</p>
                       </CardContent>
                       <CardFooter className="grid grid-cols-2 gap-3">
                         <Button variant="outline" asChild>
@@ -697,7 +697,7 @@ export default function AgriculturePage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-green-600 to-lime-600 bg-clip-text text-transparent">
               Connect With Agricultural Experts
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Get personalized advice, farming solutions, and connect with verified agricultural service providers in
               your area. Our team is available 24/7 to assist you.
             </p>

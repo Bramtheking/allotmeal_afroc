@@ -236,7 +236,7 @@ export default function TendersPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700">Tender Value</label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-900" />
                     <select
                       className="w-full pl-10 h-12 border border-gray-200 rounded-lg focus:border-gray-400 bg-white"
                       value={filterValue}
@@ -290,7 +290,7 @@ export default function TendersPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-slate-600 to-gray-700 bg-clip-text text-transparent">
               Premium Business Opportunities
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Access exclusive tender opportunities from leading organizations across Africa
             </p>
           </div>
@@ -327,7 +327,7 @@ export default function TendersPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     No Private Sector Opportunities Found
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're connecting with leading corporations and private organizations. Please check back later for
                     exclusive business opportunities!
                   </p>
@@ -345,15 +345,15 @@ export default function TendersPage() {
                         <CardHeader className="pb-4">
                           <div className="flex items-start justify-between mb-4">
                             <div className="space-y-2 flex-1">
-                              <CardTitle className="text-xl font-bold group-hover:text-slate-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-slate-700 dark:text-slate-300">
                                 {tender.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <Building className="h-4 w-4 text-slate-500" />
                                 <span className="text-sm font-medium">{tender.company || "Leading Corporation"}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <MapPin className="h-4 w-4 text-gray-500" />
+                              <div className="flex items-center gap-2 text-gray-900">
+                                <MapPin className="h-4 w-4 text-gray-900" />
                                 <span className="text-sm">{(tender.town || "Kitale") + ", Kenya"}</span>
                               </div>
                             </div>
@@ -362,20 +362,20 @@ export default function TendersPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{tender.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{tender.description}</p>
 
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <DollarSign className="h-4 w-4 text-green-500" />
-                                <span className="text-xs text-gray-600">Value</span>
+                                <span className="text-xs text-gray-900">Value</span>
                               </div>
                               <p className="font-semibold text-green-600">{(tender as any).value || tender.price || "$500K"}</p>
                             </div>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-orange-500" />
-                                <span className="text-xs text-gray-600">Deadline</span>
+                                <span className="text-xs text-gray-900">Deadline</span>
                               </div>
                               <p className="font-semibold text-orange-600">{tender.deadline || "30 days"}</p>
                             </div>
@@ -427,7 +427,7 @@ export default function TendersPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     No Government Contracts Found
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're partnering with government agencies and public institutions. Please check back later for
                     official tender opportunities!
                   </p>
@@ -445,15 +445,15 @@ export default function TendersPage() {
                         <CardHeader className="pb-4">
                           <div className="flex items-start justify-between mb-4">
                             <div className="space-y-2 flex-1">
-                              <CardTitle className="text-xl font-bold group-hover:text-slate-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-slate-700 dark:text-slate-300">
                                 {tender.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <Building className="h-4 w-4 text-slate-500" />
                                 <span className="text-sm font-medium">{tender.company || "Government Agency"}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <MapPin className="h-4 w-4 text-gray-500" />
+                              <div className="flex items-center gap-2 text-gray-900">
+                                <MapPin className="h-4 w-4 text-gray-900" />
                                 <span className="text-sm">{(tender.town || "Kitale") + ", Kenya"}</span>
                               </div>
                             </div>
@@ -462,20 +462,20 @@ export default function TendersPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{tender.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{tender.description}</p>
 
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <DollarSign className="h-4 w-4 text-green-500" />
-                                <span className="text-xs text-gray-600">Value</span>
+                                <span className="text-xs text-gray-900">Value</span>
                               </div>
                               <p className="font-semibold text-green-600">{(tender as any).value || tender.price || "$1.2M"}</p>
                             </div>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-orange-500" />
-                                <span className="text-xs text-gray-600">Deadline</span>
+                                <span className="text-xs text-gray-900">Deadline</span>
                               </div>
                               <p className="font-semibold text-orange-600">{tender.deadline || "45 days"}</p>
                             </div>
@@ -527,7 +527,7 @@ export default function TendersPage() {
               <Shield className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Verified Opportunities</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               All tenders are verified for authenticity and legitimacy before being listed.
             </p>
           </div>
@@ -537,7 +537,7 @@ export default function TendersPage() {
               <Target className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Smart Matching</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Get matched with tenders that fit your business profile and capabilities.
             </p>
           </div>
@@ -547,7 +547,7 @@ export default function TendersPage() {
               <Award className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Success Support</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Expert guidance and proposal writing assistance to maximize your win rate.
             </p>
           </div>
@@ -565,7 +565,7 @@ export default function TendersPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-slate-600 to-gray-700 bg-clip-text text-transparent">
               Ready to Win Your Next Contract?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Connect with our tender specialists for personalized guidance and proposal support.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">

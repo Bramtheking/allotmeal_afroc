@@ -227,7 +227,7 @@ export default function EntertainmentPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Premium Entertainment Content
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               From live concerts to exclusive shows, discover Africa's vibrant entertainment scene
             </p>
           </div>
@@ -271,7 +271,7 @@ export default function EntertainmentPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Amazing Live Shows Coming
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're curating incredible live entertainment experiences. Concerts, shows, and events will be
                     streaming soon!
                   </p>
@@ -327,10 +327,10 @@ export default function EntertainmentPage() {
                         </div>
 
                         <CardHeader className="pb-4">
-                          <CardTitle className="text-xl font-bold group-hover:text-purple-600 transition-colors duration-300">
+                          <CardTitle className="text-xl font-bold text-purple-600 dark:text-purple-400">
                             {event.title}
                           </CardTitle>
-                          <div className="flex items-center gap-4 text-gray-600">
+                          <div className="flex items-center gap-4 text-gray-900">
                             <div className="flex items-center gap-1">
                               <Users className="h-4 w-4 text-purple-500" />
                               <span className="text-sm">{(event as any).artist || event.company || "Live Artist"}</span>
@@ -343,7 +343,7 @@ export default function EntertainmentPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{event.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{event.description}</p>
 
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -354,7 +354,7 @@ export default function EntertainmentPage() {
                                 Live
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-1 text-gray-600">
+                            <div className="flex items-center gap-1 text-gray-900">
                               <Heart className="h-4 w-4 text-red-500" />
                               <span className="text-sm">234</span>
                             </div>
@@ -393,7 +393,7 @@ export default function EntertainmentPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Exclusive Clips Loading
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     Short-form content and exclusive clips from your favorite creators are being curated for you!
                   </p>
                   <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg px-8 py-3">
@@ -439,7 +439,7 @@ export default function EntertainmentPage() {
                           <h3 className="font-medium text-sm line-clamp-2 group-hover:text-purple-600 transition-colors">
                             {clip.title}
                           </h3>
-                          <p className="text-xs text-gray-500 mt-1">{clip.views || "12K"} views</p>
+                          <p className="text-xs text-gray-900 mt-1">{clip.views || "12K"} views</p>
                         </div>
                       </Card>
                     </motion.div>
@@ -462,7 +462,7 @@ export default function EntertainmentPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Premium Videos Coming
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     High-quality video content including documentaries, movies, and series from African creators will be
                     available soon!
                   </p>
@@ -510,10 +510,10 @@ export default function EntertainmentPage() {
                         </div>
 
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-lg font-bold group-hover:text-purple-600 transition-colors">
+                          <CardTitle className="text-lg font-bold text-purple-600 dark:text-purple-400">
                             {video.title}
                           </CardTitle>
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-900">
                             <span className="text-sm">{(video as any).creator || video.company || "Creator Name"}</span>
                             <span className="text-xs">•</span>
                             <span className="text-sm">{video.views || "25K"} views</span>
@@ -521,7 +521,7 @@ export default function EntertainmentPage() {
                         </CardHeader>
 
                         <CardContent className="pt-0">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
                             {video.description || "Premium video content from talented African creators."}
                           </p>
                         </CardContent>
@@ -558,7 +558,7 @@ export default function EntertainmentPage() {
               <Headphones className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">High Quality</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Crystal clear audio and HD video streaming for the best entertainment experience.
             </p>
           </div>
@@ -568,7 +568,7 @@ export default function EntertainmentPage() {
               <Star className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Exclusive Content</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Access to premium shows, concerts, and content you won't find anywhere else.
             </p>
           </div>
@@ -578,7 +578,7 @@ export default function EntertainmentPage() {
               <Users className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Community</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Join a vibrant community of entertainment lovers and connect with fellow fans.
             </p>
           </div>
@@ -596,7 +596,7 @@ export default function EntertainmentPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Ready for Premium Entertainment?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Subscribe to access exclusive content, live shows, and connect with Africa's top entertainers.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">

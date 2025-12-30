@@ -330,7 +330,7 @@ export default function JobsPage() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700">&nbsp;</label>
-                  <div className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3 h-12 flex items-center">
+                  <div className="text-sm text-gray-900 bg-gray-50 rounded-lg p-3 h-12 flex items-center">
                     Showing {getFilteredJobs().length} of {jobs.length} jobs
                   </div>
                 </div>
@@ -377,7 +377,7 @@ export default function JobsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">Search Results</h3>
-                  <p className="text-gray-600">Found {allJobs.length} job opportunities</p>
+                  <p className="text-gray-900">Found {allJobs.length} job opportunities</p>
                 </div>
                 <Button
                   variant="outline"
@@ -437,7 +437,7 @@ export default function JobsPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Premium Career Opportunities
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Connect with top employers offering exceptional career growth and competitive benefits
             </p>
           </div>
@@ -486,7 +486,7 @@ export default function JobsPage() {
                     <Briefcase className="h-20 w-20 text-emerald-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">No Jobs Found</h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     {searchTerm || townFilter || jobTypeFilter
                       ? "Try adjusting your search filters to find more opportunities."
                       : "We're partnering with leading companies to bring you exceptional career opportunities. Premium positions launching soon!"}
@@ -515,14 +515,14 @@ export default function JobsPage() {
                         <CardHeader className="pb-4">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2 flex-1">
-                              <CardTitle className="text-xl font-bold group-hover:text-emerald-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                                 {job.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <Building className="h-4 w-4 text-emerald-500" />
                                 <span className="text-sm font-medium">{job.company || "Growing Company"}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <MapPin className="h-4 w-4 text-teal-500" />
                                 <span className="text-sm">{(job.town || "Kitale") + ", Kenya"}</span>
                               </div>
@@ -536,26 +536,26 @@ export default function JobsPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{job.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{job.description}</p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <DollarSign className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">{job.salary || job.price || "Competitive"}</span>
+                              <span className="text-xs text-gray-900">{job.salary || job.price || "Competitive"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">
+                              <span className="text-xs text-gray-900">
                                 {job.jobType === "permanent" ? "Full Time" : job.jobType || "Full Time"}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <GraduationCap className="h-4 w-4 text-purple-500" />
-                              <span className="text-xs text-gray-600">{job.experience || "All Levels"}</span>
+                              <span className="text-xs text-gray-900">{job.experience || "All Levels"}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-orange-500" />
-                              <span className="text-xs text-gray-600">Posted recently</span>
+                              <span className="text-xs text-gray-900">Posted recently</span>
                             </div>
                           </div>
                         </CardContent>
@@ -590,7 +590,7 @@ export default function JobsPage() {
                     <Briefcase className="h-20 w-20 text-emerald-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4">No Full-Time Jobs Found</h3>
-                  <p className="text-lg text-gray-600 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 max-w-md mx-auto mb-8">
                     {searchTerm || townFilter
                       ? "Try adjusting your search filters."
                       : "Full-time opportunities coming soon!"}
@@ -604,12 +604,12 @@ export default function JobsPage() {
                       className="group overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-500 border-0 h-full"
                     >
                       <CardHeader>
-                        <CardTitle className="group-hover:text-emerald-600 transition-colors">{job.title}</CardTitle>
+                        <CardTitle className="text-emerald-600 dark:text-emerald-400 font-bold">{job.title}</CardTitle>
                         <CardDescription>{job.company}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600 line-clamp-2">{job.description}</p>
-                        <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+                        <p className="text-sm text-gray-900 line-clamp-2">{job.description}</p>
+                        <div className="mt-4 flex items-center gap-4 text-sm text-gray-900">
                           <span className="flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
                             {job.town || "Kitale"}, Kenya
@@ -642,7 +642,7 @@ export default function JobsPage() {
                     <Clock className="h-20 w-20 text-emerald-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4">No Part-Time Jobs Found</h3>
-                  <p className="text-lg text-gray-600 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 max-w-md mx-auto mb-8">
                     {searchTerm || townFilter
                       ? "Try adjusting your search filters."
                       : "Part-time opportunities coming soon!"}
@@ -656,11 +656,11 @@ export default function JobsPage() {
                       className="group overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-500 border-0 h-full"
                     >
                       <CardHeader>
-                        <CardTitle className="group-hover:text-emerald-600 transition-colors">{job.title}</CardTitle>
+                        <CardTitle className="text-emerald-600 dark:text-emerald-400 font-bold">{job.title}</CardTitle>
                         <CardDescription>{job.company}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600 line-clamp-2">{job.description}</p>
+                        <p className="text-sm text-gray-900 line-clamp-2">{job.description}</p>
                       </CardContent>
                       <CardFooter className="grid grid-cols-2 gap-3">
                         <Button variant="outline" asChild>
@@ -684,7 +684,7 @@ export default function JobsPage() {
                     <Users className="h-20 w-20 text-emerald-500" />
                   </div>
                   <h3 className="text-3xl font-semibold mb-4">No Contract Jobs Found</h3>
-                  <p className="text-lg text-gray-600 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 max-w-md mx-auto mb-8">
                     {searchTerm || townFilter
                       ? "Try adjusting your search filters."
                       : "Contract opportunities coming soon!"}
@@ -698,11 +698,11 @@ export default function JobsPage() {
                       className="group overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-500 border-0 h-full"
                     >
                       <CardHeader>
-                        <CardTitle className="group-hover:text-emerald-600 transition-colors">{job.title}</CardTitle>
+                        <CardTitle className="text-emerald-600 dark:text-emerald-400 font-bold">{job.title}</CardTitle>
                         <CardDescription>{job.company}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600 line-clamp-2">{job.description}</p>
+                        <p className="text-sm text-gray-900 line-clamp-2">{job.description}</p>
                       </CardContent>
                       <CardFooter className="grid grid-cols-2 gap-3">
                         <Button variant="outline" asChild>
@@ -732,7 +732,7 @@ export default function JobsPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Ready to Find Your Dream Job?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Get personalized job recommendations and connect with our career advisors for expert guidance. Available 24/7 to help you succeed.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">

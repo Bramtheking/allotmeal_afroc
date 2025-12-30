@@ -31,14 +31,14 @@ export default function AdvertisementsManagementPage() {
 
       const querySnapshot = await getDocs(collection(db, "advertisements"))
       const ads: Advertisement[] = []
-      
+
       querySnapshot.forEach((doc) => {
         ads.push({ id: doc.id, ...doc.data() } as Advertisement)
       })
 
       // Sort by creation date, newest first
       ads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      
+
       setAdvertisements(ads)
     } catch (error) {
       console.error("Error fetching advertisements:", error)
@@ -252,9 +252,10 @@ export default function AdvertisementsManagementPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="below-video" className="text-gray-900">Below Video</SelectItem>
-                        <SelectItem value="advertisement-section" className="text-gray-900">Advertisement Section</SelectItem>
+                        <SelectItem value="homepage" className="text-gray-900">Homepage (Below Video)</SelectItem>
+                        <SelectItem value="services" className="text-gray-900">Featured Advertisements</SelectItem>
                         <SelectItem value="sidebar" className="text-gray-900">Sidebar</SelectItem>
+                        <SelectItem value="footer" className="text-gray-900">Footer</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

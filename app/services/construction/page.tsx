@@ -226,7 +226,7 @@ export default function ConstructionPage() {
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               Professional Construction Services
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 dark:text-gray-300 max-w-3xl mx-auto">
               Connect with certified contractors, architects, and construction specialists
             </p>
           </div>
@@ -304,10 +304,10 @@ export default function ConstructionPage() {
                         <CardHeader className="pb-4 space-y-3">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2">
-                              <CardTitle className="text-xl font-bold group-hover:text-orange-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-orange-600 dark:text-orange-400">
                                 {project.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <MapPin className="h-4 w-4 text-orange-500 flex-shrink-0" />
                                 <span className="text-sm">{(project.town || "Kitale") + ", Kenya"}</span>
                               </div>
@@ -325,30 +325,30 @@ export default function ConstructionPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">{project.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-3">{project.description}</p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">Available</span>
+                              <span className="text-xs text-gray-900">Available</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">Professional</span>
+                              <span className="text-xs text-gray-900">Professional</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <HardHat className="h-4 w-4 text-orange-500" />
-                              <span className="text-xs text-gray-600">Licensed</span>
+                              <span className="text-xs text-gray-900">Licensed</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Award className="h-4 w-4 text-amber-500" />
-                              <span className="text-xs text-gray-600">Certified</span>
+                              <span className="text-xs text-gray-900">Certified</span>
                             </div>
                           </div>
 
                           <div className="flex items-end justify-between pt-4 border-t">
                             <div>
-                              <p className="text-xs text-gray-500">Price</p>
+                              <p className="text-xs text-gray-900">Price</p>
                               <div className="flex items-baseline gap-1">
                                 <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                                   {project.price || "Contact for quote"}
@@ -357,7 +357,7 @@ export default function ConstructionPage() {
                             </div>
                             <div className="text-right">
                               <p className="text-xs text-orange-600 font-medium">Active</p>
-                              <p className="text-xs text-gray-500">Available now</p>
+                              <p className="text-xs text-gray-900">Available now</p>
                             </div>
                           </div>
                         </CardContent>
@@ -394,7 +394,7 @@ export default function ConstructionPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Premium Builders Coming Soon
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're connecting with Africa's top construction companies and certified builders. Professional
                     construction services will be available soon!
                   </p>
@@ -449,10 +449,10 @@ export default function ConstructionPage() {
                         <CardHeader className="pb-4 space-y-3">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2">
-                              <CardTitle className="text-xl font-bold group-hover:text-orange-600 transition-colors duration-300">
+                              <CardTitle className="text-xl font-bold text-orange-600 dark:text-orange-400">
                                 {project.title}
                               </CardTitle>
-                              <div className="flex items-center gap-2 text-gray-600">
+                              <div className="flex items-center gap-2 text-gray-900">
                                 <MapPin className="h-4 w-4 text-orange-500 flex-shrink-0" />
                                 <span className="text-sm">{(project.town || "Kitale") + ", Kenya"}</span>
                               </div>
@@ -470,40 +470,40 @@ export default function ConstructionPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4 flex-1">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{project.description}</p>
+                          <p className="text-sm text-gray-900 dark:text-white line-clamp-2">{project.description}</p>
 
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-blue-500" />
-                              <span className="text-xs text-gray-600">Timeline</span>
+                              <span className="text-xs text-gray-900">Timeline</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-green-500" />
-                              <span className="text-xs text-gray-600">Team Size</span>
+                              <span className="text-xs text-gray-900">Team Size</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <HardHat className="h-4 w-4 text-orange-500" />
-                              <span className="text-xs text-gray-600">Safety First</span>
+                              <span className="text-xs text-gray-900">Safety First</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Award className="h-4 w-4 text-amber-500" />
-                              <span className="text-xs text-gray-600">Certified</span>
+                              <span className="text-xs text-gray-900">Certified</span>
                             </div>
                           </div>
 
                           <div className="flex items-end justify-between pt-4 border-t">
                             <div>
-                              <p className="text-xs text-gray-500">Starting from</p>
+                              <p className="text-xs text-gray-900">Starting from</p>
                               <div className="flex items-baseline gap-1">
                                 <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                                   {project.price || "$15K"}
                                 </span>
-                                <span className="text-sm text-gray-500">/ project</span>
+                                <span className="text-sm text-gray-900">/ project</span>
                               </div>
                             </div>
                             <div className="text-right">
                               <p className="text-xs text-orange-600 font-medium">Professional</p>
-                              <p className="text-xs text-gray-500">Quality assured</p>
+                              <p className="text-xs text-gray-900">Quality assured</p>
                             </div>
                           </div>
                         </CardContent>
@@ -544,7 +544,7 @@ export default function ConstructionPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Infrastructure Projects Coming
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're connecting with road construction specialists and infrastructure developers. Major projects
                     will be available soon!
                   </p>
@@ -573,7 +573,7 @@ export default function ConstructionPage() {
                   <h3 className="text-3xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
                     Quality Materials Coming
                   </h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                  <p className="text-lg text-gray-900 dark:text-white max-w-md mx-auto mb-8">
                     We're sourcing premium construction materials and building supplies. Quality materials will be
                     available soon!
                   </p>
@@ -602,7 +602,7 @@ export default function ConstructionPage() {
               <ShieldCheck className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Licensed & Insured</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               All contractors are fully licensed, insured, and background-checked for your peace of mind.
             </p>
           </div>
@@ -612,7 +612,7 @@ export default function ConstructionPage() {
               <Clock className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">On-Time Delivery</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Projects completed on schedule with milestone-based progress tracking and regular updates.
             </p>
           </div>
@@ -622,7 +622,7 @@ export default function ConstructionPage() {
               <Award className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-gray-800">Quality Guarantee</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-900 leading-relaxed">
               Premium materials and workmanship backed by comprehensive warranties and quality assurance.
             </p>
           </div>
@@ -640,7 +640,7 @@ export default function ConstructionPage() {
             <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               Ready to Build Your Dream Project?
             </h3>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-900 mb-8 max-w-2xl mx-auto">
               Connect with certified construction professionals and get personalized quotes for your building needs.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
