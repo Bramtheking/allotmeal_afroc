@@ -375,6 +375,24 @@ export default function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
+
+              <Card className="bg-gradient-to-br from-pink-50 to-red-50 dark:from-pink-950/30 dark:to-red-950/30 border-pink-200 dark:border-pink-800">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-pink-700 dark:text-pink-300">
+                    <Calendar className="h-5 w-5" />
+                    World Couple's Day
+                  </CardTitle>
+                  <CardDescription>Manage competition entries & winners</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild className="w-full bg-pink-600 hover:bg-pink-700">
+                    <Link href="/dashboard/admin/couples-day">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      View Competition
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
