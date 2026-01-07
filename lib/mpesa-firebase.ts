@@ -80,7 +80,7 @@ export async function getMpesaSettings(): Promise<MpesaSettings | null> {
 
 export async function updateMpesaSettings(settings: Partial<MpesaSettings>, userId: string): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     await setDoc(doc(db, "mpesa_settings", "global"), {
@@ -96,7 +96,7 @@ export async function updateMpesaSettings(settings: Partial<MpesaSettings>, user
 
 export async function getServicePricing(serviceType: string): Promise<MpesaServicePricing | null> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) {
       return null
     }
@@ -116,7 +116,7 @@ export async function getServicePricing(serviceType: string): Promise<MpesaServi
 
 export async function getAllServicePricing(): Promise<MpesaServicePricing[]> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) return []
 
     const pricingSnapshot = await getDocs(collection(db, "mpesa_service_pricing"))
@@ -137,7 +137,7 @@ export async function getAllServicePricing(): Promise<MpesaServicePricing[]> {
 
 export async function setServicePricing(pricing: MpesaServicePricing, userId: string): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     await setDoc(doc(db, "mpesa_service_pricing", pricing.serviceType), {
@@ -153,7 +153,7 @@ export async function setServicePricing(pricing: MpesaServicePricing, userId: st
 
 export async function deleteServicePricing(serviceType: string): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     await updateDoc(doc(db, "mpesa_service_pricing", serviceType), { 
@@ -168,7 +168,7 @@ export async function deleteServicePricing(serviceType: string): Promise<void> {
 
 export async function getWhitelist(): Promise<MpesaWhitelistEntry[]> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) return []
 
     const whitelistSnapshot = await getDocs(collection(db, "mpesa_whitelist"))
@@ -186,7 +186,7 @@ export async function getWhitelist(): Promise<MpesaWhitelistEntry[]> {
 
 export async function addToWhitelist(entry: Omit<MpesaWhitelistEntry, "id">, userId: string): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     await addDoc(collection(db, "mpesa_whitelist"), {
@@ -202,7 +202,7 @@ export async function addToWhitelist(entry: Omit<MpesaWhitelistEntry, "id">, use
 
 export async function removeFromWhitelist(id: string): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     const whitelistRef = doc(db, "mpesa_whitelist", id)
@@ -242,7 +242,7 @@ function normalizePhoneNumber(phone: string): string[] {
 
 export async function isWhitelisted(phoneOrEmail: string): Promise<boolean> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) return false
 
     // Check if it's an email
@@ -302,7 +302,7 @@ export async function isWhitelisted(phoneOrEmail: string): Promise<boolean> {
 
 export async function saveTransaction(transaction: Omit<MpesaTransaction, "id">): Promise<string> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     // Filter out undefined values - Firestore doesn't accept them
@@ -320,7 +320,7 @@ export async function saveTransaction(transaction: Omit<MpesaTransaction, "id">)
 
 export async function updateTransaction(checkoutRequestId: string, updates: Partial<MpesaTransaction>): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     // Filter out undefined values - Firestore doesn't accept them
@@ -347,7 +347,7 @@ export async function updateTransaction(checkoutRequestId: string, updates: Part
 
 export async function updateTransactionById(id: string, updates: Partial<MpesaTransaction>): Promise<void> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) throw new Error("Database not initialized")
 
     // Filter out undefined values - Firestore doesn't accept them
@@ -364,7 +364,7 @@ export async function updateTransactionById(id: string, updates: Partial<MpesaTr
 
 export async function getTransactions(limitCount: number = 50): Promise<MpesaTransaction[]> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) return []
 
     const transactionsQuery = query(
@@ -388,7 +388,7 @@ export async function getTransactions(limitCount: number = 50): Promise<MpesaTra
 
 export async function getUserTransactions(userId: string): Promise<MpesaTransaction[]> {
   try {
-    const db = getFirebaseDb()
+    const db = await getFirebaseDb()
     if (!db) return []
 
     const transactionsQuery = query(
