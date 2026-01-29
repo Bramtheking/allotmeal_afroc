@@ -25,21 +25,11 @@ export function ServicePaymentGate({ serviceType, serviceId, serviceName, childr
   const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
-    // Check if user has paid for this service
-    const checkPaymentStatus = () => {
-      // Check localStorage for specific service payment
-      const paymentKey = `service_paid_${serviceType}_${serviceId}`
-      const localPaid = localStorage.getItem(paymentKey) === "true"
-      
-      // Check for active session (pays for all services of this type)
-      const sessionPaid = hasActivePaidSession(serviceType, "Continue")
-      
-      console.log("Payment check:", { paymentKey, localPaid, sessionPaid })
-      setHasPaid(localPaid || sessionPaid)
-      setIsChecking(false)
-    }
-
-    checkPaymentStatus()
+    // PAYMENT DISABLED - Direct access to all content
+    // Users can access service details and videos without payment
+    console.log("Payment gate disabled - granting direct access")
+    setHasPaid(true) // Always grant access
+    setIsChecking(false)
   }, [serviceType, serviceId])
 
   const handlePaymentSuccess = () => {
@@ -107,8 +97,8 @@ export function ServicePaymentGate({ serviceType, serviceId, serviceName, childr
                 <Home className="mr-2 h-4 w-4" />
                 Go Home
               </Button>
-              <Button 
-                onClick={() => setShowPaymentDialog(true)} 
+              <Button
+                onClick={() => setShowPaymentDialog(true)}
                 className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
               >
                 <CreditCard className="mr-2 h-4 w-4" />

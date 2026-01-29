@@ -25,7 +25,7 @@ import {
   Search,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { MpesaPaymentDialog } from "./mpesa-payment-dialog"
+// import { MpesaPaymentDialog } from "./mpesa-payment-dialog" // No longer needed - payment disabled
 
 interface ServiceOptionsDialogProps {
   isOpen: boolean
@@ -84,9 +84,9 @@ export function ServiceOptionsDialog({ isOpen, onClose, serviceType }: ServiceOp
   const [step, setStep] = useState<"country" | "action">("country")
   const [selectedCountry, setSelectedCountry] = useState("")
   const [countrySearch, setCountrySearch] = useState("")
-  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
-  const [selectedAction, setSelectedAction] = useState<"Continue" | "Videos">("Continue")
-  
+  // const [paymentDialogOpen, setPaymentDialogOpen] = useState(false) // No longer needed - payment disabled
+  // const [selectedAction, setSelectedAction] = useState<"Continue" | "Videos">("Continue") // No longer needed - payment disabled
+
   const IconComponent = serviceIcons[serviceType as keyof typeof serviceIcons] || Building2
   const colorGradient = serviceColors[serviceType as keyof typeof serviceColors] || "from-gray-500 to-gray-600"
   const serviceTitle = serviceTitles[serviceType as keyof typeof serviceTitles] || "Service"
@@ -108,21 +108,28 @@ export function ServiceOptionsDialog({ isOpen, onClose, serviceType }: ServiceOp
   }
 
   const handleActionClick = (action: "Continue" | "Videos") => {
-    setSelectedAction(action)
-    setPaymentDialogOpen(true)
-  }
-
-  const handlePaymentSuccess = () => {
-    setPaymentDialogOpen(false)
+    // PAYMENT DISABLED - Direct navigation to services or videos
     handleClose()
-    
-    // Navigate to service page (country selection is just for show, filtering done manually)
-    const url = selectedAction === "Continue" 
+
+    // Navigate directly to service page without payment
+    const url = action === "Continue"
       ? `/services/${serviceType}`
       : `/services/${serviceType}/videos`
-    
+
     router.push(url)
   }
+
+  // const handlePaymentSuccess = () => { // Removed as payment is disabled
+  //   setPaymentDialogOpen(false)
+  //   handleClose()
+
+  //   // Navigate to service page (country selection is just for show, filtering done manually)
+  //   const url = selectedAction === "Continue" 
+  //     ? `/services/${serviceType}`
+  //     : `/services/${serviceType}/videos`
+
+  //   router.push(url)
+  // }
 
   return (
     <>
@@ -202,7 +209,7 @@ export function ServiceOptionsDialog({ isOpen, onClose, serviceType }: ServiceOp
               </div>
 
               {/* Action Cards */}
-              <Card 
+              <Card
                 className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20"
                 onClick={() => handleActionClick("Continue")}
               >
@@ -222,7 +229,7 @@ export function ServiceOptionsDialog({ isOpen, onClose, serviceType }: ServiceOp
                 </CardHeader>
               </Card>
 
-              <Card 
+              <Card
                 className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20"
                 onClick={() => handleActionClick("Videos")}
               >
@@ -250,13 +257,7 @@ export function ServiceOptionsDialog({ isOpen, onClose, serviceType }: ServiceOp
         </DialogContent>
       </Dialog>
 
-      <MpesaPaymentDialog
-        isOpen={paymentDialogOpen}
-        onClose={() => setPaymentDialogOpen(false)}
-        onSuccess={handlePaymentSuccess}
-        serviceType={serviceType}
-        actionType={selectedAction}
-      />
+      {/* Payment dialog removed - direct access enabled */}
     </>
   )
 }

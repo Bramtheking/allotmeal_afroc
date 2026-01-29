@@ -13,7 +13,6 @@ import { ArrowLeft, MapPin, Phone, Mail, Globe, Star, Play, Share2, Briefcase } 
 import Link from "next/link"
 import { toast } from "sonner"
 import VisitorTracker from "@/components/visitor-tracker"
-import { ServicePaymentGate } from "@/components/service-payment-gate"
 import { JobApplicationDialog } from "@/components/job-application-dialog"
 import { PlacementAdvertisements } from "@/components/placement-advertisements"
 
