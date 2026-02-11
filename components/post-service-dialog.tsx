@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, CreditCard, CheckCircle2 } from "lucide-react"
+import { Loader2, CreditCard, CheckCircle2, Shield } from "lucide-react"
 import { toast } from "sonner"
-import { getServicePricing } from "@/lib/mpesa-firebase"
+import { getServicePricing, isWhitelisted } from "@/lib/mpesa-firebase"
 import { MpesaPaymentDialog } from "./mpesa-payment-dialog"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
@@ -41,6 +41,8 @@ export function PostServiceDialog({ isOpen, onClose }: PostServiceDialogProps) {
   const [pricing, setPricing] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [showPaymentDialog, setShowPaymentDialog] = useState(false)
+  const [isCheckingWhitelist, setIsCheckingWhitelist] = useState(false)
+  const [isWhitelistedUser, setIsWhitelistedUser] = useState(false)
   
   // Service details
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -55,8 +57,42 @@ export function PostServiceDialog({ isOpen, onClose }: PostServiceDialogProps) {
       setPhoneNumber("")
       setServiceTitle("")
       setServiceDescription("")
+      setIsWhitelistedUser(false)
+      checkEmailWhitelist()
     }
   }, [isOpen])
+
+  const checkEmailWhitelist = async () => {
+    if (user?.email) {
+      const whitelisted = await isWhitelisted(user.email)
+      if (whitelisted) {
+        setIsWhitelistedUser(true)
+        toast.success("Your email is whitelisted - no payment required!")
+      }
+    }
+  }
+
+  const handlePhoneNumberChange = async (value: string) => {
+    setPhoneNumber(value)
+    
+    const cleaned = value.replace(/\D/g, '')
+    if (cleaned.length >= 9) {
+      setIsCheckingWhitelist(true)
+      try {
+        const whitelisted = await isWhitelisted(value)
+        if (whitelisted) {
+          setIsWhitelistedUser(true)
+          toast.success("This phone number is whitelisted - no payment required!")
+        } else {
+          setIsWhitelistedUser(false)
+        }
+      } catch (error) {
+        console.error("Error checking whitelist:", error)
+      } finally {
+        setIsCheckingWhitelist(false)
+      }
+    }
+  }
 
   const handleServiceSelect = async (serviceType: string) => {
     setSelectedService(serviceType)
@@ -100,8 +136,8 @@ export function PostServiceDialog({ isOpen, onClose }: PostServiceDialogProps) {
       return
     }
 
-    if (pricing === 0) {
-      // Free posting - skip payment
+    if (pricing === 0 || isWhitelistedUser) {
+      // Free posting or whitelisted - skip payment
       handlePaymentSuccess()
     } else {
       setStep("payment")
@@ -225,15 +261,36 @@ export function PostServiceDialog({ isOpen, onClose }: PostServiceDialogProps) {
 
           {step === "details" && (
             <div className="space-y-6">
+              {isWhitelistedUser && (
+                <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <div>
+                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                      You're whitelisted!
+                    </p>
+                    <p className="text-xs text-green-700 dark:text-green-300">
+                      No payment required - you can post for free
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number (M-Pesa) *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="0712345678 or +254712345678"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="0712345678 or +254712345678"
+                    value={phoneNumber}
+                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                  />
+                  {isCheckingWhitelist && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   This number will be used for payment and will be whitelisted for free access
                 </p>
@@ -277,8 +334,8 @@ export function PostServiceDialog({ isOpen, onClose }: PostServiceDialogProps) {
                   onClick={handleSubmitDetails}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500"
                 >
-                  {pricing === 0 ? "Submit (Free)" : `Pay KSh ${pricing?.toFixed(2)}`}
-                  <CreditCard className="ml-2 h-4 w-4" />
+                  {pricing === 0 || isWhitelistedUser ? "Submit (Free)" : `Pay KSh ${pricing?.toFixed(2)}`}
+                  {isWhitelistedUser ? <Shield className="ml-2 h-4 w-4" /> : <CreditCard className="ml-2 h-4 w-4" />}
                 </Button>
               </div>
             </div>
