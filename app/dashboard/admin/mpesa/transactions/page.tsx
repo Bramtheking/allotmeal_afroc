@@ -131,7 +131,7 @@ export default function MpesaTransactionsPage() {
     .filter((tx) => tx.resultCode === 0 || tx.status === "success")
     .reduce((sum, tx) => sum + tx.amount, 0)
 
-  const serviceTypes = Array.from(new Set(transactions.map((tx) => tx.serviceType)))
+  const serviceTypes = Array.from(new Set(transactions.map((tx) => tx.serviceType).filter(type => type && type.trim() !== "")))
 
   if (loading || authLoading) {
     return (
@@ -208,9 +208,11 @@ export default function MpesaTransactionsPage() {
                 <SelectContent>
                   <SelectItem value="all">All Services</SelectItem>
                   {serviceTypes.map((service) => (
-                    <SelectItem key={service} value={service}>
-                      {service}
-                    </SelectItem>
+                    service && service.trim() !== "" && (
+                      <SelectItem key={service} value={service}>
+                        {service}
+                      </SelectItem>
+                    )
                   ))}
                 </SelectContent>
               </Select>

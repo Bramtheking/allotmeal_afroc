@@ -323,9 +323,11 @@ export default function AdminBlogPage() {
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((category) => (
-                <SelectItem key={category.id} value={category.name}>
-                  {category.name}
-                </SelectItem>
+                category.name && category.name.trim() !== "" && (
+                  <SelectItem key={category.id} value={category.name}>
+                    {category.name}
+                  </SelectItem>
+                )
               ))}
             </SelectContent>
           </Select>
